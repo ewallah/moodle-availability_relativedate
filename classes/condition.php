@@ -165,6 +165,11 @@ class condition extends \core_availability\condition {
         return $this->relativenumber;
     }
 
+    /**
+     * Calculates the date.
+     *
+     * @return int relative date.
+     */
     private function calcstart() {
         global $COURSE, $DB;
         if ($this->relativedate == 0) {

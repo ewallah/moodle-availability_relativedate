@@ -29,7 +29,7 @@ M.availability_relativedate.form.getNode = function(json) {
     for (var i = 1; i < 52; i++) {
         html += '<option value="' + i + '">' + i + '</option>';
     }
-    
+
     html += '</select></label> ';
     html += '<label><select name="relativednw">';
     for (var i = 0; i < this.timeFields.length; i++) {
@@ -64,7 +64,7 @@ M.availability_relativedate.form.getNode = function(json) {
         jasonsval = json.s;
     }
     node.one('select[name=relativestart]').set('value', jasonsval);
-    
+
     // Add event handlers (first time only).
     if (!M.availability_relativedate.form.addedEvents) {
         M.availability_relativedate.form.addedEvents = true;
