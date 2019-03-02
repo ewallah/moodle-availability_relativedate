@@ -52,11 +52,10 @@ class availability_relativedate_testcase extends advanced_testcase {
     public function test_in_tree() {
         global $CFG;
         $this->resetAfterTest();
-        $this->setAdminUser();
 
         // Create course with relativedate turned on.
         $CFG->enableavailability = true;
-        $course = $this->getDataGenerator()->create_course(['startdate' => time(), 'enddate' => time() + 7 * WEEKSECS]);
+        $course = $this->getDataGenerator()->create_course();
         $user = $this->getDataGenerator()->create_user();
         $this->getDataGenerator()->enrol_user($user->id, $course->id);
         $info = new \core_availability\mock_info($course, $user->id);
@@ -69,6 +68,7 @@ class availability_relativedate_testcase extends advanced_testcase {
         $tree2 = new \core_availability\tree($stru2);
         $tree3 = new \core_availability\tree($stru3);
 
+        $this->assertFalse($tree1->check_available(false, $info, true, 0)->is_available());
         $result1 = $tree1->check_available(false, $info, true, $user->id);
         $result2 = $tree2->check_available(false, $info, true, $user->id);
         $result3 = $tree3->check_available(false, $info, true, $user->id);
@@ -80,8 +80,20 @@ class availability_relativedate_testcase extends advanced_testcase {
         $result2 = $tree2->check_available(true, $info, true, $user->id);
         $result3 = $tree3->check_available(true, $info, true, $user->id);
         $this->assertTrue($result1->is_available());
-        $this->assertTrue($result2->is_available());
+        $this->assertFalse($result2->is_available());
         $this->assertTrue($result3->is_available());
+
+        $course = $this->getDataGenerator()->create_course(['startdate' => time(), 'enddate' => time() + 7 * WEEKSECS]);
+        $this->getDataGenerator()->enrol_user($user->id, $course->id);
+        $info = new \core_availability\mock_info($course, $user->id);
+        $this->assertFalse($tree1->check_available(false, $info, true, 0)->is_available());
+        $result1 = $tree1->check_available(false, $info, true, $user->id);
+        $result2 = $tree2->check_available(false, $info, true, $user->id);
+        $result3 = $tree3->check_available(false, $info, true, $user->id);
+        $this->assertFalse($result1->is_available());
+        $this->assertFalse($result2->is_available());
+        $this->assertFalse($result3->is_available());
+
     }
 
     /**
@@ -156,30 +168,48 @@ class availability_relativedate_testcase extends advanced_testcase {
     }
 
     /**
-     * Tests a page before and after completion.
+     * Tests a course with no enddate.
      */
-    public function test_page() {
+    public function test_noenddate() {
         global $CFG, $PAGE;
         $this->resetAfterTest();
         $this->setAdminUser();
-
-        // Create course with relativedate turned on.
         $CFG->enableavailability = true;
         $generator = $this->getDataGenerator();
-        $course = $generator->create_course();
+        $course1 = $generator->create_course();
+        $course2 = $generator->create_course(['enddate' => time() + 7 * WEEKSECS]);
         $user = $generator->create_user();
-        $generator->enrol_user($user->id, $course->id);
-        $page = $generator->get_plugin_generator('mod_page')->create_instance(['course' => $course]);
-        $modinfo = get_fast_modinfo($course);
-        $cm = $modinfo->get_cm($page->cmid);
-        $PAGE->set_url('/course/modedit.php', ['update' => $page->cmid]);
-        \core_availability\frontend::include_all_javascript($course, $cm);
-        $info = new \core_availability\info_module($cm);
-        $cond = new condition((object)['type' => 'relativedate', 'n' => 7, 'd' => 2, 's' => 1]);
+        $generator->enrol_user($user->id, $course1->id);
+        $generator->enrol_user($user->id, $course2->id);
+        $page1 = $generator->get_plugin_generator('mod_page')->create_instance(['course' => $course1]);
+        $page2 = $generator->get_plugin_generator('mod_page')->create_instance(['course' => $course2]);
+        $modinfo1 = get_fast_modinfo($course1);
+        $modinfo2 = get_fast_modinfo($course2);
+        $cm1 = $modinfo1->get_cm($page1->cmid);
+        $cm2 = $modinfo2->get_cm($page2->cmid);
+        $PAGE->set_url('/course/modedit.php', ['update' => $page1->cmid]);
+        \core_availability\frontend::include_all_javascript($course1, $cm1);
+        $info = new \core_availability\info_module($cm1);
+        $cond = new condition((object)['type' => 'relativedate', 'n' => 7, 'd' => 2, 's' => 2]);
+        $information = $cond->get_description(true, false, $info);
+        $this->assertEquals('7 weeks before course end date (No course enddate)', $information);
+        $this->assertEquals('{relativedate: 7 weeks  before course end date}', "$cond");
         $this->assertFalse($cond->is_available(false, $info, true, $user->id));
         $this->assertFalse($cond->is_available(false, $info, false, $user->id));
-        $this->assertTrue($cond->is_available(true, $info, false, $user->id));
-        $this->assertTrue($cond->is_available(true, $info, true, $user->id));
+        $this->assertFalse($cond->is_available(true, $info, false, $user->id));
+        $this->assertFalse($cond->is_available(true, $info, true, $user->id));
+
+        $PAGE->set_url('/course/modedit.php', ['update' => $page2->cmid]);
+        \core_availability\frontend::include_all_javascript($course2, $cm2);
+        $info = new \core_availability\info_module($cm2);
+        $information = $cond->get_description(true, false, $info);
+        $this->assertContains('7 weeks before course end date', $information);
+        $this->assertNotContains('(No course enddate)', $information);
+        $this->assertEquals('{relativedate: 7 weeks  before course end date}', "$cond");
+        $this->assertTrue($cond->is_available(false, $info, true, $user->id));
+        $this->assertTrue($cond->is_available(false, $info, false, $user->id));
+        $this->assertFalse($cond->is_available(true, $info, false, $user->id));
+        $this->assertFalse($cond->is_available(true, $info, true, $user->id));
     }
 
     /**

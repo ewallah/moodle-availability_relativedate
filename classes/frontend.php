@@ -56,15 +56,13 @@ class frontend extends \core_availability\frontend {
      * @return array Array of parameters for the JavaScript function
      */
     protected function get_javascript_init_params($course, \cm_info $cm = null, \section_info $section = null) {
-        $a = get_string('after', 'availability_relativedate');
-        $b = get_string('before', 'availability_relativedate');
-        $options = [1 => get_string('days'), 2 => get_string('weeks'), 3 => strtolower(get_string('months'))];
+        $options = [];
+        foreach (condition::options_dwm() as $key => $value) {
+            $options[$key] = strtolower(get_string($value));
+        };
         $options = self::convert_associative_array_for_js($options, 'field', 'display');
-        $options2 = [
-            1 => $a . ' ' . strtolower(get_string('startdate')),
-            2 => $b . ' ' . strtolower(get_string('enddate')),
-            3 => get_string('dateenrol', 'availability_relativedate')];
-        $options2 = self::convert_associative_array_for_js($options2, 'field', 'display');
-        return [$options, $options2];
+        $aptions = [1 => condition::options_start(1), 2 => condition::options_start(2), 3 => condition::options_start(3)];
+        $aptions = self::convert_associative_array_for_js($aptions, 'field', 'display');
+        return [$options, $aptions];
     }
 }

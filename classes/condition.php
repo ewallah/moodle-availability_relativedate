@@ -92,7 +92,11 @@ class condition extends \core_availability\condition {
      * @return bool True if this item is available to the user, false otherwise
      */
     public function is_available($not, \core_availability\info $info, $grabthelot, $userid) {
-        $allow = time() >= $this->calcstart($info, $userid);
+        $calc = $this->calcstart($info, $userid);
+        if ($calc == 0) {
+             return false;
+        }
+        $allow = time() >= $calc;
         if ($not) {
             $allow = !$allow;
         }
@@ -110,48 +114,20 @@ class condition extends \core_availability\condition {
     public function get_description($full, $not, \core_availability\info $info) {
         $calc = $this->calcstart($info, 0);
         $nstr = $not ? 'Not ' : '';
-        $dstr = ' (' . userdate($calc, get_string('strftimedatetime', 'langconfig')) . ')';
+        if ($calc == 0) {
+            $dstr = ' (No course enddate)';
+        } else {
+            $dstr = ' (' . userdate($calc, get_string('strftimedatetime', 'langconfig')) . ')';
+        }
         if ($full) {
-            switch ($this->relativedwm) {
-                case 2:
-                    $str = get_string('weeks');
-                    break;
-                case 3:
-                    $str = get_string('months');
-                    break;
-                default:
-                    $str = get_string('days');
-                    break;
-            }
-            $str = $nstr . $this->relativenumber . ' ' . strtolower($str);
-            switch ($this->relativestart) {
-                case 2:
-                    return $str . get_string('before', 'availability_relativedate') . strtolower(get_string('enddate')) . $dstr;
-                case 3:
-                    return $str . get_string('after', 'availability_relativedate') .
-                        get_string('dateenrol', 'availability_relativedate') . $dstr;
-                default:
-                    return $str . get_string('after', 'availability_relativedate') . strtolower(get_string('startdate')) . $dstr;
-            }
+            $str = $nstr . $this->relativenumber . ' ';
+            $str .= strtolower(get_string(self::options_dwm()[$this->relativedwm]));
+            $str .= self::options_start($this->relativestart) . $dstr;
+            return $str;
         } else {
             $bstr = ($this->relativestart == 2) ? 'before' : 'after';
             return $nstr . ' ' . $bstr . ' ' . userdate($this->relativedate, get_string('strftimedatetime', 'langconfig'));
         }
-    }
-
-    /**
-     * Obtains a string describing this restriction, used when there is only
-     * a single restriction to display. (I.e. this provides a 'short form'
-     * rather than showing in a list.)
-     *
-     *
-     * @param bool $full Set true if this is the 'full information' view
-     * @param bool $not Set true if we are inverting the condition
-     * @param info $info Item we're checking
-     * @return string Information string (for admin) about all restrictions on his item
-     */
-    public function get_standalone_description($full, $not, \core_availability\info $info) {
-        return $this->get_description($full, $not, $info);
     }
 
     /**
@@ -160,7 +136,34 @@ class condition extends \core_availability\condition {
      * @return string Text representation of parameters
      */
     protected function get_debug_string() {
-        return $this->relativenumber;
+        return ' ' . $this->relativenumber . ' ' . self::options_dwm()[$this->relativedwm] . ' ' .
+                self::options_start($this->relativestart);
+    }
+
+    /**
+     * Obtains a the options for days week months.
+     *
+     * @param int $i index
+     * @return string
+     */
+    public static function options_start(int $i) {
+        switch ($i) {
+            case 2:
+                return get_string('before', 'availability_relativedate') . strtolower(get_string('enddate'));
+            case 3:
+                return get_string('after', 'availability_relativedate') . get_string('dateenrol', 'availability_relativedate');
+            default:
+                return get_string('after', 'availability_relativedate') . strtolower(get_string('startdate'));
+        }
+    }
+
+    /**
+     * Obtains a the options for days week months.
+     *
+     * @return array
+     */
+    public static function options_dwm() {
+        return [1 => 'days', 2 => 'weeks', 3 => 'months'];
     }
 
     /**
@@ -172,7 +175,7 @@ class condition extends \core_availability\condition {
      */
     private function calcstart(\core_availability\info $info, $userid) {
         global $DB, $USER;
-        if ($this->relativedate == 0) {
+        if (is_null($this->relativedate)) {
             switch ($this->relativedwm) {
                 case 2:
                     $i = WEEKSECS;
@@ -190,22 +193,19 @@ class condition extends \core_availability\condition {
                 case 2:
                     if ($course->enddate > 0) {
                         $this->relativedate = $course->enddate - $i;
+                    } else {
+                        return 0;
                     }
                     break;
                 case 3:
                     if ($userid == 0) {
                         $userid = $USER->id;
                     }
-                    if ($userid == 0) {
-                        return $course->startdate + $i;
-                    }
                     $sql = 'SELECT GREATEST(ue.timestart, ue.timecreated) AS startdate FROM {user_enrolments} ue
                             JOIN {enrol} e on ue.enrolid = e.id WHERE e.courseid = ? AND ue.userid = ? ORDER by startdate DESC';
                     if ($lowest = $DB->get_records_sql($sql, [$course->id, $userid])) {
                         $lowest = reset($lowest);
                         $this->relativedate = $lowest->startdate + $i;
-                    } else {
-                        debugging("No records found for user with id $userid");
                     }
                     break;
                 default:

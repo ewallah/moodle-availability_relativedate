@@ -79,9 +79,9 @@ M.availability_relativedate.form.getNode = function(json) {
 };
 
 M.availability_relativedate.form.fillValue = function(value, node) {
-    value.n = node.one('select[name=relativenumber]').get('value');
-    value.d = node.one('select[name=relativednw]').get('value');
-    value.s = node.one('select[name=relativestart]').get('value');
+    value.n = parseInt(node.one('select[name=relativenumber]').get('value'));
+    value.d = parseInt(node.one('select[name=relativednw]').get('value'));
+    value.s = parseInt(node.one('select[name=relativestart]').get('value'));
 };
 
 M.availability_relativedate.form.fillErrors = function(errors, node) {

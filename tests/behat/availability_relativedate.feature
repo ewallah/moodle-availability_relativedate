@@ -6,8 +6,8 @@ Feature: availability_relativedate
 
   Background:
     Given the following "courses" exist:
-      | fullname | shortname | format | enablecompletion | numsections | startdate  | endate     |
-      | Course 1 | C1        | topics | 1                | 4           | 1957139200 | 2957139200 |
+      | fullname | shortname | format | enablecompletion | numsections | startdate     | endate                     |
+      | Course 1 | C1        | topics | 1                | 4           | ##yesterday## | ##last day of +10 months## |
     And the following "users" exist:
       | username |
       | teacher1 |
@@ -93,7 +93,7 @@ Feature: availability_relativedate
 
     # Page 1 should appear, but page 2 does not.
     Then I should see "Page 1" in the "region-main" "region"
-    And I should see "Page 2" in the "region-main" "region"
+    And I should not see "Page 2" in the "region-main" "region"
     And I should not see "Page 3" in the "region-main" "region"
     And I should not see "Section 2" in the "region-main" "region"
     And I should not see "Section 3" in the "region-main" "region"
