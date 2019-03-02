@@ -61,21 +61,27 @@ class availability_relativedate_testcase extends advanced_testcase {
         $this->getDataGenerator()->enrol_user($user->id, $course->id);
         $info = new \core_availability\mock_info($course, $user->id);
 
-        $structure1 = (object)['op' => '|', 'show' => true, 'c' => [(object)['type' => 'relativedate', 'n' => 1, 'd' => 1, 's' => 1]]];
-        $structure2 = (object)['op' => '|', 'show' => true, 'c' => [(object)['type' => 'relativedate', 'n' => 2, 'd' => 2, 's' => 2]]];
-        $structure3 = (object)['op' => '|', 'show' => true, 'c' => [(object)['type' => 'relativedate', 'n' => 3, 'd' => 3, 's' => 3]]];
+        $stru1 = (object)['op' => '|', 'show' => true, 'c' => [(object)['type' => 'relativedate', 'n' => 1, 'd' => 1, 's' => 1]]];
+        $stru2 = (object)['op' => '|', 'show' => true, 'c' => [(object)['type' => 'relativedate', 'n' => 2, 'd' => 2, 's' => 2]]];
+        $stru3 = (object)['op' => '|', 'show' => true, 'c' => [(object)['type' => 'relativedate', 'n' => 3, 'd' => 3, 's' => 3]]];
 
-        $tree1 = new \core_availability\tree($structure1);
-        $tree2 = new \core_availability\tree($structure2);
-        $tree3 = new \core_availability\tree($structure3);
+        $tree1 = new \core_availability\tree($stru1);
+        $tree2 = new \core_availability\tree($stru2);
+        $tree3 = new \core_availability\tree($stru3);
 
-        // Initial check.
         $result1 = $tree1->check_available(false, $info, true, $user->id);
         $result2 = $tree2->check_available(false, $info, true, $user->id);
         $result3 = $tree3->check_available(false, $info, true, $user->id);
+        $this->assertFalse($result1->is_available());
+        $this->assertFalse($result2->is_available());
+        $this->assertFalse($result3->is_available());
+
+        $result1 = $tree1->check_available(true, $info, true, $user->id);
+        $result2 = $tree2->check_available(true, $info, true, $user->id);
+        $result3 = $tree3->check_available(true, $info, true, $user->id);
         $this->assertTrue($result1->is_available());
         $this->assertTrue($result2->is_available());
-        $this->assertFalse($result3->is_available());
+        $this->assertTrue($result3->is_available());
     }
 
     /**
@@ -114,7 +120,9 @@ class availability_relativedate_testcase extends advanced_testcase {
         $this->resetAfterTest();
         $course = $this->getDataGenerator()->create_course(['startdate' => time(), 'enddate' => time() + 7 * WEEKSECS]);
         $user = $this->getDataGenerator()->create_user();
+        $this->getDataGenerator()->enrol_user($user->id, $course->id);
         $info = new \core_availability\mock_info($course, $user->id);
+        $this->setUser($user);
         $relativedate = new condition((object)['type' => 'relativedate', 'n' => 1, 'd' => 1, 's' => 1]);
         $information = $relativedate->get_description(true, false, $info);
         $this->assertContains('1 days after course start date', $information);
@@ -168,14 +176,10 @@ class availability_relativedate_testcase extends advanced_testcase {
         \core_availability\frontend::include_all_javascript($course, $cm);
         $info = new \core_availability\info_module($cm);
         $cond = new condition((object)['type' => 'relativedate', 'n' => 7, 'd' => 2, 's' => 1]);
-        $this->assertTrue($cond->is_available(false, $info, true, $user->id));
-        $this->assertTrue($cond->is_available(false, $info, false, $user->id));
-        $this->assertFalse($cond->is_available(true, $info, false, $user->id));
-        $this->assertFalse($cond->is_available(true, $info, true, $user->id));
-        $this->assertFalse($cond->is_available(true, $info, true, $user->id));
-        $this->assertFalse($cond->is_available(true, $info, false, $user->id));
-        $this->assertTrue($cond->is_available(false, $info, false, $user->id));
-        $this->assertTrue($cond->is_available(false, $info, true, $user->id));
+        $this->assertFalse($cond->is_available(false, $info, true, $user->id));
+        $this->assertFalse($cond->is_available(false, $info, false, $user->id));
+        $this->assertTrue($cond->is_available(true, $info, false, $user->id));
+        $this->assertTrue($cond->is_available(true, $info, true, $user->id));
     }
 
     /**

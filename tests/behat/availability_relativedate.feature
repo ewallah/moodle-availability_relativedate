@@ -6,8 +6,8 @@ Feature: availability_relativedate
 
   Background:
     Given the following "courses" exist:
-      | fullname | shortname | format | enablecompletion | numsections | startdate  |
-      | Course 1 | C1        | topics | 1                | 1           | 1957139200 |
+      | fullname | shortname | format | enablecompletion | numsections | startdate  | endate     |
+      | Course 1 | C1        | topics | 1                | 4           | 1957139200 | 2957139200 |
     And the following "users" exist:
       | username |
       | teacher1 |
@@ -21,11 +21,9 @@ Feature: availability_relativedate
 
   @javascript
   Scenario: Test condition
-    # Basic setup.
     Given I log in as "teacher1"
     And I am on "Course 1" course homepage with editing mode on
 
-    # Add a Page with a date condition that does match (from the past).
     And I add a "Page" to section "1"
     And I set the following fields to these values:
       | Name         | Page 1 |
@@ -34,15 +32,28 @@ Feature: availability_relativedate
     And I expand all fieldsets
     And I click on "Add restriction..." "button"
     And I click on "Relative date" "button" in the "Add restriction..." "dialogue"
-    And I set the field "relativenumber" to "2"
-    And I set the field "relativednw" to "2"
-    And I set the field "relativestart" to "2"
+    And I set the field "relativenumber" to "1"
+    And I set the field "relativednw" to "1"
+    And I set the field "relativestart" to "1"
     And I press "Save and return to course"
 
-    # Add a Page with a date condition that doesn't match (until the past).
     And I add a "Page" to section "1"
     And I set the following fields to these values:
       | Name         | Page 2 |
+      | Description  | Test   |
+      | Page content | Test   |
+    And I expand all fieldsets
+    And I click on "Add restriction..." "button"
+    And I click on "Relative date" "button" in the "Add restriction..." "dialogue"
+    And I set the field "relativenumber" to "2"
+    And I set the field "relativednw" to "2"
+    And I set the field "relativestart" to "2"
+    And I click on ".availability-item .availability-eye img" "css_element"
+    And I press "Save and return to course"
+
+    And I add a "Page" to section "1"
+    And I set the following fields to these values:
+      | Name         | Page 3 |
       | Description  | Test   |
       | Page content | Test   |
     And I expand all fieldsets
@@ -54,6 +65,27 @@ Feature: availability_relativedate
     And I click on ".availability-item .availability-eye img" "css_element"
     And I press "Save and return to course"
 
+    And I edit the section "2"
+    And I expand all fieldsets
+    Then I should see "None" in the "Restrict access" "fieldset"
+    When I click on "Add restriction..." "button"
+    And  I click on "Relative date" "button" in the "Add restriction..." "dialogue"
+    And I set the field "relativenumber" to "5"
+    And I set the field "relativednw" to "2"
+    And I set the field "relativestart" to "1"
+    And I click on ".availability-item .availability-eye img" "css_element"
+    And I press "Save changes"
+
+    And I edit the section "3"
+    And I expand all fieldsets
+    Then I should see "None" in the "Restrict access" "fieldset"
+    When I click on "Add restriction..." "button"
+    And  I click on "Relative date" "button" in the "Add restriction..." "dialogue"
+    And I set the field "relativenumber" to "5"
+    And I set the field "relativednw" to "2"
+    And I set the field "relativestart" to "2"
+    And I press "Save changes"
+
     # Log back in as student.
     When I log out
     And I log in as "student1"
@@ -61,4 +93,7 @@ Feature: availability_relativedate
 
     # Page 1 should appear, but page 2 does not.
     Then I should see "Page 1" in the "region-main" "region"
-    And I should not see "Page 2" in the "region-main" "region"
+    And I should see "Page 2" in the "region-main" "region"
+    And I should not see "Page 3" in the "region-main" "region"
+    And I should not see "Section 2" in the "region-main" "region"
+    And I should not see "Section 3" in the "region-main" "region"
