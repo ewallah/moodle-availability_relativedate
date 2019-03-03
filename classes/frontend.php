@@ -56,13 +56,13 @@ class frontend extends \core_availability\frontend {
      * @return array Array of parameters for the JavaScript function
      */
     protected function get_javascript_init_params($course, \cm_info $cm = null, \section_info $section = null) {
-        $options = [];
+        $optionsdwm = [];
         foreach (condition::options_dwm() as $key => $value) {
-            $options[$key] = strtolower(get_string($value));
+            $optionsdwm[] = (object)['field' => $key, 'display' => $value];
         };
-        $options = self::convert_associative_array_for_js($options, 'field', 'display');
-        $aptions = [1 => condition::options_start(1), 2 => condition::options_start(2), 3 => condition::options_start(3)];
-        $aptions = self::convert_associative_array_for_js($aptions, 'field', 'display');
-        return [$options, $aptions];
+        $optionsstart = [(object)['field' => 1, 'display' => condition::options_start(1)],
+                         (object)['field' => 2, 'display' => condition::options_start(2)],
+                         (object)['field' => 3, 'display' => condition::options_start(3)]];
+        return [$optionsdwm, $optionsstart];
     }
 }

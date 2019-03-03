@@ -54,9 +54,6 @@ class condition extends \core_availability\condition {
      */
     private $relativestart;
 
-    /** @var int relativedate Calculated date. */
-    private $relativedate;
-
     /**
      * Constructor.
      *
@@ -94,7 +91,8 @@ class condition extends \core_availability\condition {
     public function is_available($not, \core_availability\info $info, $grabthelot, $userid) {
         $calc = $this->calcstart($info, $userid);
         if ($calc == 0) {
-             return false;
+            // Return false if for some reason the calculation returns 0.
+            return false;
         }
         $allow = time() >= $calc;
         if ($not) {
@@ -114,19 +112,20 @@ class condition extends \core_availability\condition {
     public function get_description($full, $not, \core_availability\info $info) {
         $calc = $this->calcstart($info, 0);
         $nstr = $not ? 'Not ' : '';
-        if ($calc == 0) {
-            $dstr = ' (No course enddate)';
-        } else {
-            $dstr = ' (' . userdate($calc, get_string('strftimedatetime', 'langconfig')) . ')';
-        }
         if ($full) {
+            if ($calc == 0) {
+                $dstr = ' (No course enddate)';
+            } else {
+                $dstr = ' (' . userdate($calc, get_string('strftimedatetime', 'langconfig')) . ')';
+            }
             $str = $nstr . $this->relativenumber . ' ';
-            $str .= strtolower(get_string(self::options_dwm()[$this->relativedwm]));
-            $str .= self::options_start($this->relativestart) . $dstr;
+            $str .= strtolower(get_string(self::options_dwm()[$this->relativedwm])) . ' ';
+            $str .= strtolower(self::options_start($this->relativestart)) . $dstr;
             return $str;
         } else {
             $bstr = ($this->relativestart == 2) ? 'before' : 'after';
-            return $nstr . ' ' . $bstr . ' ' . userdate($this->relativedate, get_string('strftimedatetime', 'langconfig'));
+            $bstr = get_string($bstr, 'availability_relativedate');
+            return $nstr . $bstr . userdate($calc, get_string('strftimedatetime', 'langconfig'));
         }
     }
 
@@ -149,11 +148,11 @@ class condition extends \core_availability\condition {
     public static function options_start(int $i) {
         switch ($i) {
             case 2:
-                return get_string('before', 'availability_relativedate') . strtolower(get_string('enddate'));
+                return get_string('dateend', 'availability_relativedate');
             case 3:
-                return get_string('after', 'availability_relativedate') . get_string('dateenrol', 'availability_relativedate');
+                return get_string('dateenrol', 'availability_relativedate');
             default:
-                return get_string('after', 'availability_relativedate') . strtolower(get_string('startdate'));
+                return get_string('datestart', 'availability_relativedate');
         }
     }
 
@@ -175,44 +174,39 @@ class condition extends \core_availability\condition {
      */
     private function calcstart(\core_availability\info $info, $userid) {
         global $DB, $USER;
-        if (is_null($this->relativedate)) {
-            switch ($this->relativedwm) {
-                case 2:
-                    $i = WEEKSECS;
-                    break;
-                case 3:
-                    $i = WEEKSECS * 4;
-                    break;
-                default:
-                    $i = DAYSECS;
-                    break;
-            }
-            $i *= $this->relativenumber;
-            $course = $info->get_course();
-            switch ($this->relativestart) {
-                case 2:
-                    if ($course->enddate > 0) {
-                        $this->relativedate = $course->enddate - $i;
-                    } else {
-                        return 0;
-                    }
-                    break;
-                case 3:
-                    if ($userid == 0) {
-                        $userid = $USER->id;
-                    }
-                    $sql = 'SELECT GREATEST(ue.timestart, ue.timecreated) AS startdate FROM {user_enrolments} ue
-                            JOIN {enrol} e on ue.enrolid = e.id WHERE e.courseid = ? AND ue.userid = ? ORDER by startdate DESC';
-                    if ($lowest = $DB->get_records_sql($sql, [$course->id, $userid])) {
-                        $lowest = reset($lowest);
-                        $this->relativedate = $lowest->startdate + $i;
-                    }
-                    break;
-                default:
-                    $this->relativedate = $course->startdate + $i;
-                    break;
-            }
+        $i = 0;
+        switch ($this->relativedwm) {
+            case 2:
+                $i = WEEKSECS;
+                break;
+            case 3:
+                $i = WEEKSECS * 4;
+                break;
+            default:
+                $i = DAYSECS;
+                break;
         }
-        return $this->relativedate;
+        $i *= $this->relativenumber;
+        $course = $info->get_course();
+        switch ($this->relativestart) {
+            case 2:
+                if ($course->enddate > 0) {
+                    return $course->enddate - $i;
+                } else {
+                    return 0;
+                }
+            case 3:
+                if ($userid == 0) {
+                    $userid = $USER->id;
+                }
+                $sql = 'SELECT GREATEST(ue.timestart, ue.timecreated) AS startdate FROM {user_enrolments} ue
+                        JOIN {enrol} e on ue.enrolid = e.id WHERE e.courseid = ? AND ue.userid = ? ORDER by startdate DESC';
+                if ($lowest = $DB->get_records_sql($sql, [$course->id, $userid])) {
+                    $lowest = reset($lowest);
+                    return $lowest->startdate + $i;
+                }
+            default:
+                return $course->startdate + $i;
+        }
     }
 }
