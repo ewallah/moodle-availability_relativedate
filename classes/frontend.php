@@ -63,6 +63,10 @@ class frontend extends \core_availability\frontend {
         $optionsstart = [(object)['field' => 1, 'display' => condition::options_start(1)],
                          (object)['field' => 2, 'display' => condition::options_start(2)],
                          (object)['field' => 3, 'display' => condition::options_start(3)]];
-        return [$optionsdwm, $optionsstart];
+        $warnings = [];
+        if ($course->enddate == 0) {
+            $warnings[] = get_string('noenddate', 'availability_relativedate');
+        }
+        return [$optionsdwm, $optionsstart, $warnings];
     }
 }

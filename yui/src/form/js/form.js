@@ -17,16 +17,20 @@ M.availability_relativedate.form.relativedates = null;
  * @method initInner
  * @param {boolean} completed Is completed or not
  */
-M.availability_relativedate.form.initInner = function(timeFields, startFields) {
+M.availability_relativedate.form.initInner = function(timeFields, startFields, warningStrings) {
     this.timeFields = timeFields;
     this.startFields = startFields;
+    this.warningStrings = warningStrings;
 };
 
 M.availability_relativedate.form.getNode = function(json) {
-    // Create HTML structure.
-    var html = '<span class="availability-relativedate"><label><select name="relativenumber">';
-    var i = 0;
+    var html = '<span class="availability-relativedate">';
     var fieldInfo;
+    var i = 0;
+    for (i = 0; i < this.warningStrings.length; i++) {
+        html += '<div class="alert alert-warning alert-block fade in " role="alert">' + this.warningStrings[i] + '</div>';
+    }
+    html += '<label><select name="relativenumber">';
     for (i = 1; i < 52; i++) {
         html += '<option value="' + i + '">' + i + '</option>';
     }
@@ -39,6 +43,7 @@ M.availability_relativedate.form.getNode = function(json) {
     }
     html += '</select></label> ';
     html += '<label><select name="relativestart">';
+
     for (i = 0; i < this.startFields.length; i++) {
         fieldInfo = this.startFields[i];
         html += '<option value="' + fieldInfo.field + '">' + fieldInfo.display + '</option>';
@@ -48,23 +53,23 @@ M.availability_relativedate.form.getNode = function(json) {
     var node = Y.Node.create('<span>' + html + '</span>');
 
     // Set initial values if specified.
-    var jasonnval = 1;
+    i = 1;
     if (json.n !== undefined) {
-        jasonnval = json.n;
+        i = json.n;
     }
-    node.one('select[name=relativenumber]').set('value', jasonnval);
+    node.one('select[name=relativenumber]').set('value', i);
 
-    var jasondval = 2;
+    i = 2;
     if (json.d !== undefined) {
-        jasondval = json.d;
+        i = json.d;
     }
-    node.one('select[name=relativednw]').set('value', jasondval);
+    node.one('select[name=relativednw]').set('value', i);
 
-    var jasonsval = 1;
+    i = 1;
     if (json.s !== undefined) {
-        jasonsval = json.s;
+        i = json.s;
     }
-    node.one('select[name=relativestart]').set('value', jasonsval);
+    node.one('select[name=relativestart]').set('value', i);
 
     // Add event handlers (first time only).
     if (!M.availability_relativedate.form.addedEvents) {

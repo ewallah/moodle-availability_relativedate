@@ -28,6 +28,7 @@ $string['dateend'] = 'before course end date';
 $string['dateenrol'] = 'after user enrolment date';
 $string['datestart'] = 'after course start date';
 $string['description'] = 'Prevent access until a relative time is reached before/after a course or user date.';
+$string['noenddate'] = 'This course has no end date';
 $string['pluginname'] = 'Restriction by relative date';
 $string['privacy:metadata'] = "The relative date availability restriction does not store private user data.";
 $string['title'] = 'Relative date';

@@ -1,25 +1,27 @@
-@availability @availability_relativedate
+@availability @availability_relativedate @javascript
 Feature: availability_relativedate
   In order to control student access to activities
   As a teacher
   I need to set date conditions which prevent student access
 
   Background:
-    Given the following "courses" exist:
-      | fullname | shortname | format | enablecompletion | numsections | startdate     | endate                     |
-      | Course 1 | C1        | topics | 1                | 4           | ##yesterday## | ##last day of +10 months## |
-    And the following "users" exist:
+    Given the following "users" exist:
       | username |
       | teacher1 |
       | student1 |
+    Given the following "courses" exist:
+      | fullname | shortname | category | startdate     | endate                     |
+      | Course 1 | C1        | 0        | ##yesterday## | ##last day of next month## |
+    And the following "activities" exist:
+      | activity | course | idnumber  | name            | intro                   | timeopen        | duedate                     |
+      | assign   | C1     | assign1   | Test assign 1   | Test assign description | ##tomorrow##    | ##first day of next month## |
+    And the following config values are set as admin:
+      | enableavailability   | 1 |
     And the following "course enrolments" exist:
       | user     | course | role           |
       | teacher1 | C1     | editingteacher |
       | student1 | C1     | student        |
-    And the following config values are set as admin:
-      | enableavailability  | 1 |
 
-  @javascript
   Scenario: Test condition
     Given I log in as "teacher1"
     And I am on "Course 1" course homepage with editing mode on
