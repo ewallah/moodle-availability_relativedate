@@ -31,4 +31,5 @@ $string['description'] = 'Prevent access until a relative time is reached before
 $string['noenddate'] = 'This course has no end date';
 $string['pluginname'] = 'Restriction by relative date';
 $string['privacy:metadata'] = "The relative date availability restriction does not store private user data.";
+$string['short'] = 'Short';
 $string['title'] = 'Relative date';

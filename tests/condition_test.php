@@ -59,10 +59,12 @@ class availability_relativedate_testcase extends advanced_testcase {
         $this->getDataGenerator()->enrol_user($user->id, $course->id);
         $info = new \core_availability\mock_info($course, $user->id);
 
-        $stru1 = (object)['op' => '|', 'show' => true, 'c' => [(object)['type' => 'relativedate', 'n' => 1, 'd' => 1, 's' => 1]]];
-        $stru2 = (object)['op' => '|', 'show' => true, 'c' => [(object)['type' => 'relativedate', 'n' => 2, 'd' => 2, 's' => 2]]];
-        $stru3 = (object)['op' => '|', 'show' => true, 'c' => [(object)['type' => 'relativedate', 'n' => 3, 'd' => 3, 's' => 3]]];
-
+        $stru1 = (object)['op' => '|', 'show' => true,
+            'c' => [(object)['type' => 'relativedate', 'n' => 1, 'd' => 1, 's' => 1, 'e' => 1]]];
+        $stru2 = (object)['op' => '|', 'show' => true,
+            'c' => [(object)['type' => 'relativedate', 'n' => 2, 'd' => 2, 's' => 2, 'e' => 1]]];
+        $stru3 = (object)['op' => '|', 'show' => true,
+            'c' => [(object)['type' => 'relativedate', 'n' => 3, 'd' => 3, 's' => 3, 'e' => 1]]];
         $tree1 = new \core_availability\tree($stru1);
         $tree2 = new \core_availability\tree($stru2);
         $tree3 = new \core_availability\tree($stru3);
@@ -104,6 +106,9 @@ class availability_relativedate_testcase extends advanced_testcase {
 
         $structure->n = 'a';
         $condc = new condition($structure);
+
+        $structure->e = 'a';
+        $condc = new condition($structure);
     }
 
     /**
@@ -111,7 +116,7 @@ class availability_relativedate_testcase extends advanced_testcase {
      */
     public function test_save() {
         $this->resetAfterTest();
-        $structure = (object)['n' => 1, 'd' => 2, 's' => 1];
+        $structure = (object)['n' => 1, 'd' => 2, 's' => 1, 'e' => 1];
         $cond = new condition($structure);
         $structure->type = 'relativedate';
         $this->assertEquals($structure, $cond->save());
@@ -127,28 +132,33 @@ class availability_relativedate_testcase extends advanced_testcase {
         $this->getDataGenerator()->enrol_user($user->id, $course->id);
         $info = new \core_availability\mock_info($course, $user->id);
         $this->setUser($user);
-        $cond = new condition((object)['type' => 'relativedate', 'n' => 1, 'd' => 1, 's' => 1]);
+        $cond = new condition((object)['type' => 'relativedate', 'n' => 1, 'd' => 1, 's' => 1, 'e' => 0]);
         $this->assertContains('1 days after course start date', $cond->get_description(true, false, $info));
-        $this->assertContains('Not 1 days after course start date', $cond->get_description(true, true, $info));
-        $this->assertNotContains('1 days after course start date',
+        $this->assertContains('Until 1 days after course start date', $cond->get_description(true, true, $info));
+        $this->assertContains('1 days after course start date',
             $cond->get_standalone_description(false, false, $info));
-        $this->assertNotContains('Not 1 days after course start date',
+        $this->assertContains('Until 1 days after course start date',
             $cond->get_standalone_description(false, true, $info));
 
-        $cond = new condition((object)['type' => 'relativedate', 'n' => 2, 'd' => 2, 's' => 2]);
+        $cond = new condition((object)['type' => 'relativedate', 'n' => 2, 'd' => 2, 's' => 2, 'e' => 0]);
         $this->assertContains('2 weeks before course end date', $cond->get_description(true, false, $info));
-        $this->assertContains('Not 2 weeks before course end date', $cond->get_description(true, true, $info));
-        $this->assertNotContains('2 weeks before course end date',
+        $this->assertContains('From 2 weeks before course end date', $cond->get_description(true, true, $info));
+        $this->assertContains('2 weeks before course end date',
             $cond->get_standalone_description(false, false, $info));
-        $this->assertNotContains('Not 2 weeks before course end date',
+        $this->assertContains('From 2 weeks before course end date',
             $cond->get_standalone_description(false, true, $info));
 
-        $cond = new condition((object)['type' => 'relativedate', 'n' => 3, 'd' => 3, 's' => 3]);
+        $cond = new condition((object)['type' => 'relativedate', 'n' => 3, 'd' => 3, 's' => 3, 'e' => 0]);
         $this->assertContains('3 months after', $cond->get_description(true, false, $info));
-        $this->assertContains('Not 3 months after', $cond->get_description(true, true, $info));
-        $this->assertNotContains('3 months after', $cond->get_standalone_description(false, false, $info));
-        $this->assertNotContains('Not 3 months after', $cond->get_standalone_description(false, true, $info));
+        $this->assertContains('Until 3 months after', $cond->get_description(true, true, $info));
+        $this->assertContains('3 months after', $cond->get_standalone_description(false, false, $info));
+        $this->assertContains('Until 3 months after', $cond->get_standalone_description(false, true, $info));
 
+        $cond = new condition((object)['type' => 'relativedate', 'n' => 99, 'd' => 99, 's' => 99, 'e' => 999]);
+        $this->assertContains(' (', $cond->get_description(true, false, $info));
+        $this->assertContains('Until  (', $cond->get_description(true, true, $info));
+        $this->assertEquals('Not available unless: From ', $cond->get_standalone_description(false, false, $info));
+        $this->assertEquals('Not available unless: Until ', $cond->get_standalone_description(false, true, $info));
     }
 
     /**
@@ -174,9 +184,9 @@ class availability_relativedate_testcase extends advanced_testcase {
         $PAGE->set_url('/course/modedit.php', ['update' => $page1->cmid]);
         \core_availability\frontend::include_all_javascript($course1, $cm1);
         $info = new \core_availability\info_module($cm1);
-        $cond = new condition((object)['type' => 'relativedate', 'n' => 7, 'd' => 2, 's' => 2]);
+        $cond = new condition((object)['type' => 'relativedate', 'n' => 7, 'd' => 2, 's' => 2, 'e' => 0]);
         $information = $cond->get_description(true, false, $info);
-        $this->assertEquals('7 weeks before course end date (No course enddate)', $information);
+        $this->assertEquals('Until 7 weeks before course end date (This course has no end date)', $information);
         $this->assertEquals('{relativedate: 7 weeks before course end date}', "$cond");
         $this->assertFalse($cond->is_available(false, $info, false, $user->id));
         $this->assertFalse($cond->is_available(true, $info, false, $user->id));
@@ -190,6 +200,8 @@ class availability_relativedate_testcase extends advanced_testcase {
         $this->assertEquals('{relativedate: 7 weeks before course end date}', "$cond");
         $this->assertTrue($cond->is_available(false, $info, false, $user->id));
         $this->assertFalse($cond->is_available(true, $info, false, $user->id));
+        $this->assertTrue($cond->is_available(false, $info, false, null));
+        $this->assertFalse($cond->is_available(true, $info, false, null));
     }
 
     /**

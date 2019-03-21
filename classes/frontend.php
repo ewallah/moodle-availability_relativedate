@@ -42,7 +42,7 @@ class frontend extends \core_availability\frontend {
      * @return array Array of required string identifiers
      */
     protected function get_javascript_strings() {
-        return [];
+        return ['short'];
     }
 
     /**
@@ -63,10 +63,11 @@ class frontend extends \core_availability\frontend {
         $optionsstart = [(object)['field' => 1, 'display' => condition::options_start(1)],
                          (object)['field' => 2, 'display' => condition::options_start(2)],
                          (object)['field' => 3, 'display' => condition::options_start(3)]];
+        $issection = is_null($section) ? false : true;
         $warnings = [];
         if ($course->enddate == 0) {
             $warnings[] = get_string('noenddate', 'availability_relativedate');
         }
-        return [$optionsdwm, $optionsstart, $warnings];
+        return [$optionsdwm, $optionsstart, $issection, $warnings];
     }
 }

@@ -17,9 +17,10 @@ M.availability_relativedate.form.relativedates = null;
  * @method initInner
  * @param {boolean} completed Is completed or not
  */
-M.availability_relativedate.form.initInner = function(timeFields, startFields, warningStrings) {
+M.availability_relativedate.form.initInner = function(timeFields, startFields, isSection, warningStrings) {
     this.timeFields = timeFields;
     this.startFields = startFields;
+    this.isSection = isSection;
     this.warningStrings = warningStrings;
 };
 
@@ -49,6 +50,8 @@ M.availability_relativedate.form.getNode = function(json) {
         html += '<option value="' + fieldInfo.field + '">' + fieldInfo.display + '</option>';
     }
     html += '</select></label>';
+    html += ' <label>' +  M.util.get_string('short', 'availability_relativedate');
+    html += ' <input type="checkbox" class="form-check-input m-x-1" name="rshort"/></label>';
     html += '</span>';
     var node = Y.Node.create('<span>' + html + '</span>');
 
@@ -71,6 +74,12 @@ M.availability_relativedate.form.getNode = function(json) {
     }
     node.one('select[name=relativestart]').set('value', i);
 
+    var check = false;
+    if (json.e !== 0) {
+        check = true;
+    }
+    node.one('input[name=rshort]').set('checked', check);
+
     // Add event handlers (first time only).
     if (!M.availability_relativedate.form.addedEvents) {
         M.availability_relativedate.form.addedEvents = true;
@@ -88,6 +97,11 @@ M.availability_relativedate.form.fillValue = function(value, node) {
     value.n = node.one('select[name=relativenumber]').get('value');
     value.d = node.one('select[name=relativednw]').get('value');
     value.s = node.one('select[name=relativestart]').get('value');
+    if (node.one('input[name=rshort]').get('checked')) {
+       value.e = 1;
+    } else {
+       value.e = 0;
+    }
 };
 
 M.availability_relativedate.form.fillErrors = function(errors, node) {
