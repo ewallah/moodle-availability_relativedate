@@ -34,6 +34,7 @@ Feature: availability_relativedate
     And I expand all fieldsets
     And I click on "Add restriction..." "button"
     And I click on "Relative date" "button" in the "Add restriction..." "dialogue"
+    Then "input[name=rshort]:not([checked=checked])" "css_element" should exist
     And I set the field "relativenumber" to "1"
     And I set the field "relativednw" to "1"
     And I set the field "relativestart" to "1"
@@ -50,6 +51,7 @@ Feature: availability_relativedate
     And I set the field "relativenumber" to "2"
     And I set the field "relativednw" to "2"
     And I set the field "relativestart" to "2"
+    And I click on ".availability-item .form-check-input" "css_element"
     And I click on ".availability-item .availability-eye img" "css_element"
     And I press "Save and return to course"
 
@@ -83,11 +85,18 @@ Feature: availability_relativedate
     Then I should see "None" in the "Restrict access" "fieldset"
     When I click on "Add restriction..." "button"
     And  I click on "Relative date" "button" in the "Add restriction..." "dialogue"
-    And I set the field "relativenumber" to "5"
+    And I set the field "relativenumber" to "6"
     And I set the field "relativednw" to "2"
     And I set the field "relativestart" to "2"
     And I press "Save changes"
 
+    Then I should see "Page 1" in the "region-main" "region"
+    And I should see "Not available unless: Hour 1" in the "region-main" "region"
+    And I should see "Not available unless: This course has no end date (hidden otherwise)" in the "region-main" "region"
+    And I should see "Not available unless: Week 3 (hidden otherwise)" in the "region-main" "region"
+    And I should see "Not available unless: Day 5 (hidden otherwise)" in the "region-main" "region"
+    And I should see "Not available unless: Day 6" in the "region-main" "region"
+    
     # Log back in as student.
     When I log out
     And I log in as "student1"

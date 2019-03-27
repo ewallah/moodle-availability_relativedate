@@ -40,9 +40,10 @@ class condition extends \core_availability\condition {
 
     /** @var int relativedwm (what does the date relates to) for condition.
      *
-     * 1 => days
-     * 2 => weeks
-     * 3 => months
+     * 1 => hours
+     * 2 => days
+     * 3 => weeks
+     * 4 => months
      */
     private $relativedwm;
 
@@ -102,9 +103,14 @@ class condition extends \core_availability\condition {
         $course = $info->get_course();
         $calc = 0;
         switch ($this->relativestart) {
+            case 1:
+                $calc = $course->startdate + $this->calcdate();
+                break;
             case 2:
                 if ($course->enddate > 0) {
                     $calc = $course->enddate - $this->calcdate();
+                } else {
+                    return false;
                 }
                 break;
             case 3:
@@ -116,17 +122,13 @@ class condition extends \core_availability\condition {
                 }
                 break;
             default:
-                $calc = $course->startdate + $this->calcdate();
-                break;
+                return false;
         }
-        if ($calc > 0) {
-            $allow = time() >= $calc;
-            if ($not) {
-                $allow = !$allow;
-            }
-            return $allow;
+        $allow = time() >= $calc;
+        if ($not) {
+            $allow = !$allow;
         }
-        return false;
+        return $allow;
     }
 
     /**
@@ -140,9 +142,9 @@ class condition extends \core_availability\condition {
     public function get_description($full, $not, \core_availability\info $info) {
         global $DB, $USER;
         if ($this->relativeshort != 0) {
-            if ($this->relativedwm < 4) {
+            if ($this->relativedwm < 5) {
                 $str = substr(self::options_dwm()[$this->relativedwm], 0, -1);
-                return get_string($str) . ' ' . $this->relativenumber;
+                return ucfirst(get_string($str)) . ' ' . $this->relativenumber;
             }
         }
         if ($not) {
@@ -151,7 +153,7 @@ class condition extends \core_availability\condition {
             $str = $this->relativestart == 2 ? 'until' : 'from';
         }
         $str = ucfirst(get_string('direction_' . $str, 'availability_date')) . ' ';
-        if ($this->relativedwm < 4 and $this->relativestart < 4) {
+        if ($this->relativedwm < 4) {
             $str .= $this->relativenumber . ' ' . self::options_dwm()[$this->relativedwm];
             $str .= ' ' . strtolower(self::options_start($this->relativestart));
         }
@@ -160,9 +162,14 @@ class condition extends \core_availability\condition {
             $str .= ' (';
             $course = $info->get_course();
             switch ($this->relativestart) {
+                case 1:
+                    $str .= userdate($course->startdate + $this->calcdate(), $conf);
+                    break;
                 case 2:
-                    $str .= $course->enddate > 0 ? userdate($course->enddate - $this->calcdate(), $conf)
-                       : get_string('noenddate', 'availability_relativedate');
+                    if ($course->enddate == 0) {
+                        return get_string('noenddate', 'availability_relativedate');
+                    }
+                    $str .= userdate($course->enddate - $this->calcdate(), $conf);
                     break;
                 case 3:
                     $sql = 'SELECT GREATEST(ue.timestart, ue.timecreated) AS startdate FROM {user_enrolments} ue
@@ -173,8 +180,7 @@ class condition extends \core_availability\condition {
                     }
                     break;
                 default:
-                    $str .= userdate($course->startdate + $this->calcdate(), $conf);
-                    break;
+                    return '';
             }
             $str .= ')';
         }
@@ -199,12 +205,12 @@ class condition extends \core_availability\condition {
      */
     public static function options_start(int $i) {
         switch ($i) {
+            case 1:
+                return get_string('datestart', 'availability_relativedate');
             case 2:
                 return get_string('dateend', 'availability_relativedate');
             case 3:
                 return get_string('dateenrol', 'availability_relativedate');
-            default:
-                return get_string('datestart', 'availability_relativedate');
         }
     }
 
@@ -214,7 +220,7 @@ class condition extends \core_availability\condition {
      * @return array
      */
     public static function options_dwm() {
-        return [1 => 'days', 2 => 'weeks', 3 => 'months'];
+        return [1 => 'hours', 2 => 'days', 3 => 'weeks', 4 => 'months'];
     }
 
     /**
@@ -223,19 +229,15 @@ class condition extends \core_availability\condition {
      * @return int seconds.
      */
     private function calcdate() {
-        $i = 0;
         switch ($this->relativedwm) {
+            case 1:
+                return 60 * $this->relativenumber;
             case 2:
-                $i = WEEKSECS;
-                break;
+                return DAYSECS * $this->relativenumber;
             case 3:
-                $i = WEEKSECS * 4;
-                break;
-            default:
-                $i = DAYSECS;
-                break;
+                return WEEKSECS * $this->relativenumber;
+            case 4:
+                return WEEKSECS * 4 * $this->relativenumber;
         }
-        $i *= $this->relativenumber;
-        return $i;
     }
 }
