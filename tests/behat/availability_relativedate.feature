@@ -96,7 +96,7 @@ Feature: availability_relativedate
     And I should see "Not available unless: Week 3 (hidden otherwise)" in the "region-main" "region"
     And I should see "Not available unless: Day 5 (hidden otherwise)" in the "region-main" "region"
     And I should see "Not available unless: Day 6" in the "region-main" "region"
-    
+
     # Log back in as student.
     When I log out
     And I log in as "student1"
