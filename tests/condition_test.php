@@ -32,6 +32,7 @@ use availability_relativedate\condition;
  * @package availability_relativedate
  * @copyright 2019 Renaat Debleu (info@eWallah.net)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @coversDefaultClass availability_relativedate
  */
 class availability_relativedate_testcase extends advanced_testcase {
 
@@ -106,6 +107,7 @@ class availability_relativedate_testcase extends advanced_testcase {
 
     /**
      * Tests the constructor including error conditions.
+     * @covers availability_relativedate\condition
      */
     public function test_constructor() {
         $structure = (object)['type' => 'relativedate'];
@@ -128,6 +130,7 @@ class availability_relativedate_testcase extends advanced_testcase {
 
     /**
      * Tests the save() function.
+     * @covers availability_relativedate\condition
      */
     public function test_save() {
         $this->resetAfterTest();
@@ -139,6 +142,7 @@ class availability_relativedate_testcase extends advanced_testcase {
 
     /**
      * Tests the get_description and get_standalone_description functions.
+     * @covers availability_relativedate\condition
      */
     public function test_get_description() {
         global $DB;
@@ -184,6 +188,7 @@ class availability_relativedate_testcase extends advanced_testcase {
 
     /**
      * Tests a course with no enddate.
+     * @covers availability_relativedate\condition
      */
     public function test_noenddate() {
         global $CFG, $DB, $PAGE;
@@ -227,7 +232,35 @@ class availability_relativedate_testcase extends advanced_testcase {
     }
 
     /**
+     * Tests using relativedate condition in front end.
+     * @covers availability_relativedate\frontend
+     */
+    public function test_frontend() {
+        global $CFG;
+        $this->resetAfterTest();
+        $this->setAdminUser();
+        $CFG->enableavailability = true;
+        $generator = $this->getDataGenerator();
+        $course = $generator->create_course();
+        $user = $generator->create_user();
+        $generator->enrol_user($user->id, $course->id);
+
+        $frontend = new availability_relativedate\frontend();
+        $class = new ReflectionClass('availability_relativedate\frontend');
+        $method = $class->getMethod('get_javascript_strings');
+        $method->setAccessible(true);
+        $this->assertEquals([0 => 'short'], $method->invokeArgs($frontend, []));
+        $method = $class->getMethod('get_javascript_init_params');
+        $method->setAccessible(true);
+        $this->assertEquals(4, count($method->invokeArgs($frontend, [$course])));
+        $method = $class->getMethod('allow_add');
+        $method->setAccessible(true);
+        $this->assertTrue($method->invokeArgs($frontend, [$course]));
+    }
+
+    /**
      * Test privacy.
+     * @covers availability_relativedate\privacy\provider
      */
     public function test_privacy() {
         $privacy = new availability_relativedate\privacy\provider();
