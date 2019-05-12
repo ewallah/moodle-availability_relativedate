@@ -6,6 +6,7 @@ This availability condition makes it easy to show modules or sections only x day
   - after course start date
   - before course end date
   - after user enrolment date
+  - after course completion
 
 Check the global documentation about availability conditions : https://docs.moodle.org/en/Conditional_activities_settings
 
