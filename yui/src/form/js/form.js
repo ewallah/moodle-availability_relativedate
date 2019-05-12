@@ -15,7 +15,10 @@ M.availability_relativedate.form.relativedates = null;
  * Initialises this plugin.
  *
  * @method initInner
- * @param {boolean} completed Is completed or not
+ * @param {array} timeFields Collection of time fields
+ * @param {array} startFields Collection of start fields
+ * @param {boolean} isSection Is this a section
+ * @param {array} warningStrings Collection of warning strings
  */
 M.availability_relativedate.form.initInner = function(timeFields, startFields, isSection, warningStrings) {
     this.timeFields = timeFields;
@@ -50,7 +53,7 @@ M.availability_relativedate.form.getNode = function(json) {
         html += '<option value="' + fieldInfo.field + '">' + fieldInfo.display + '</option>';
     }
     html += '</select></label>';
-    html += ' <label>' +  M.util.get_string('short', 'availability_relativedate');
+    html += ' <label>' + M.util.get_string('short', 'availability_relativedate');
     html += ' <input type="checkbox" class="form-check-input m-x-1" name="rshort"/></label>';
     html += '</span>';
     var node = Y.Node.create('<span>' + html + '</span>');
