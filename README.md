@@ -10,7 +10,7 @@ This availability condition makes it easy to show modules or sections only x day
 
 Check the global documentation about availability conditions : https://docs.moodle.org/en/Conditional_activities_settings
 
-Warning: This is code in devellopment. Do not use in production (yet).
+Warning: This is code in development. Do not use in production (yet).
 
 Installation:
 
