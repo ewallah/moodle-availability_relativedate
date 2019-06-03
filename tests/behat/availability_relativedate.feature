@@ -23,7 +23,7 @@ Feature: availability_relativedate
       | student1 | C1     | student        |
 
   @javascript
-  Scenario: Restrict section0 
+  Scenario: Restrict section0
 
     Given I log in as "teacher1"
     And I am on "Course 1" course homepage with editing mode on
