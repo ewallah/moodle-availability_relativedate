@@ -243,6 +243,8 @@ class availability_relativedate_testcase extends advanced_testcase {
         $generator = $this->getDataGenerator();
         $course = $generator->create_course();
         $user = $generator->create_user();
+        $modinfo = get_fast_modinfo($course);
+        $sections = $modinfo->get_section_info_all();
         $generator->enrol_user($user->id, $course->id);
 
         $frontend = new availability_relativedate\frontend();
@@ -256,6 +258,8 @@ class availability_relativedate_testcase extends advanced_testcase {
         $method = $class->getMethod('allow_add');
         $method->setAccessible(true);
         $this->assertTrue($method->invokeArgs($frontend, [$course]));
+        $this->assertFalse($method->invokeArgs($frontend, [$course, null, $sections[0]]));
+        $this->assertTrue($method->invokeArgs($frontend, [$course, null, $sections[1]]));
     }
 
     /**

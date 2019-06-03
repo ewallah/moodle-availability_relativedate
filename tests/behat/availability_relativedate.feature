@@ -22,6 +22,16 @@ Feature: availability_relativedate
       | teacher1 | C1     | editingteacher |
       | student1 | C1     | student        |
 
+  @javascript
+  Scenario: Restrict section0 
+
+    Given I log in as "teacher1"
+    And I am on "Course 1" course homepage with editing mode on
+    When I edit the section "0"
+    And I expand all fieldsets
+    And I click on "Add restriction..." "button"
+    Then "Relative date" "button" should not exist in the "Add restriction..." "dialogue"
+
   Scenario: Test condition
     Given I log in as "teacher1"
     And I am on "Course 1" course homepage with editing mode on
