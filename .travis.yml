@@ -1,4 +1,8 @@
+dist: xenial
 language: php
+
+services:
+  - xvfb
 
 notifications:
   email:
