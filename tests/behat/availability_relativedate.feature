@@ -118,3 +118,4 @@ Feature: availability_relativedate
     And I should not see "Page 3" in the "region-main" "region"
     And I should not see "Section 2" in the "region-main" "region"
     And I should not see "Section 3" in the "region-main" "region"
+    And I should see "XXXX" in the "region-main" "region"

@@ -18,7 +18,7 @@
  * Unit tests for the relativedate condition.
  *
  * @package availability_relativedate
- * @copyright 2019 Renaat Debleu (info@eWallah.net)
+ * @copyright 2019 Renaat Debleu <info@eWallah.net>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -30,7 +30,7 @@ use availability_relativedate\condition;
  * Unit tests for the relativedate condition.
  *
  * @package availability_relativedate
- * @copyright 2019 Renaat Debleu (info@eWallah.net)
+ * @copyright 2019 Renaat Debleu <info@eWallah.net>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @coversDefaultClass availability_relativedate
  */
