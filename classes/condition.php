@@ -143,8 +143,8 @@ class condition extends \core_availability\condition {
         global $DB, $USER;
         if ($this->relativeshort != 0) {
             if ($this->relativedwm < 5) {
-                $str = core_text::substr(self::options_dwm()[$this->relativedwm], 0, -1);
-                return ucfirst(get_string($str)) . ' ' . $this->relativenumber;
+                $str = \core_text::substr(self::options_dwm()[$this->relativedwm], 0, -1);
+                return \core_text::strtotitle(get_string($str)) . ' ' . $this->relativenumber;
             }
         }
         if ($not) {
@@ -155,7 +155,7 @@ class condition extends \core_availability\condition {
         $str = ucfirst(get_string('direction_' . $str, 'availability_date')) . ' ';
         if ($this->relativedwm < 4) {
             $str .= $this->relativenumber . ' ' . self::options_dwm()[$this->relativedwm];
-            $str .= ' ' . core_text::strtolower(self::options_start($this->relativestart));
+            $str .= ' ' . \core_text::strtolower(self::options_start($this->relativestart));
         }
         if ($full) {
             $conf = get_string('strftimedatetime', 'langconfig');
