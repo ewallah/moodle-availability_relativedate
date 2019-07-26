@@ -18,7 +18,7 @@
  * Date condition.
  *
  * @package availability_relativedate
- * @copyright 2014 Valery Fremaux
+ * @copyright 2019 Renaat Debleu <info@eWallah.net>
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -30,7 +30,7 @@ defined('MOODLE_INTERNAL') || die();
  * relativedate from course start condition.
  *
  * @package availability_relativedate
- * @copyright 2014 Valery Fremaux
+ * @copyright 2019 Renaat Debleu <info@eWallah.net>
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class condition extends \core_availability\condition {
@@ -143,7 +143,7 @@ class condition extends \core_availability\condition {
         global $DB, $USER;
         if ($this->relativeshort != 0) {
             if ($this->relativedwm < 5) {
-                $str = substr(self::options_dwm()[$this->relativedwm], 0, -1);
+                $str = core_text::substr(self::options_dwm()[$this->relativedwm], 0, -1);
                 return ucfirst(get_string($str)) . ' ' . $this->relativenumber;
             }
         }
@@ -155,7 +155,7 @@ class condition extends \core_availability\condition {
         $str = ucfirst(get_string('direction_' . $str, 'availability_date')) . ' ';
         if ($this->relativedwm < 4) {
             $str .= $this->relativenumber . ' ' . self::options_dwm()[$this->relativedwm];
-            $str .= ' ' . strtolower(self::options_start($this->relativestart));
+            $str .= ' ' . core_text::strtolower(self::options_start($this->relativestart));
         }
         if ($full) {
             $conf = get_string('strftimedatetime', 'langconfig');
