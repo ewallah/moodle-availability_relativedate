@@ -90,7 +90,7 @@ class condition extends \core_availability\condition {
      * @return bool True if this item is available to the user, false otherwise
      */
     public function is_available($not, \core_availability\info $info, $grabthelot, $userid) {
-        global $CFG, $DB, $USER;
+        global $DB, $USER;
         $course = $info->get_course();
         $calc = 0;
         switch ($this->relativestart) {
