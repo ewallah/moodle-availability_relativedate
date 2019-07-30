@@ -36,16 +36,6 @@ defined('MOODLE_INTERNAL') || die();
 class frontend extends \core_availability\frontend {
 
     /**
-     * Gets a list of string identifiers (in the plugin's language file) that
-     * are required in JavaScript for this plugin.
-     *
-     * @return array Array of required string identifiers
-     */
-    protected function get_javascript_strings() {
-        return ['short'];
-    }
-
-    /**
      * Gets additional parameters for the plugin's initInner function.
      *
      * Default returns no parameters.
@@ -75,7 +65,7 @@ class frontend extends \core_availability\frontend {
      * @param \stdClass $course Course object
      * @param \cm_info $cm Course-module currently being edited (null if none)
      * @param \section_info $section Section currently being edited (null if none)
-     * @return bool True if there are completion criteria
+     * @return bool True if section > 0
      */
     protected function allow_add($course, \cm_info $cm = null, \section_info $section = null) {
         // Section 0.

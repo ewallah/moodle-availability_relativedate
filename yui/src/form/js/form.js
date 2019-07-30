@@ -8,8 +8,18 @@ M.availability_relativedate = M.availability_relativedate || {};
 // Class M.availability_relativedate.form @extends M.core_availability.plugin.
 M.availability_relativedate.form = Y.Object(M.core_availability.plugin);
 
-// Options available for selection.
-M.availability_relativedate.form.relativedates = null;
+// Time fields available for selection.
+M.availability_relativedate.form.timeFields = null;
+
+// Start field available for selection.
+M.availability_relativedate.form.startFields = null;
+
+// A section or a module.
+M.availability_relativedate.form.isSection = null;
+
+// Optional warnings that can be displayed.
+M.availability_relativedate.form.warningStrings = null;
+
 
 /**
  * Initialises this plugin.
@@ -31,6 +41,7 @@ M.availability_relativedate.form.getNode = function(json) {
     var html = '<span class="availability-relativedate">';
     var fieldInfo;
     var i = 0;
+
     for (i = 0; i < this.warningStrings.length; i++) {
         html += '<div class="alert alert-warning alert-block fade in " role="alert">' + this.warningStrings[i] + '</div>';
     }
@@ -53,9 +64,6 @@ M.availability_relativedate.form.getNode = function(json) {
         html += '<option value="' + fieldInfo.field + '">' + fieldInfo.display + '</option>';
     }
     html += '</select></label>';
-    html += ' <label>' + M.util.get_string('short', 'availability_relativedate');
-    html += ' <input type="checkbox" class="form-check-input m-x-1" name="rshort"/></label>';
-    html += '</span>';
     var node = Y.Node.create('<span>' + html + '</span>');
 
     // Set initial values if specified.
@@ -77,12 +85,6 @@ M.availability_relativedate.form.getNode = function(json) {
     }
     node.one('select[name=relativestart]').set('value', i);
 
-    var check = false;
-    if (json.e !== 0) {
-        check = true;
-    }
-    node.one('input[name=rshort]').set('checked', check);
-
     // Add event handlers (first time only).
     if (!M.availability_relativedate.form.addedEvents) {
         M.availability_relativedate.form.addedEvents = true;
@@ -100,11 +102,6 @@ M.availability_relativedate.form.fillValue = function(value, node) {
     value.n = node.one('select[name=relativenumber]').get('value');
     value.d = node.one('select[name=relativednw]').get('value');
     value.s = node.one('select[name=relativestart]').get('value');
-    if (node.one('input[name=rshort]').get('checked')) {
-       value.e = 1;
-    } else {
-       value.e = 0;
-    }
 };
 
 M.availability_relativedate.form.fillErrors = function(errors, node) {

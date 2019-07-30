@@ -51,16 +51,9 @@ class condition extends \core_availability\condition {
      *
      * 1 => After Course start date
      * 2 => Before Course end date
-     * 3 => After user enrolment date
+     * 3 => After User enrolment date
      */
     private $relativestart;
-
-    /** @var bool relativeshort (Show long or short description) for condition.
-     *
-     * true => After Course start date
-     * false => Before Course end date
-     */
-    private $relativeshort;
 
     /**
      * Constructor.
@@ -72,7 +65,6 @@ class condition extends \core_availability\condition {
         $this->relativenumber = property_exists($structure, 'n') ? (int)$structure->n : 1;
         $this->relativedwm = property_exists($structure, 'd') ? (int)$structure->d : 2;
         $this->relativestart = property_exists($structure, 's') ? (int)$structure->s : 1;
-        $this->relativeshort = property_exists($structure, 'e') ? (int)$structure->e : 1;
     }
 
     /**
@@ -83,10 +75,9 @@ class condition extends \core_availability\condition {
     public function save() {
         return (object)[
             'type' => 'relativedate',
-            'n' => (int)$this->relativenumber,
-            'd' => (int)$this->relativedwm,
-            's' => (int)$this->relativestart,
-            'e' => (bool)$this->relativeshort];
+            'n' => intval($this->relativenumber),
+            'd' => intval($this->relativedwm),
+            's' => intval($this->relativestart)];
     }
 
     /**
@@ -99,7 +90,7 @@ class condition extends \core_availability\condition {
      * @return bool True if this item is available to the user, false otherwise
      */
     public function is_available($not, \core_availability\info $info, $grabthelot, $userid) {
-        global $DB;
+        global $CFG, $DB, $USER;
         $course = $info->get_course();
         $calc = 0;
         switch ($this->relativestart) {
@@ -116,7 +107,8 @@ class condition extends \core_availability\condition {
             case 3:
                 $sql = 'SELECT GREATEST(ue.timestart, ue.timecreated) AS startdate FROM {user_enrolments} ue
                         JOIN {enrol} e on ue.enrolid = e.id WHERE e.courseid = ? AND ue.userid = ? ORDER by startdate DESC';
-                if ($lowest = $DB->get_records_sql($sql, [$course->id, $userid])) {
+                $uid = ($userid != $USER->id) ? $userid : $USER->id;
+                if ($lowest = $DB->get_records_sql($sql, [$course->id, $uid])) {
                     $lowest = reset($lowest);
                     $calc = $lowest->startdate + $this->calcdate();
                 }
@@ -141,19 +133,13 @@ class condition extends \core_availability\condition {
      */
     public function get_description($full, $not, \core_availability\info $info) {
         global $DB, $USER;
-        if ($this->relativeshort != 0) {
-            if ($this->relativedwm < 5) {
-                $str = \core_text::substr(self::options_dwm()[$this->relativedwm], 0, -1);
-                return \core_text::strtotitle(get_string($str)) . ' ' . $this->relativenumber;
-            }
-        }
         if ($not) {
             $str = $this->relativestart == 2 ? 'from' : 'until';
         } else {
             $str = $this->relativestart == 2 ? 'until' : 'from';
         }
         $str = ucfirst(get_string('direction_' . $str, 'availability_date')) . ' ';
-        if ($this->relativedwm < 4) {
+        if ($this->relativedwm < 5) {
             $str .= $this->relativenumber . ' ' . self::options_dwm()[$this->relativedwm];
             $str .= ' ' . \core_text::strtolower(self::options_start($this->relativestart));
         }
@@ -194,7 +180,7 @@ class condition extends \core_availability\condition {
      */
     protected function get_debug_string() {
         return ' ' . $this->relativenumber . ' ' . self::options_dwm()[$this->relativedwm] . ' ' .
-                self::options_start($this->relativestart);
+               self::options_start($this->relativestart);
     }
 
     /**
