@@ -1,6 +1,7 @@
 moodle-availability_relativedate
 ==============================================
-Restrict module and section access based on a relative date.
+Relative dates will be experimental in Moodle 3.8. Until then we can restrict module and section
+access based on a relative date.
 
 This availability condition makes it easy to show modules or sections only x days/weeks/months
   - after course start date
