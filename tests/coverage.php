@@ -20,7 +20,6 @@
  * @package availability_relativedate
  * @copyright 2019 Renaat Debleu <info@eWallah.net>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- * @coversDefaultClass availability_relativedate
  */
 defined('MOODLE_INTERNAL') || die();
 
@@ -33,8 +32,8 @@ return new class extends phpunit_coverage_info {
     protected $whitelistfiles = [];
 
     /** @var array The list of folders relative to the plugin root to excludelist in coverage generation. */
-    protected $excludelistfolders = ['lang', 'tests'];
+    protected $excludelistfolders = ['lang/en', 'tests'];
 
     /** @var array The list of files relative to the plugin root to excludelist in coverage generation. */
-    protected $excludelistfiles = [];
+    protected $excludelistfiles = ['version.php', 'tests/coverage.php'];
 };
