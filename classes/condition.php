@@ -217,7 +217,7 @@ class condition extends \core_availability\condition {
     private function calcdate() {
         switch ($this->relativedwm) {
             case 1:
-                return 60 * $this->relativenumber;
+                return 3600 * $this->relativenumber;
             case 2:
                 return DAYSECS * $this->relativenumber;
             case 3:
