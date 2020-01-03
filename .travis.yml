@@ -9,7 +9,7 @@ services:
 addons:
   firefox: "47.0.1"
   postgresql: "9.6"
-  mariadb: "10.2.29"
+  mariadb: "10.3"
   chrome: stable
   apt:
     packages:
