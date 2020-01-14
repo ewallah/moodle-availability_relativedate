@@ -206,7 +206,7 @@ class condition extends \core_availability\condition {
      * @return array
      */
     public static function options_dwm() {
-        return [1 => 'hours', 2 => 'days', 3 => 'weeks', 4 => 'months'];
+        return [1 => get_string('hours'), 2 => get_string('days'), 3 => get_string('weeks'), 4 => get_string('months')];
     }
 
     /**
