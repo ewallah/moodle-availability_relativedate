@@ -154,11 +154,11 @@ class availability_relativedate_testcase extends advanced_testcase {
         $info = new \core_availability\mock_info($course, $user->id);
         $this->setUser($user);
         $cond = new condition((object)['type' => 'relativedate', 'n' => 1, 'd' => 1, 's' => 1]);
-        $this->assertContains('1 hours after course start date', $cond->get_description(true, false, $info));
-        $this->assertContains('Until 1 hours after course start date', $cond->get_description(true, true, $info));
-        $this->assertContains('1 hours after course start date',
+        $this->assertContains('1 hour after course start date', $cond->get_description(true, false, $info));
+        $this->assertContains('Until 1 hour after course start date', $cond->get_description(true, true, $info));
+        $this->assertContains('1 hour after course start date',
             $cond->get_standalone_description(false, false, $info));
-        $this->assertContains('Until 1 hours after course start date',
+        $this->assertContains('Until 1 hour after course start date',
             $cond->get_standalone_description(false, true, $info));
 
         $cond = new condition((object)['type' => 'relativedate', 'n' => 2, 'd' => 2, 's' => 2]);

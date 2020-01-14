@@ -10,11 +10,8 @@ Feature: availability_relativedate
       | teacher1 |
       | student1 |
     Given the following "courses" exist:
-      | fullname | shortname | category | startdate     | enddate                     |
+      | fullname | shortname | category | startdate     | enddate                    |
       | Course 1 | C1        | 0        | ##yesterday## | ##last day of next month## |
-    And the following "activities" exist:
-      | activity | course | idnumber  | name            | intro                   | timeopen        | duedate                     |
-      | assign   | C1     | assign1   | Test assign 1   | Test assign description | ##tomorrow##    | ##first day of next month## |
     And the following config values are set as admin:
       | enableavailability   | 1 |
     And the following "course enrolments" exist:
@@ -23,7 +20,6 @@ Feature: availability_relativedate
       | student1 | C1     | student        |
 
   Scenario: Restrict section0
-
     Given I log in as "teacher1"
     And I am on "Course 1" course homepage with editing mode on
     When I edit the section "0"

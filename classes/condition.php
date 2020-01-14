@@ -140,8 +140,13 @@ class condition extends \core_availability\condition {
         }
         $str = ucfirst(get_string('direction_' . $str, 'availability_date')) . ' ';
         if ($this->relativedwm < 5) {
-            $str .= $this->relativenumber . ' ' . self::options_dwm()[$this->relativedwm];
-            $str .= ' ' . \core_text::strtolower(self::options_start($this->relativestart));
+            $str .= $this->relativenumber . ' ';
+            if ($this->relativenumber == 1) {
+               $str .= self::option_dwm()[$this->relativedwm];
+            } else {
+               $str .= self::options_dwm()[$this->relativedwm];
+            }
+            $str .= ' ' . self::options_start($this->relativestart);
         }
         if ($full) {
             $conf = get_string('strftimedatetime', 'langconfig');
@@ -201,12 +206,32 @@ class condition extends \core_availability\condition {
     }
 
     /**
-     * Obtains a the options for days week months.
+     * Obtains a the options for hours days weeks months.
      *
      * @return array
      */
     public static function options_dwm() {
-        return [1 => get_string('hours'), 2 => get_string('days'), 3 => get_string('weeks'), 4 => get_string('months')];
+        return [
+           1 => \core_text::strtolower(get_string('hours')),
+           2 => \core_text::strtolower(get_string('days')),
+           3 => \core_text::strtolower(get_string('weeks')),
+           4 => \core_text::strtolower(get_string('months'))
+        ];
+    }
+
+
+    /**
+     * Obtains a the options for hour day week month.
+     *
+     * @return array
+     */
+    public static function option_dwm() {
+        return [
+           1 => \core_text::strtolower(get_string('hour')),
+           2 => \core_text::strtolower(get_string('day')),
+           3 => \core_text::strtolower(get_string('week')),
+           4 => \core_text::strtolower(get_string('month'))
+        ];
     }
 
     /**
