@@ -142,9 +142,9 @@ class condition extends \core_availability\condition {
         if ($this->relativedwm < 5) {
             $str .= $this->relativenumber . ' ';
             if ($this->relativenumber == 1) {
-               $str .= self::option_dwm()[$this->relativedwm];
+                $str .= self::option_dwm()[$this->relativedwm];
             } else {
-               $str .= self::options_dwm()[$this->relativedwm];
+                $str .= self::options_dwm()[$this->relativedwm];
             }
             $str .= ' ' . self::options_start($this->relativestart);
         }
@@ -212,10 +212,10 @@ class condition extends \core_availability\condition {
      */
     public static function options_dwm() {
         return [
-           1 => \core_text::strtolower(get_string('hours')),
-           2 => \core_text::strtolower(get_string('days')),
-           3 => \core_text::strtolower(get_string('weeks')),
-           4 => \core_text::strtolower(get_string('months'))
+            1 => \core_text::strtolower(get_string('hours')),
+            2 => \core_text::strtolower(get_string('days')),
+            3 => \core_text::strtolower(get_string('weeks')),
+            4 => \core_text::strtolower(get_string('months'))
         ];
     }
 
@@ -227,10 +227,10 @@ class condition extends \core_availability\condition {
      */
     public static function option_dwm() {
         return [
-           1 => \core_text::strtolower(get_string('hour')),
-           2 => \core_text::strtolower(get_string('day')),
-           3 => \core_text::strtolower(get_string('week')),
-           4 => \core_text::strtolower(get_string('month'))
+            1 => \core_text::strtolower(get_string('hour')),
+            2 => \core_text::strtolower(get_string('day')),
+            3 => \core_text::strtolower(get_string('week')),
+            4 => \core_text::strtolower(get_string('month'))
         ];
     }
 
