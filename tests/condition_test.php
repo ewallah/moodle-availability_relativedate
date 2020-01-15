@@ -56,7 +56,7 @@ class availability_relativedate_testcase extends advanced_testcase {
 
         $CFG->enableavailability = true;
         $generator = $this->getDataGenerator();
-        
+
         $stru1 = (object)['op' => '|', 'show' => true,
             'c' => [(object)['type' => 'relativedate', 'n' => 1, 'd' => 1, 's' => 1]]];
         $stru2 = (object)['op' => '|', 'show' => true,
