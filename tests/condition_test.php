@@ -55,12 +55,8 @@ class availability_relativedate_testcase extends advanced_testcase {
         $this->resetAfterTest();
 
         $CFG->enableavailability = true;
-        $course = $this->getDataGenerator()->create_course();
-        $user = $this->getDataGenerator()->create_user();
-        $studentrole = $DB->get_record('role', ['shortname' => 'student']);
-        $this->getDataGenerator()->enrol_user($user->id, $course->id, $studentrole->id);
-        $info = new \core_availability\mock_info($course, $user->id);
-
+        $generator = $this->getDataGenerator();
+        
         $stru1 = (object)['op' => '|', 'show' => true,
             'c' => [(object)['type' => 'relativedate', 'n' => 1, 'd' => 1, 's' => 1]]];
         $stru2 = (object)['op' => '|', 'show' => true,
@@ -77,27 +73,31 @@ class availability_relativedate_testcase extends advanced_testcase {
         $tree4 = new \core_availability\tree($stru4);
         $tree5 = new \core_availability\tree($stru5);
 
-        $this->assertTrue($tree1->check_available(false, $info, true, 0)->is_available());
-        $this->assertTrue($tree1->check_available(false, $info, true, $user->id)->is_available());
-        $this->assertFalse($tree2->check_available(false, $info, true, $user->id)->is_available());
-        $this->assertFalse($tree3->check_available(false, $info, true, $user->id)->is_available());
-        $this->assertFalse($tree4->check_available(false, $info, true, $user->id)->is_available());
-        $this->assertFalse($tree5->check_available(false, $info, true, $user->id)->is_available());
-        $this->assertFalse($tree1->check_available(true, $info, true, $user->id)->is_available());
-        $this->assertFalse($tree2->check_available(true, $info, true, $user->id)->is_available());
-        $this->assertTrue($tree3->check_available(true, $info, true, $user->id)->is_available());
-        $this->assertTrue($tree4->check_available(true, $info, true, $user->id)->is_available());
-        $this->assertFalse($tree5->check_available(true, $info, true, $user->id)->is_available());
-
-        $course = $this->getDataGenerator()->create_course(['startdate' => time(), 'enddate' => time() + 7 * WEEKSECS]);
-        $this->getDataGenerator()->enrol_user($user->id, $course->id, $studentrole->id);
+        $course = $generator->create_course(['startdate' => time(), 'enddate' => time() + 7 * WEEKSECS]);
+        $user = $generator->create_user();
+        $generator->enrol_user($user->id, $course->id, $DB->get_field('role', 'id', ['shortname' => 'student']));
         $info = new \core_availability\mock_info($course, $user->id);
+
+        list($sql, $params) = $tree1->get_user_list_sql(false, $info, false);
+        $this->assertEquals('', $sql);
+        $this->assertEquals([], $params);
+        $this->assertContains('From 1 hour after', $tree1->get_full_information($info));
+        $this->assertContains('Until 2 days before course end date', $tree2->get_full_information($info));
+        $this->assertContains('From 3 weeks after user enrolment date', $tree3->get_full_information($info));
+        $this->assertContains('From 4 months after user enrolment date', $tree4->get_full_information($info));
+        $this->assertEquals('Not available unless: ', $tree5->get_full_information($info));
+        $this->assertFalse($tree1->is_available_for_all());
+        $this->assertFalse($tree2->is_available_for_all());
+        $this->assertFalse($tree3->is_available_for_all());
+        $this->assertFalse($tree4->is_available_for_all());
+        $this->assertFalse($tree5->is_available_for_all());
         $this->assertFalse($tree1->check_available(false, $info, false, 0)->is_available());
         $this->assertFalse($tree1->check_available(false, $info, false, $user->id)->is_available());
         $this->assertFalse($tree2->check_available(false, $info, false, $user->id)->is_available());
         $this->assertFalse($tree3->check_available(false, $info, false, $user->id)->is_available());
         $this->assertFalse($tree4->check_available(false, $info, false, $user->id)->is_available());
         $this->assertFalse($tree5->check_available(false, $info, false, $user->id)->is_available());
+        $this->assertTrue($tree1->check_available(true, $info, false, 0)->is_available());
         $this->assertTrue($tree1->check_available(true, $info, false, $user->id)->is_available());
         $this->assertTrue($tree2->check_available(true, $info, false, $user->id)->is_available());
         $this->assertTrue($tree3->check_available(true, $info, false, $user->id)->is_available());
@@ -133,7 +133,6 @@ class availability_relativedate_testcase extends advanced_testcase {
      * @covers availability_relativedate\condition
      */
     public function test_save() {
-        $this->resetAfterTest();
         $structure = (object)['n' => 1, 'd' => 2, 's' => 1];
         $cond = new condition($structure);
         $structure->type = 'relativedate';
@@ -147,10 +146,10 @@ class availability_relativedate_testcase extends advanced_testcase {
     public function test_get_description() {
         global $DB;
         $this->resetAfterTest();
-        $course = $this->getDataGenerator()->create_course(['startdate' => time(), 'enddate' => time() + 7 * WEEKSECS]);
-        $user = $this->getDataGenerator()->create_user();
-        $studentrole = $DB->get_record('role', ['shortname' => 'student']);
-        $this->getDataGenerator()->enrol_user($user->id, $course->id, $studentrole->id);
+        $generator = $this->getDataGenerator();
+        $course = $generator->create_course(['startdate' => time(), 'enddate' => time() + 7 * WEEKSECS]);
+        $user = $generator->create_user();
+        $generator->enrol_user($user->id, $course->id, $DB->get_field('role', 'id', ['shortname' => 'student']));
         $info = new \core_availability\mock_info($course, $user->id);
         $this->setUser($user);
         $cond = new condition((object)['type' => 'relativedate', 'n' => 1, 'd' => 1, 's' => 1]);
@@ -193,9 +192,8 @@ class availability_relativedate_testcase extends advanced_testcase {
         $course1 = $generator->create_course();
         $course2 = $generator->create_course(['enddate' => time() + 14 * WEEKSECS]);
         $user = $generator->create_user();
-        $studentrole = $DB->get_record('role', ['shortname' => 'student']);
-        $generator->enrol_user($user->id, $course1->id, $studentrole->id);
-        $generator->enrol_user($user->id, $course2->id, $studentrole->id);
+        $generator->enrol_user($user->id, $course1->id, $DB->get_field('role', 'id', ['shortname' => 'student']));
+        $generator->enrol_user($user->id, $course2->id, $DB->get_field('role', 'id', ['shortname' => 'student']));
         $page1 = $generator->get_plugin_generator('mod_page')->create_instance(['course' => $course1]);
         $page2 = $generator->get_plugin_generator('mod_page')->create_instance(['course' => $course2]);
         $modinfo1 = get_fast_modinfo($course1);

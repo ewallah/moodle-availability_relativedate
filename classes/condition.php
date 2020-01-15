@@ -149,31 +149,30 @@ class condition extends \core_availability\condition {
             $str .= ' ' . self::options_start($this->relativestart);
         }
         if ($full) {
-            $conf = get_string('strftimedatetime', 'langconfig');
-            $str .= ' (';
+            $calc = 0;
             $course = $info->get_course();
             switch ($this->relativestart) {
                 case 1:
-                    $str .= userdate($course->startdate + $this->calcdate(), $conf);
+                    $calc = $course->startdate + $this->calcdate();
                     break;
                 case 2:
                     if ($course->enddate == 0) {
                         return get_string('noenddate', 'availability_relativedate');
                     }
-                    $str .= userdate($course->enddate - $this->calcdate(), $conf);
+                    $calc = $course->enddate - $this->calcdate();
                     break;
                 case 3:
                     $sql = 'SELECT GREATEST(ue.timestart, ue.timecreated) AS startdate FROM {user_enrolments} ue
                             JOIN {enrol} e on ue.enrolid = e.id WHERE e.courseid = ? AND ue.userid = ? ORDER by startdate DESC';
                     if ($lowest = $DB->get_records_sql($sql, [$course->id, $USER->id])) {
                         $lowest = reset($lowest);
-                        $str .= userdate($lowest->startdate + $this->calcdate(), $conf);
+                        $calc = $lowest->startdate + $this->calcdate();
                     }
                     break;
                 default:
                     return '';
             }
-            $str .= ')';
+            $str .= ' (' . userdate($calc, get_string('strftimedatetime', 'langconfig')) . ')';
         }
         return $str;
     }
