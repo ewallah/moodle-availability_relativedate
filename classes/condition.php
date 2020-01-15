@@ -134,11 +134,11 @@ class condition extends \core_availability\condition {
     public function get_description($full, $not, \core_availability\info $info) {
         global $DB, $USER;
         if ($not) {
-            $str = $this->relativestart == 2 ? 'from' : 'until';
+            $frun = $this->relativestart == 2 ? 'from' : 'until';
         } else {
-            $str = $this->relativestart == 2 ? 'until' : 'from';
+            $frun = $this->relativestart == 2 ? 'until' : 'from';
         }
-        $str = get_string('direction_' . $str, 'availability_date');
+        $str = get_string('direction_' . $frun, 'availability_date');
         $a = new \stdClass();
         if ($this->relativedwm < 5) {
             $a->rnumber = $this->relativenumber;
@@ -148,7 +148,7 @@ class condition extends \core_availability\condition {
                 $a->rtime = self::options_dwm()[$this->relativedwm];
             }
             $a->rela = self::options_start($this->relativestart);
-            $str = [get_string($str, 'availability_relativedate', $a)];
+            $str = [get_string($frun, 'availability_relativedate', $a)];
         } else {
             $str = [];
         }
