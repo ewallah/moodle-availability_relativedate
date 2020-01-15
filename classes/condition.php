@@ -138,15 +138,19 @@ class condition extends \core_availability\condition {
         } else {
             $str = $this->relativestart == 2 ? 'until' : 'from';
         }
-        $str = ucfirst(get_string('direction_' . $str, 'availability_date')) . ' ';
+        $str = get_string('direction_' . $str, 'availability_date');
+        $a = new \stdClass();
         if ($this->relativedwm < 5) {
-            $str .= $this->relativenumber . ' ';
+            $a->rnumber = $this->relativenumber;
             if ($this->relativenumber == 1) {
-                $str .= self::option_dwm()[$this->relativedwm];
+                $a->rtime = self::option_dwm()[$this->relativedwm];
             } else {
-                $str .= self::options_dwm()[$this->relativedwm];
+                $a->rtime = self::options_dwm()[$this->relativedwm];
             }
-            $str .= ' ' . self::options_start($this->relativestart);
+            $a->rela = self::options_start($this->relativestart);
+            $str = [get_string($str, 'availability_relativedate', $a)];
+        } else {
+            $str = [];
         }
         if ($full) {
             $calc = 0;
@@ -172,9 +176,9 @@ class condition extends \core_availability\condition {
                 default:
                     return '';
             }
-            $str .= ' (' . userdate($calc, get_string('strftimedatetime', 'langconfig')) . ')';
+            $str[] = '(' . userdate($calc, get_string('strftimedatetime', 'langconfig')) . ')';
         }
-        return $str;
+        return implode(' ', $str);
     }
 
     /**
@@ -211,10 +215,10 @@ class condition extends \core_availability\condition {
      */
     public static function options_dwm() {
         return [
-            1 => \core_text::strtolower(get_string('hours')),
-            2 => \core_text::strtolower(get_string('days')),
-            3 => \core_text::strtolower(get_string('weeks')),
-            4 => \core_text::strtolower(get_string('months'))
+            1 => get_string('hours', 'availability_relativedate'),
+            2 => get_string('days', 'availability_relativedate'),
+            3 => get_string('weeks', 'availability_relativedate'),
+            4 => get_string('months', 'availability_relativedate')
         ];
     }
 
@@ -226,10 +230,10 @@ class condition extends \core_availability\condition {
      */
     public static function option_dwm() {
         return [
-            1 => \core_text::strtolower(get_string('hour')),
-            2 => \core_text::strtolower(get_string('day')),
-            3 => \core_text::strtolower(get_string('week')),
-            4 => \core_text::strtolower(get_string('month'))
+            1 => get_string('hour', 'availability_relativedate'),
+            2 => get_string('day', 'availability_relativedate'),
+            3 => get_string('week', 'availability_relativedate'),
+            4 => get_string('month', 'availability_relativedate')
         ];
     }
 

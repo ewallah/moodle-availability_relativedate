@@ -175,8 +175,8 @@ class availability_relativedate_testcase extends advanced_testcase {
         $cond = new condition((object)['type' => 'relativedate', 'n' => 9, 'd' => 9, 's' => 9]);
         $this->assertEquals('', $cond->get_description(true, false, $info));
         $this->assertEquals('', $cond->get_description(true, true, $info));
-        $this->assertEquals('Not available unless: From ', $cond->get_standalone_description(false, false, $info));
-        $this->assertEquals('Not available unless: Until ', $cond->get_standalone_description(false, true, $info));
+        $this->assertEquals('Not available unless: ', $cond->get_standalone_description(false, false, $info));
+        $this->assertEquals('Not available unless: ', $cond->get_standalone_description(false, true, $info));
     }
 
     /**
