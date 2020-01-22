@@ -7,10 +7,6 @@ services:
   - mysql
   - xvfb
 
-env:
-  global:
-    - MOZ_HEADLESS=1
-
 addons:
   firefox: "47.0.1"
   postgresql: "9.6"
@@ -40,6 +36,8 @@ before_install:
   - export PATH="$(cd ci/bin; pwd):$(cd ci/vendor/bin; pwd):$PATH"
   - "/sbin/start-stop-daemon --start --quiet --pidfile /tmp/custom_xvfb_99.pid --make-pidfile --background --exec /usr/bin/Xvfb -- :99 -ac -screen 0 1280x1024x16"
   - google-chrome-stable --headless --disable-gpu --remote-debugging-port=9222 http://127.0.0.1 &
+  - wget --max-redirect=1 https://goo.gl/s4o9Vx -O selenium.jar
+  - /usr/bin/Xvfb -s "-screen 0 1280x1024x16" -a java -Djava.net.preferIPv6Addresses=false -Djava.net.preferIPv4Stack=true -jar selenium -host 127.0.0.1 -port 4444 > /dev/null 2>&1 &
 
 install:
   - moodle-plugin-ci install
