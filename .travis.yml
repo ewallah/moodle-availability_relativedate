@@ -37,7 +37,7 @@ before_install:
   - /sbin/start-stop-daemon --start --quiet --pidfile /tmp/custom_xvfb_99.pid --make-pidfile --background --exec /usr/bin/Xvfb -- :99 -ac -screen 0 1280x1024x16
   - google-chrome-stable --headless --disable-gpu --remote-debugging-port=9222 http://127.0.0.1 &
   - wget --max-redirect=1 https://selenium-release.storage.googleapis.com/2.53/selenium-server-standalone-2.53.1.jar -O selenium.jar
-  - /usr/bin/xvfb-run -s "-screen 0 1280x1024x16" -a java -Djava.net.preferIPv6Addresses=false -Djava.net.preferIPv4Stack=true -jar selenium -host 127.0.0.1 -port 4444 &
+  - /usr/bin/xvfb-run -s "-screen 0 1280x1024x16" -a java -Djava.net.preferIPv6Addresses=false -Djava.net.preferIPv4Stack=true -jar selenium.jar -host 127.0.0.1 -port 4444 &
 
 install:
   - moodle-plugin-ci install
