@@ -26,17 +26,19 @@ php:
 env:
   - DB=pgsql MOODLE_BRANCH=master
   - DB=mysqli MOODLE_BRANCH=master
-
+  global:
+    - MOZ_HEADLESS=1
+  
 matrix:
   include:
-    - php: 7.1
-      env: DB=pgsql MOODLE_BRANCH=MOODLE_35_STABLE
-    - php: 7.2
-      env: DB=pgsql MOODLE_BRANCH=MOODLE_36_STABLE
-    - php: 7.2
-      env: DB=pgsql MOODLE_BRANCH=MOODLE_37_STABLE
-    - php: 7.2
-      env: DB=pgsql MOODLE_BRANCH=MOODLE_38_STABLE
+    #- php: 7.1
+    #  env: DB=pgsql MOODLE_BRANCH=MOODLE_35_STABLE
+    #- php: 7.2
+    # env: DB=pgsql MOODLE_BRANCH=MOODLE_36_STABLE
+    #- php: 7.2
+    #  env: DB=pgsql MOODLE_BRANCH=MOODLE_37_STABLE
+    #- php: 7.2
+    #  env: DB=pgsql MOODLE_BRANCH=MOODLE_38_STABLE
     - php: 7.3
       env: DB=pgsql MOODLE_BRANCH=master
 
