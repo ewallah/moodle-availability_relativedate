@@ -11,9 +11,6 @@ addons:
   firefox: "47.0.1"
   postgresql: "9.6"
   chrome: stable
-  apt:
-    packages:
-      - chromium-chromedriver
 
 cache:
   directories:
@@ -41,6 +38,7 @@ before_install:
  
 install:
   - moodle-plugin-ci install
+  - composer require --dev dmore/behat-chrome-extension --no-progress --no-suggest -q
 
 script:
   - moodle-plugin-ci add-config -q '
