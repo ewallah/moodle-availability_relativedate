@@ -14,7 +14,6 @@ addons:
   apt:
     packages:
       - openjdk-8-jre-headless
-      - chromium-chromedriver
 
 cache:
   directories:
@@ -33,8 +32,6 @@ before_install:
   - nvm use 8.9
   - cd ../..
   - composer create-project -n --no-dev --prefer-dist blackboard-open-source/moodle-plugin-ci ci ^2
-  - composer require --dev dmore/behat-chrome-extension
-  - composer require --dev dmore/chrome-mink-driver
   - export PATH="$(cd ci/bin; pwd):$(cd ci/vendor/bin; pwd):$PATH"
   - /sbin/start-stop-daemon --start --quiet --pidfile /tmp/custom_xvfb_99.pid --make-pidfile --background --exec /usr/bin/Xvfb -- :99 -ac -screen 0 1280x1024x16
   - google-chrome-stable --headless --disable-gpu --remote-debugging-port=9222 --remote-debugging-address=127.0.0.1 &
@@ -52,7 +49,7 @@ script:
   - moodle-plugin-ci add-config -q '
     $CFG->behat_profiles = [
        "firefox" => ["browser" => "firefox", "wd_host" => "http://127.0.0.1:4444/wd/hub",  "capabilities" => ["platform" => "Linux", "extra_capabilities" => ["marionette" => false, "binary" => "/home/travis/firefox-47.0/firefox"]]],
-       "chrome" => ["browser" => "chrome", "extensions" => ["Behat\MinkExtension" => ["selenium2" => ["browser" => "chrome"]]], "wd_host" => "http://127.0.0.1:9222", "capabilities" => ["platform" => "Linux"]]];
+       "chrome" => ["browser" => "chrome", "extensions" => ["Behat\MinkExtension" => ["selenium2" => ["browser" => "chrome"]]], "capabilities" => ["platform" => "Linux"]]];
     $CFG->behat_config = [
        "firefox" => ["extensions" => ["Behat\MinkExtension" => ["default_session" => "goutte", "goutte" => null, "javascript_session" => "selenium2", "selenium2" => ["browser" => "firefox", "capabilities" => ["platform" => "Linux", "extra_capabilities" => [ "marionette" => false, "binary" => "/home/travis/firefox-47.0/firefox"]]]]]],
        "chrome" => ["extensions" => ["DMore\ChromeExtension\Behat\ServiceContainer\ChromeExtension" => [], "Behat\MinkExtension" => ["browser_name" => "chrome", "base_url" => "http://127.0.0.1:8000", "goutte" => null, "selenium2" => null, "sessions" => ["javascript" => ["chrome" => ["api_url" => "http://127.0.0.1:9222"]]]]]]
