@@ -37,13 +37,12 @@ before_install:
   - google-chrome-stable --headless --disable-gpu --remote-debugging-port=9222 http://127.0.0.1 &
   - wget --max-redirect=1 https://selenium-release.storage.googleapis.com/3.141/selenium-server-standalone-3.141.59.jar -O selenium.jar
   - /usr/bin/xvfb-run -s "-screen 0 1280x1024x16" -a java -jar selenium.jar -host localhost -port 4444 &
-  - locate firefox
  
 install:
   - moodle-plugin-ci install
 
 script:
-  - moodle-plugin-ci add-config '$CFG->behat_profiles = ["firefox" => ["browser" => "firefox", "capabilities" => ["extra_capabilities" => ["marionette" => false, "binary" => "/usr/bin/firefox"]]]];'
+  - moodle-plugin-ci add-config '$CFG->behat_profiles = ["firefox" => ["browser" => "firefox", "capabilities" => ["extra_capabilities" => ["marionette" => false, "binary" => "/usr/bin/X11/firefox"]]]];'
   - cat /home/travis/build/moodle/config.php
   - php /home/travis/build/moodle/admin/tool/behat/cli/init.php
   - /home/travis/build/moodle/vendor/bin/phpunit "provider_testcase" /home/travis/build/moodle/privacy/tests/provider_test.php
