@@ -38,7 +38,6 @@ before_install:
   - google-chrome-stable --headless --disable-gpu --remote-debugging-port=9222 --remote-debugging-address=127.0.0.1 > /home/travis/build/chrome.log 2>&1 &
   - wget --max-redirect=1 https://selenium-release.storage.googleapis.com/3.141/selenium-server-standalone-3.141.59.jar -O selenium.jar
   - /usr/bin/xvfb-run -a --server-args="-screen 0 1024x768x8" java -Djava.net.preferIPv6Addresses=false -Djava.net.preferIPv4Stack=true -jar selenium.jar -host 127.0.0.1 -port 4444 > /home/travis/build/sel.log 2>&1 &
-  - /usr/bin/xvfb-run --help
  
 install:
   - moodle-plugin-ci install
@@ -50,7 +49,7 @@ install:
 script:
   - moodle-plugin-ci add-config -q '
     $CFG->behat_profiles = [
-       "firefox" => ["browser" => "firefox", "capabilities" => ["platform" => "LINUX", "extra_capabilities" => ["marionette" => false, "binary" => "/home/travis/firefox-47.0/firefox/firefox"]]],
+       "firefox" => ["browser" => "firefox", "capabilities" => ["extra_capabilities" => ["marionette" => false, "binary" => "/home/travis/firefox-47.0/firefox/firefox"]]],
        "chrome" => ["browser" => "chrome", "extensions" => ["Behat\MinkExtension" => ["selenium2" => ["browser" => "chrome"]]], "capabilities" => ["platform" => "Linux"]]];
     $CFG->behat_config = [
        "firefox" => ["extensions" => ["Behat\MinkExtension" => ["default_session" => "goutte", "goutte" => null, "javascript_session" => "selenium2", "selenium2" => ["browser" => "firefox", "wd_host" => "http://127.0.0.1:4444/wd/hub", "capabilities" => ["platform" => "LINUX", "extra_capabilities" => [ "marionette" => false, "binary" => "/home/travis/firefox-47.0/firefox/firefox"]]]]]],
@@ -77,6 +76,7 @@ script:
   - cat /home/travis/build/php.log
   - moodle-plugin-ci behat --profile chrome || true
   - cat /home/travis/build/chrome.log
+  - cat /home/travis/build/php.log
 
 after_success:
   - moodle-plugin-ci coveralls-upload
