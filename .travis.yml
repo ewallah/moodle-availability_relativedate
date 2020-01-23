@@ -37,9 +37,9 @@ before_install:
   - /sbin/start-stop-daemon --start --quiet --pidfile /tmp/custom_xvfb_99.pid --make-pidfile --background --exec /usr/bin/Xvfb -- :99 -ac -screen 0 1280x1024x16
   - google-chrome-stable --headless --disable-gpu --remote-debugging-port=9222 --remote-debugging-address=127.0.0.1 > /home/travis/build/chrome.log 2>&1 &
   - wget --max-redirect=1 https://selenium-release.storage.googleapis.com/2.53/selenium-server-standalone-2.53.1.jar -O selenium.jar
-  - wget --max-redirect=1 https://selenium-release.storage.googleapis.com/3.141/selenium-server-standalone-3.141.59.jar -O selenium1.jar
+  #- wget --max-redirect=1 https://selenium-release.storage.googleapis.com/3.141/selenium-server-standalone-3.141.59.jar -O selenium1.jar
   - /usr/bin/xvfb-run -a --server-args="-screen 0 1024x768x8" java -Djava.net.preferIPv6Addresses=false -Djava.net.preferIPv4Stack=true -jar selenium.jar -host 127.0.0.1 -port 4444 -browser "browser=firefox, browserVersion=9, browserName=firefox, maxInstances=9, platform=LINUX, seleniumProtocol=WebDriver, maxSession=9" > /home/travis/build/sel.log 2>&1 &
-  - /usr/bin/xvfb-run -a --server-args="-screen 0 1024x768x8" java -Djava.net.preferIPv6Addresses=false -Djava.net.preferIPv4Stack=true -jar selenium1.jar -host 127.0.0.1 -port 5555 > /home/travis/build/sel1.log 2>&1 &
+  #- /usr/bin/xvfb-run -a --server-args="-screen 0 1024x768x8" java -Djava.net.preferIPv6Addresses=false -Djava.net.preferIPv4Stack=true -jar selenium1.jar -host 127.0.0.1 -port 5555 > /home/travis/build/sel1.log 2>&1 &
  
 install:
   - moodle-plugin-ci install
@@ -78,10 +78,8 @@ script:
   - moodle-plugin-ci behat --profile firefox || true
   - cat /home/travis/build/sel.log
   - cat /home/travis/build/php.log
-  - moodle-plugin-ci behat --profile firefoxnew || true
+  #- moodle-plugin-ci behat --profile firefoxnew || true
   - moodle-plugin-ci behat --profile chrome || true
-  - cat /home/travis/build/chrome.log
-  - cat /home/travis/build/php.log
-
+  
 after_success:
   - moodle-plugin-ci coveralls-upload
