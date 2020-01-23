@@ -42,7 +42,9 @@ install:
   - moodle-plugin-ci install
 
 script:
-  - moodle-plugin-ci add-config '$CFG->behat_profiles = ["firefox" => ["browser" => "firefox", "capabilities" => ["extra_capabilities" => ["marionette" => false, "binary" => "/usr/bin/X11/firefox"]]]];'
+  - moodle-plugin-ci add-config '
+    $CFG->behat_profiles = ["firefox" => ["browser" => "firefox", "wd_host" => "http://localhost:4444/wd/hub",  "capabilities" => ["extra_capabilities" => ["marionette" => false, "binary" => "/usr/bin/X11/firefox"]]]];
+    $CFG->behat_config = ["firefox" => ["extensions" => ["Behat\MinkExtension" => ["default_session" => "goutte", "goutte" => null, "javascript_session" => "selenium2", "selenium2" => ["browser" => "firefox", "wd_host" => "http://localhost:4444/wd/hub", "capabilities" => ["platform" => "Linux", "extra_capabilities" => [ "marionette" => false, "binary" => "/usr/bin/X11/firefox"]]]]]]];'
   - cat /home/travis/build/moodle/config.php
   - php /home/travis/build/moodle/admin/tool/behat/cli/init.php
   - /home/travis/build/moodle/vendor/bin/phpunit "provider_testcase" /home/travis/build/moodle/privacy/tests/provider_test.php
