@@ -25,7 +25,7 @@ php:
  - 7.2
 
 env:
-  - DB=pgsql MOODLE_BRANCH=master
+  - DB=pgsql MOODLE_BRANCH=MOODLE_37_STABLE
   
 before_install:
   - phpenv config-rm xdebug.ini
