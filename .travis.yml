@@ -25,7 +25,6 @@ php:
 
 env:
   - DB=pgsql MOODLE_BRANCH=master
-  - DB=mysqli MOODLE_BRANCH=master
   
 before_install:
   - phpenv config-rm xdebug.ini
@@ -36,8 +35,10 @@ before_install:
   - export PATH="$(cd ci/bin; pwd):$(cd ci/vendor/bin; pwd):$PATH"
   - /sbin/start-stop-daemon --start --quiet --pidfile /tmp/custom_xvfb_99.pid --make-pidfile --background --exec /usr/bin/Xvfb -- :99 -ac -screen 0 1280x1024x16
   - google-chrome-stable --headless --disable-gpu --remote-debugging-port=9222 http://127.0.0.1 &
-  - wget --max-redirect=1 https://selenium-release.storage.googleapis.com/2.53/selenium-server-standalone-2.53.1.jar -O selenium.jar
-  - /usr/bin/xvfb-run -s "-screen 0 1280x1024x16" -a java -Djava.net.preferIPv6Addresses=false -Djava.net.preferIPv4Stack=true -jar selenium.jar -host 127.0.0.1 -port 4444 &
+  - wget --max-redirect=1 https://selenium-release.storage.googleapis.com/3.141/selenium-server-standalone-3.141.59.jar -O selenium.jar
+  - /usr/bin/xvfb-run -s "-screen 0 1280x1024x16" -a java -jar selenium.jar -host localhost -port 4444 &
+  - comfire=$( which firefox )
+  - moodle-plugin-ci add-config '$CFG->behat_profiles = ["firefox" => ["browser" => "firefox", "capabilities" => ["extra_capabilities" => ["marionette" => false, "binary" => "'$comfire'"]]]];'
 
 install:
   - moodle-plugin-ci install
@@ -56,7 +57,7 @@ script:
   - moodle-plugin-ci mustache
   - moodle-plugin-ci grunt
   - moodle-plugin-ci phpunit --coverage-text --coverage-clover
-  - moodle-plugin-ci behat || true
+  - moodle-plugin-ci behat --profile firefox || true
   - moodle-plugin-ci behat --profile chrome
 
 after_success:
