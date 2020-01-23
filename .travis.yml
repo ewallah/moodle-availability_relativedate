@@ -37,6 +37,7 @@ before_install:
   - google-chrome-stable --headless --disable-gpu --remote-debugging-port=9222 --remote-debugging-address=127.0.0.1 &
   - wget --max-redirect=1 https://selenium-release.storage.googleapis.com/3.141/selenium-server-standalone-3.141.59.jar -O selenium.jar
   - /usr/bin/xvfb-run -s "-screen 0 1280x1024x16" -a java -jar selenium.jar -host 127.0.0.1 -port 4444 &
+  - echo "$(locate firefox)"
  
 install:
   - moodle-plugin-ci install
