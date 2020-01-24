@@ -52,7 +52,9 @@ script:
   - moodle-plugin-ci behat --auto-rerun=0 || true
   - cat /home/travis/build/sel.log
   - cat /home/travis/build/php.log
-  - moodle-plugin-ci add-config -q '$CFG->behat_config = ["default" => ["extensions" => ["Behat\MinkExtension" => ["default_session" => "goutte", "goutte" => null, "javascript_session" => "selenium2", "selenium2" => ["browser" => "firefox", "wd_host" => "http://localhost:5555/wd/hub", "capabilities" => ["platform" => "LINUX", "extra_capabilities" => [ "marionette" => false, "binary" => "/home/travis/firefox-47.0/firefox/firefox"]]]]]]];'
+  - moodle-plugin-ci add-config -q '
+    $CFG->behat_config = ["default" => ["extensions" => ["Behat\MinkExtension" => ["default_session" => "goutte", "goutte" => null, "javascript_session" => "selenium2", "selenium2" => ["browser" => "firefox", "wd_host" => "http://localhost:5555/wd/hub", "capabilities" => ["platform" => "LINUX", "extra_capabilities" => [ "marionette" => false, "binary" => "/home/travis/firefox-47.0/firefox/firefox"]]]]]]];
+    $CFG->behat_profiles = ["default" => ["browser" => "firefox", "capabilities" => ["extra_capabilities" => ["marionette" => false, "binary" => "/home/travis/firefox-47.0/firefox/firefox"]]]];'
   - php /home/travis/build/moodle/admin/tool/behat/cli/init.php
   - sed -i "s/4444/5555/g" /home/travis/build/moodledata/behat_moodledata/behatrun/behat/behat.yml
   - cat /home/travis/build/moodledata/behat_moodledata/behatrun/behat/behat.yml
@@ -60,7 +62,9 @@ script:
   - cat /home/travis/build/sel1.log
   - cat /home/travis/build/php.log
   - composer require --dev dmore/behat-chrome-extension
-  - moodle-plugin-ci add-config '$CFG->behat_config = ["default" => ["extensions" => ["DMore\ChromeExtension\Behat\ServiceContainer\ChromeExtension" => [], "Behat\MinkExtension" => ["browser_name" => "chrome", "base_url" => "http://localhost:8000", "goutte" => null, "selenium2" => null, "sessions" => ["javascript" => ["chrome" => ["api_url" => "http://localhost:9222"]]]]]]];'
+  - moodle-plugin-ci add-config '
+    $CFG->behat_config = ["default" => ["extensions" => ["DMore\ChromeExtension\Behat\ServiceContainer\ChromeExtension" => [], "Behat\MinkExtension" => ["browser_name" => "chrome", "base_url" => "http://localhost:8000", "goutte" => null, "selenium2" => null, "sessions" => ["javascript" => ["chrome" => ["api_url" => "http://localhost:9222"]]]]]]];
+    $CFG->behat_profiles = ["default" => ["browser" => "chrome", "extensions" => ["Behat\MinkExtension" => ["selenium2" => ["browser" => "chrome"]]], "capabilities" => ["platform" => "Linux"]];'
   - php /home/travis/build/moodle/admin/tool/behat/cli/init.php
   - cat /home/travis/build/moodledata/behat_moodledata/behatrun/behat/behat.yml
   - moodle-plugin-ci behat  --auto-rerun=0 || true
