@@ -49,6 +49,7 @@ install:
   - composer require --dev dmore/behat-chrome-extension
   
 script:
+  - ls /home/travis/firefox-47.0/firefox/
   - moodle-plugin-ci add-config -q '
     $CFG->behat_profiles = [
        "firefox" => ["browser" => "firefox", "wd_host" => "http://localhost:4444/wd/hub", "capabilities" => ["platform" => "LINUX"]],
@@ -75,7 +76,7 @@ script:
   - moodle-plugin-ci mustache
   - moodle-plugin-ci grunt
   - moodle-plugin-ci phpunit --coverage-text --coverage-clover
-  - moodle-plugin-ci behat --profile firefox || true
+  - moodle-plugin-ci behat --profile firefox --auto-rerun=0 || true
   - cat /home/travis/build/sel.log
   - cat /home/travis/build/php.log
   #- moodle-plugin-ci behat --profile firefoxnew || true
