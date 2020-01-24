@@ -38,8 +38,8 @@ before_install:
   - google-chrome-stable --headless --disable-gpu --remote-debugging-port=9222 --remote-debugging-address=localhost > /home/travis/build/chrome.log 2>&1 &
   - wget --max-redirect=1 https://selenium-release.storage.googleapis.com/2.53/selenium-server-standalone-2.53.1.jar -O selenium.jar
   - wget --max-redirect=1 https://selenium-release.storage.googleapis.com/3.141/selenium-server-standalone-3.141.59.jar -O selenium1.jar
-  - /usr/bin/xvfb-run -a --server-args="-screen 0 1024x768x8" java -jar selenium.jar -host localhost -port 5555 -browser "browser=firefox, browserVersion=9, browserName=firefox, maxInstances=9, platform=LINUX, seleniumProtocol=WebDriver, maxSession=9" > /home/travis/build/sel.log 2>&1 &
-  - /usr/bin/xvfb-run -a --server-args="-screen 0 1024x768x8" java -jar selenium1.jar -host localhost -port 4444 > /home/travis/build/sel1.log 2>&1 &
+  - /usr/bin/xvfb-run -a --server-args="-screen 0 1024x768x8" java -jar selenium.jar -host localhost -port 4444 -browser "browser=firefox, browserVersion=9, browserName=firefox, maxInstances=9, platform=LINUX, seleniumProtocol=WebDriver, maxSession=9" > /home/travis/build/sel.log 2>&1 &
+  - /usr/bin/xvfb-run -a --server-args="-screen 0 1024x768x8" java -jar selenium1.jar -host localhost -port 5555 > /home/travis/build/sel1.log 2>&1 &
  
 install:
   - moodle-plugin-ci install
@@ -52,12 +52,12 @@ script:
   - ls /home/travis/firefox-47.0/firefox/
   - moodle-plugin-ci add-config -q '
     $CFG->behat_profiles = [
-       "firefox" => ["browser" => "firefox", "wd_host" => "http://localhost:5555/wd/hub", "capabilities" => ["platform" => "LINUX"]],
-       "firefoxnew" => ["browser" => "firefox", "capabilities" => ["extra_capabilities" => ["marionette" => false, "binary" => "/home/travis/firefox-47.0/firefox/firefox"]]],
+       "firefox" => ["browser" => "firefox", "wd_host" => "http://localhost:4444/wd/hub", "capabilities" => ["platform" => "LINUX"]],
+       "firefoxnew" => ["browser" => "firefox", "wd_host" => "http://localhost:5555/wd/hub", "capabilities" => ["extra_capabilities" => ["marionette" => false, "binary" => "/home/travis/firefox-47.0/firefox/firefox"]]],
        "chrome" => ["browser" => "chrome", "extensions" => ["Behat\MinkExtension" => ["selenium2" => ["browser" => "chrome"]]], "capabilities" => ["platform" => "Linux"]]];
     $CFG->behat_config = [
-       "firefox" => ["extensions" => ["Behat\MinkExtension" => ["selenium2" => ["browser" => "firefox", "wd_host" => "http://localhost:5555/wd/hub"]]]],
-       "firefoxnew" => ["extensions" => ["Behat\MinkExtension" => ["default_session" => "goutte", "goutte" => null, "javascript_session" => "selenium2", "selenium2" => ["browser" => "firefox", "wd_host" => "http://localhost:4444/wd/hub", "capabilities" => ["platform" => "LINUX", "extra_capabilities" => [ "marionette" => false, "binary" => "/home/travis/firefox-47.0/firefox/firefox"]]]]]],
+       "firefox" => ["extensions" => ["Behat\MinkExtension" => ["selenium2" => ["browser" => "firefox", "wd_host" => "http://localhost:4444/wd/hub"]]]],
+       "firefoxnew" => ["extensions" => ["Behat\MinkExtension" => ["default_session" => "goutte", "goutte" => null, "javascript_session" => "selenium2", "selenium2" => ["browser" => "firefox", "wd_host" => "http://localhost:5555/wd/hub", "capabilities" => ["platform" => "LINUX", "extra_capabilities" => [ "marionette" => false, "binary" => "/home/travis/firefox-47.0/firefox/firefox"]]]]]],
        "chrome" => ["extensions" => ["DMore\ChromeExtension\Behat\ServiceContainer\ChromeExtension" => [], "Behat\MinkExtension" => ["browser_name" => "chrome", "base_url" => "http://localhost:8000", "goutte" => null, "selenium2" => null, "sessions" => ["javascript" => ["chrome" => ["api_url" => "http://localhost:9222"]]]]]]
       ];'
   #- cat /home/travis/build/moodle/config.php
@@ -80,6 +80,8 @@ script:
   - cat /home/travis/build/sel.log
   - cat /home/travis/build/php.log
   - moodle-plugin-ci behat --profile firefoxnew --auto-rerun=0 || true
+  - cat /home/travis/build/sel1.log
+  - cat /home/travis/build/php.log
   - moodle-plugin-ci behat --profile chrome || true
   
 after_success:
