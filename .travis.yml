@@ -36,10 +36,10 @@ before_install:
   - export PATH="$(cd ci/bin; pwd):$(cd ci/vendor/bin; pwd):$PATH"
   - /sbin/start-stop-daemon --start --quiet --pidfile /tmp/custom_xvfb_99.pid --make-pidfile --background --exec /usr/bin/Xvfb -- :99 -ac -screen 0 1280x1024x16
   - google-chrome-stable --headless --disable-gpu --remote-debugging-port=9222 --remote-debugging-address=127.0.0.1 > /home/travis/build/chrome.log 2>&1 &
-  - wget --max-redirect=1 https://selenium-release.storage.googleapis.com/2.53/selenium-server-standalone-2.53.1.jar -O selenium.jar
+  #- wget --max-redirect=1 https://selenium-release.storage.googleapis.com/2.53/selenium-server-standalone-2.53.1.jar -O selenium.jar
   - wget --max-redirect=1 https://selenium-release.storage.googleapis.com/3.141/selenium-server-standalone-3.141.59.jar -O selenium1.jar
-  - /usr/bin/xvfb-run -a --server-args="-screen 0 1024x768x8" java -jar selenium.jar -host localhost -port 4444 -browser "browser=firefox, browserVersion=9, browserName=firefox, maxInstances=9, platform=LINUX, seleniumProtocol=WebDriver, maxSession=9" > /home/travis/build/sel.log 2>&1 &
-  - /usr/bin/xvfb-run -a --server-args="-screen 0 1024x768x8" java -jar selenium1.jar -port 5555 > /home/travis/build/sel1.log 2>&1 &
+  #- /usr/bin/xvfb-run -a --server-args="-screen 0 1024x768x8" java -jar selenium.jar -host localhost -port 4444 -browser "browser=firefox, browserVersion=9, browserName=firefox, maxInstances=9, platform=LINUX, seleniumProtocol=WebDriver, maxSession=9" > /home/travis/build/sel.log 2>&1 &
+  - /usr/bin/xvfb-run -a --server-args="-screen 0 1024x768x8" java -Djava.net.preferIPv6Addresses=false -Djava.net.preferIPv4Stack=true -jar selenium1.jar -host 0.0.0.0 -port 4444 > /home/travis/build/sel.log 2>&1 &
  
 install:
   - moodle-plugin-ci install  --no-init
@@ -47,17 +47,17 @@ install:
   - composer require --dev dmore/behat-chrome-extension --no-progress --no-suggest -q
   - php --server 127.0.0.1:8000 > /home/travis/build/php.log 2>&1 &
   - sed -i 's/localhost:8000/127.0.0.1:8000/g' config.php 
-  - sed -i 's/localhost:4444/127.0.0.1:5555/g' config.php
+  - sed -i 's/localhost:4444/127.0.0.1:4444/g' config.php
   - sed -i -e '/behat_profiles/d' -e '/default/d' -e '/browser/d' -e '/chrome/d' -e '/wd_host/d' -e '/\],/d' -e '/\];/d' config.php
   - moodle-plugin-ci -q add-config '
    $CFG->behat_profiles = [
-     ["firefox" => ["browser" => "firefox", "wd_host" => "http://127.0.0.1:5555/wd/hub",
+     ["firefox" => ["browser" => "firefox", "wd_host" => "http://127.0.0.1:4444/wd/hub",
                     "capabilities" => ["platform" => "Linux", "extra_capabilities" => [ "marionette" => false, "binary" => "/home/travis/firefox-47.0/firefox/firefox"]]]], 
      ["default" => ["browser" => "chrome", "extensions" => ["Behat\MinkExtension" => ["selenium2" => ["browser" => "chrome"]]],
-                    "wd_host" => "http://127.0.0.1:5555", "capabilities" => ["platform" => "Linux"]]]];
+                    "wd_host" => "http://127.0.0.1:4444", "capabilities" => ["platform" => "Linux"]]]];
    $CFG->behat_config = [
      "firefox" => ["extensions" => ["Behat\MinkExtension" => ["default_session" => "goutte", "goutte" => null, "javascript_session" => "selenium2",
-                 "selenium2" => ["browser" => "firefox", "wd_host" => "http://127.0.0.1:5555/wd/hub",
+                 "selenium2" => ["browser" => "firefox", "wd_host" => "http://127.0.0.1:4444/wd/hub",
                  "capabilities" => ["platform" => "Linux", "extra_capabilities" => [ "marionette" => false, "binary" => "/home/travis/firefox-47.0/firefox/firefox"]]]]]],
      "default" => ["extensions" => ["DMore\ChromeExtension\Behat\ServiceContainer\ChromeExtension" => [],
                    "Behat\MinkExtension" => ["browser_name" => "chrome", "base_url" => "http://127.0.0.1:8000",
@@ -70,11 +70,6 @@ script:
   - moodle-plugin-ci behat --auto-rerun=0 || true
   - cat /home/travis/build/chrome.log
   - cat /home/travis/build/sel.log
-  - cat /home/travis/build/sel1.log
-  - cat /home/travis/build/php.log
   - moodle-plugin-ci behat --profile="firefox" --auto-rerun=0 || true
-  - cat /home/travis/build/chrome.log
   - cat /home/travis/build/sel.log
-  - cat /home/travis/build/sel1.log
-  - cat /home/travis/build/php.log
   
