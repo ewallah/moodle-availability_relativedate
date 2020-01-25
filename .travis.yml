@@ -4,13 +4,12 @@ dist: bionic
 sudo: required
 
 services:
-  - mysql
   - postgresql
-  - xvfb
   - docker
 
 addons:
   chrome: stable
+  postgresql: "9.6"
   apt:
     packages:
       - openjdk-8-jre-headless
@@ -35,11 +34,8 @@ before_install:
   - composer create-project -n --no-dev --prefer-dist blackboard-open-source/moodle-plugin-ci ci ^2
   - export PATH="$(cd ci/bin; pwd):$(cd ci/vendor/bin; pwd):$PATH"
   - docker run -d -p 127.0.0.1:4444:4444 --net=host -v /dev/shm:/dev/shm selenium/standalone-firefox:3
-  - /sbin/start-stop-daemon --start --quiet --pidfile /tmp/custom_xvfb_99.pid --make-pidfile --background --exec /usr/bin/Xvfb -- :99 -ac -screen 0 1280x1024x16
   - google-chrome-stable --headless --disable-gpu --remote-debugging-port=9222 --remote-debugging-address=127.0.0.1 > /home/travis/build/chrome.log 2>&1 &
-  - wget --max-redirect=1 https://selenium-release.storage.googleapis.com/3.141/selenium-server-standalone-3.141.59.jar -O selenium1.jar
-  - /usr/bin/xvfb-run -a --server-args="-screen 0 1024x768x8" java -Djava.net.preferIPv6Addresses=false -Djava.net.preferIPv4Stack=true -jar selenium1.jar -host 0.0.0.0 -port 4444 > /home/travis/build/sel.log 2>&1 &
- 
+  
 install:
   - moodle-plugin-ci install  --no-init
   - cd /home/travis/build/moodle
@@ -50,14 +46,11 @@ install:
   - sed -i -e '/behat_profiles/d' -e '/default/d' -e '/browser/d' -e '/chrome/d' -e '/wd_host/d' -e '/\],/d' -e '/\];/d' config.php
   - moodle-plugin-ci -q add-config '
    $CFG->behat_profiles = [
-     ["firefox" => ["browser" => "firefox", "wd_host" => "http://127.0.0.1:4444/wd/hub",
-                    "capabilities" => ["platform" => "Linux", "extra_capabilities" => [ "marionette" => false]]]], 
+     ["firefox" => ["browser" => "firefox", "wd_host" => "http://127.0.0.1:4444/wd/hub", "capabilities" => ["platform" => "Linux"]]], 
      ["default" => ["browser" => "chrome", "extensions" => ["Behat\MinkExtension" => ["selenium2" => ["browser" => "chrome"]]],
                     "wd_host" => "http://127.0.0.1:4444", "capabilities" => ["platform" => "Linux"]]]];
    $CFG->behat_config = [
-     "firefox" => ["extensions" => ["Behat\MinkExtension" => ["default_session" => "goutte", "goutte" => null, "javascript_session" => "selenium2",
-                 "selenium2" => ["browser" => "firefox", "wd_host" => "http://127.0.0.1:4444/wd/hub",
-                 "capabilities" => ["platform" => "Linux", "extra_capabilities" => [ "marionette" => false]]]]]],
+     "firefox" => ["extensions" => ["Behat\MinkExtension" => ["selenium2" => ["browser" => "firefox", "wd_host" => "http://127.0.0.1:4444/wd/hub"]]]],
      "default" => ["extensions" => ["DMore\ChromeExtension\Behat\ServiceContainer\ChromeExtension" => [],
                    "Behat\MinkExtension" => ["browser_name" => "chrome", "base_url" => "http://127.0.0.1:8000",
                    "goutte" => null, "selenium2" => null, "sessions" => ["javascript" => ["chrome" => ["api_url" => "http://127.0.0.1:9222"]]]]]]];'
