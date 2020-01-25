@@ -47,7 +47,7 @@ install:
   - composer require --dev dmore/behat-chrome-extension --no-progress --no-suggest -q
   - php --server 127.0.0.1:8000 > /home/travis/build/php.log 2>&1 &
   - sed -i 's/localhost:8000/127.0.0.1:8000/g' config.php 
-  - sed -i 's/localhost:4444/127.0.0.1t:5555/g' config.php
+  - sed -i 's/localhost:4444/127.0.0.1:5555/g' config.php
   - sed -i -e '/behat_profiles/d' -e '/default/d' -e '/browser/d' -e '/chrome/d' -e '/wd_host/d' -e '/\],/d' -e '/\];/d' config.php
   - moodle-plugin-ci -q add-config '
    $CFG->behat_profiles = [
