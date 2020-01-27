@@ -67,11 +67,14 @@ class availability_relativedate_testcase extends advanced_testcase {
             'c' => [(object)['type' => 'relativedate', 'n' => 4, 'd' => 4, 's' => 3]]];
         $stru5 = (object)['op' => '|', 'show' => true,
             'c' => [(object)['type' => 'relativedate', 'n' => 5, 'd' => 5, 's' => 5]]];
+        $stru6 = (object)['op' => '|', 'show' => false,
+            'c' => [(object)['type' => 'relativedate', 'n' => 5, 'd' => 5, 's' => 5]]];
         $tree1 = new \core_availability\tree($stru1);
         $tree2 = new \core_availability\tree($stru2);
         $tree3 = new \core_availability\tree($stru3);
         $tree4 = new \core_availability\tree($stru4);
         $tree5 = new \core_availability\tree($stru5);
+        $tree6 = new \core_availability\tree($stru6);
 
         $course = $generator->create_course(['startdate' => time(), 'enddate' => time() + 7 * WEEKSECS]);
         $user = $generator->create_user();
@@ -91,18 +94,21 @@ class availability_relativedate_testcase extends advanced_testcase {
         $this->assertFalse($tree3->is_available_for_all());
         $this->assertFalse($tree4->is_available_for_all());
         $this->assertFalse($tree5->is_available_for_all());
+        $this->assertFalse($tree6->is_available_for_all());
         $this->assertFalse($tree1->check_available(false, $info, false, 0)->is_available());
         $this->assertFalse($tree1->check_available(false, $info, false, $user->id)->is_available());
         $this->assertFalse($tree2->check_available(false, $info, false, $user->id)->is_available());
         $this->assertFalse($tree3->check_available(false, $info, false, $user->id)->is_available());
         $this->assertFalse($tree4->check_available(false, $info, false, $user->id)->is_available());
         $this->assertFalse($tree5->check_available(false, $info, false, $user->id)->is_available());
+        $this->assertFalse($tree6->check_available(false, $info, false, $user->id)->is_available());
         $this->assertTrue($tree1->check_available(true, $info, false, 0)->is_available());
         $this->assertTrue($tree1->check_available(true, $info, false, $user->id)->is_available());
         $this->assertTrue($tree2->check_available(true, $info, false, $user->id)->is_available());
         $this->assertTrue($tree3->check_available(true, $info, false, $user->id)->is_available());
         $this->assertTrue($tree4->check_available(true, $info, false, $user->id)->is_available());
         $this->assertFalse($tree5->check_available(true, $info, false, $user->id)->is_available());
+        $this->assertFalse($tree6->check_available(true, $info, false, $user->id)->is_available());
     }
 
     /**
