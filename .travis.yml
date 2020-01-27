@@ -5,7 +5,6 @@ sudo: required
 
 services:
   - postgresql
-  - docker
   - mysql
 
 addons:
@@ -42,7 +41,6 @@ before_install:
   - cd ../..
   - composer create-project -n --no-dev --prefer-dist blackboard-open-source/moodle-plugin-ci ci ^2
   - export PATH="$(cd ci/bin; pwd):$(cd ci/vendor/bin; pwd):$PATH"
-  - docker run -d -p 127.0.0.1:4444:4444 --net=host -v /dev/shm:/dev/shm selenium/standalone-firefox:3
   - google-chrome-stable --headless --disable-gpu --remote-debugging-port=9222 --remote-debugging-address=127.0.0.1 > /home/travis/build/chrome.log 2>&1 &
   
 install:
@@ -60,7 +58,7 @@ install:
                     "wd_host" => "http://127.0.0.1:4444", "capabilities" => ["platform" => "Linux"]]]];
    $CFG->behat_config = [
      "firefox" => ["extensions" => ["Behat\MinkExtension" => ["default_session" => "goutte", "goutte" => null, "javascript_session" => "selenium2",
-                   "selenium2" => ["browser" => "firefox", "capabilities" => ["extra_capabilities" => ["marionette" => false]],"wd_host" => "http://127.0.0.1:4444/wd/hub"]]]],
+                   "selenium2" => ["browser" => "firefox", "capabilities" => ["extra_capabilities" => ["marionette" => false]], "wd_host" => "http://127.0.0.1:4444/wd/hub"]]]],
      "default" => ["extensions" => ["DMore\ChromeExtension\Behat\ServiceContainer\ChromeExtension" => [],
                    "Behat\MinkExtension" => ["browser_name" => "chrome", "base_url" => "http://127.0.0.1:8000",
                    "goutte" => null, "selenium2" => null, "sessions" => ["javascript" => ["chrome" => ["api_url" => "http://127.0.0.1:9222"]]]]]]];'
@@ -81,7 +79,6 @@ script:
   - moodle-plugin-ci grunt
   - moodle-plugin-ci phpunit --coverage-text --coverage-clover
   - moodle-plugin-ci behat
-  - moodle-plugin-ci behat --profile="firefox"
 
 after_success:
   - moodle-plugin-ci coveralls-upload
