@@ -25,15 +25,6 @@ php:
 
 env:
   - DB=pgsql MOODLE_BRANCH=master
-  #- DB=mysqli MOODLE_BRANCH=master
-
-#matrix:
-#  include:
-    #- env: DB=pgsql MOODLE_BRANCH=MOODLE_36_STABLE
-    #- env: DB=pgsql MOODLE_BRANCH=MOODLE_37_STABLE
-    #- env: DB=pgsql MOODLE_BRANCH=MOODLE_38_STABLE
-    #- php: 7.3
-    #  env: DB=pgsql MOODLE_BRANCH=master
   
 before_install:
   - phpenv config-rm xdebug.ini
@@ -44,43 +35,25 @@ before_install:
   - export PATH="$(cd ci/bin; pwd):$(cd ci/vendor/bin; pwd):$PATH"
   - sed -i -e '29,55d' ci/res/template/config.php.txt
   - echo '
-   $CFG->behat_profiles = [
-     ["firefox" => ["browser" => "firefox", "wd_host" => "http://127.0.0.1:4444/wd/hub", "capabilities" => ["platform" => "Linux"]]], 
-     ["default" => ["browser" => "chrome", "extensions" => ["Behat\MinkExtension" => ["selenium2" => ["browser" => "chrome"]]],
-                    "wd_host" => "http://127.0.0.1:4444", "capabilities" => ["platform" => "Linux"]]]];
-   $CFG->behat_config = [
-     "firefox" => ["extensions" => ["Behat\MinkExtension" => ["selenium2" => ["browser" => "firefox", "wd_host" => "http://127.0.0.1:4444/wd/hub"]]]],
-     "default" => ["extensions" => ["DMore\ChromeExtension\Behat\ServiceContainer\ChromeExtension" => [],
-                   "Behat\MinkExtension" => ["browser_name" => "chrome", "base_url" => "http://127.0.0.1:8000",
-                   "goutte" => null, "selenium2" => null, "sessions" => ["javascript" => ["chrome" => ["api_url" => "http://127.0.0.1:9222"]]]]]]];
-  {{EXTRACONFIG}}
-   require_once(__DIR__."/lib/setup.php");' >> ci/res/template/config.php.txt
+$CFG->behat_profiles = [
+  ["firefox" => ["browser" => "firefox", "wd_host" => "http://127.0.0.1:4444/wd/hub", "capabilities" => ["platform" => "Linux"]]], 
+  ["default" => ["browser" => "chrome", "extensions" => ["Behat\MinkExtension" => ["selenium2" => ["browser" => "chrome"]]],
+                 "wd_host" => "http://127.0.0.1:4444", "capabilities" => ["platform" => "Linux"]]]];
+$CFG->behat_config = [
+  "firefox" => ["extensions" => ["Behat\MinkExtension" => ["selenium2" => ["browser" => "firefox", "wd_host" => "http://127.0.0.1:4444/wd/hub"]]]],
+  "default" => ["extensions" => ["DMore\ChromeExtension\Behat\ServiceContainer\ChromeExtension" => [],
+                "Behat\MinkExtension" => ["browser_name" => "chrome", "base_url" => "http://127.0.0.1:8000",
+                "goutte" => null, "selenium2" => null, "sessions" => ["javascript" => ["chrome" => ["api_url" => "http://127.0.0.1:9222"]]]]]]];
+{{EXTRACONFIG}}
+require_once(__DIR__."/lib/setup.php");' >> ci/res/template/config.php.txt
   - cat ci/res/template/config.php.txt
   - docker run -d -p 127.0.0.1:4444:4444 --net=host -v /dev/shm:/dev/shm selenium/standalone-firefox:3
   - google-chrome-stable --headless --disable-gpu --remote-debugging-port=9222 --remote-debugging-address=127.0.0.1 > /home/travis/build/chrome.log 2>&1 &
   
 install:
   - moodle-plugin-ci install
-  #  --no-init
   - cd /home/travis/build/moodle
   - composer require --dev dmore/behat-chrome-extension --no-progress --no-suggest -q
-  #- php --server 127.0.0.1:8000 > /home/travis/build/php.log 2>&1 &
-  #- sed -i 's/localhost:8000/127.0.0.1:8000/g' config.php 
-  #- sed -i 's/localhost:4444/127.0.0.1:4444/g' config.php
-  #- sed -i -e '/behat_profiles/d' -e '/default/d' -e '/browser/d' -e '/chrome/d' -e '/wd_host/d' -e '/\],/d' -e '/\];/d' config.php
-  #- moodle-plugin-ci -q add-config '
-  # $CFG->behat_profiles = [
-  #   ["firefox" => ["browser" => "firefox", "wd_host" => "http://127.0.0.1:4444/wd/hub", "capabilities" => ["platform" => "Linux"]]], 
-  #   ["default" => ["browser" => "chrome", "extensions" => ["Behat\MinkExtension" => ["selenium2" => ["browser" => "chrome"]]],
-  #                  "wd_host" => "http://127.0.0.1:4444", "capabilities" => ["platform" => "Linux"]]]];
-  # $CFG->behat_config = [
-  #   "firefox" => ["extensions" => ["Behat\MinkExtension" => ["selenium2" => ["browser" => "firefox", "wd_host" => "http://127.0.0.1:4444/wd/hub"]]]],
-  #   "default" => ["extensions" => ["DMore\ChromeExtension\Behat\ServiceContainer\ChromeExtension" => [],
-  #                 "Behat\MinkExtension" => ["browser_name" => "chrome", "base_url" => "http://127.0.0.1:8000",
-  #                 "goutte" => null, "selenium2" => null, "sessions" => ["javascript" => ["chrome" => ["api_url" => "http://127.0.0.1:9222"]]]]]]];'
-  #- php /home/travis/build/moodle/admin/tool/phpunit/cli/init.php > /dev/null 2>&1 &
-  #- php /home/travis/build/moodle/admin/tool/behat/cli/init.php > /dev/null 2>&1 
-  #- cat /home/travis/build/moodledata/behat_moodledata/behatrun/behat/behat.yml
   
 script:
   - /home/travis/build/moodle/vendor/bin/phpunit "provider_testcase" /home/travis/build/moodle/privacy/tests/provider_test.php > /dev/null 2>&1 
