@@ -30,7 +30,6 @@ env:
 
 jobs:
   include:
-    - env: DB=pgsql MOODLE_BRANCH=MOODLE_36_STABLE
     - env: DB=pgsql MOODLE_BRANCH=MOODLE_37_STABLE
     - env: DB=pgsql MOODLE_BRANCH=MOODLE_38_STABLE
     - php: 7.3
