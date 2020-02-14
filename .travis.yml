@@ -62,6 +62,8 @@ script:
   - moodle-plugin-ci grunt
   - moodle-plugin-ci phpunit --coverage-text --coverage-clover
   - moodle-plugin-ci behat --profile chrome
+  - php /home/travis/build/moodle/admin/tool/behat/cli/init.php -a="classic"
+  - moodle-plugin-ci behat --suite="classic" --profile chrome
 
 after_success:
   - moodle-plugin-ci coveralls-upload
