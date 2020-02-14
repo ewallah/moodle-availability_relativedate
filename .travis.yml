@@ -30,6 +30,7 @@ env:
 
 jobs:
   include:
+    - env: DB=pgsql MOODLE_BRANCH=MOODLE_36_STABLE
     - env: DB=pgsql MOODLE_BRANCH=MOODLE_37_STABLE
     - env: DB=pgsql MOODLE_BRANCH=MOODLE_38_STABLE
     - php: 7.3
@@ -61,8 +62,8 @@ script:
   - moodle-plugin-ci grunt
   - moodle-plugin-ci phpunit --coverage-text --coverage-clover
   - moodle-plugin-ci behat --profile chrome
-  - php /home/travis/build/moodle/admin/tool/behat/cli/init.php -a="classic"
-  - moodle-plugin-ci behat --suite="classic" --profile chrome
+  - branch == "master" && php /home/travis/build/moodle/admin/tool/behat/cli/init.php -a="classic"
+  - branch == "master" && moodle-plugin-ci behat --suite="classic" --profile chrome
 
 after_success:
   - moodle-plugin-ci coveralls-upload
