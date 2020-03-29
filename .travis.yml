@@ -51,6 +51,7 @@ install:
 
 script:
   - moodle-plugin-ci phpunit --coverage-text --coverage-clover
+  - moodle-plugin-ci behat
   - moodle-plugin-ci behat --profile chrome
   - >
         if [ "$MOODLE_BRANCH" = 'master' ];
