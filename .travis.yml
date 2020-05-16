@@ -23,7 +23,7 @@ cache:
     - $HOME/.npm
 
 php:
- - 7.2
+ - 7.3
 
 env:
   - DB=pgsql MOODLE_BRANCH=master
@@ -31,10 +31,9 @@ env:
 
 jobs:
   include:
-    - env: DB=pgsql MOODLE_BRANCH=MOODLE_36_STABLE
     - env: DB=pgsql MOODLE_BRANCH=MOODLE_37_STABLE
     - env: DB=pgsql MOODLE_BRANCH=MOODLE_38_STABLE
-    - php: 7.3
+    - php: 7.4
       env: DB=pgsql MOODLE_BRANCH=master
 
 before_install:
@@ -44,7 +43,7 @@ before_install:
   - cd ../..
   - composer create-project -n --no-dev --prefer-dist blackboard-open-source/moodle-plugin-ci ci ^2
   - export PATH="$(cd ci/bin; pwd):$(cd ci/vendor/bin; pwd):$PATH"
-  - google-chrome-stable --headless --disable-extensions --no-sandbox --remote-debugging-port=9222 --remote-debugging-address=127.0.0.1 &
+  - google-chrome-stable --headless --disable-extensions --no-sandbox --remote-debugging-port=9222 --remote-debugging-address=127.0.0.1 &>/dev/null &
 
 install:
   - moodle-plugin-ci install
@@ -59,12 +58,13 @@ script:
             moodle-plugin-ci phplint
             moodle-plugin-ci phpcpd
             moodle-plugin-ci phpmd
-            moodle-plugin-ci phpdoc || true
+            moodle-plugin-ci phpdoc
             moodle-plugin-ci codechecker
             moodle-plugin-ci validate
             moodle-plugin-ci savepoints
             moodle-plugin-ci mustache
             moodle-plugin-ci grunt
+            moodle-plugin-ci behat --dump /home/travis/build/moodle/blocks/admin_bookmarks
             php /home/travis/build/moodle/admin/tool/behat/cli/init.php -a="classic"
             moodle-plugin-ci behat --suite="classic"
             moodle-plugin-ci behat --suite="classic" --profile chrome

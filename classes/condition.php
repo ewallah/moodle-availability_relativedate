@@ -133,52 +133,50 @@ class condition extends \core_availability\condition {
      */
     public function get_description($full, $not, \core_availability\info $info) {
         global $DB, $USER;
-        if ($not) {
-            $frun = $this->relativestart == 2 ? 'from' : 'until';
-        } else {
-            $frun = $this->relativestart == 2 ? 'until' : 'from';
+        $frut = $not ? ($this->relativestart == 2 ? 'from' : 'until') : ($this->relativestart == 2 ? 'until' : 'from');
+        $calc = 0;
+        $course = $info->get_course();
+        switch ($this->relativestart) {
+            case 1:
+                $calc = $course->startdate + $this->calcdate();
+                break;
+            case 2:
+                if ($course->enddate == 0) {
+                    return get_string('noenddate', 'availability_relativedate');
+                }
+                $calc = $course->enddate - $this->calcdate();
+                break;
+            case 3:
+                $sql = 'SELECT GREATEST(ue.timestart, ue.timecreated) AS startdate FROM {user_enrolments} ue
+                        JOIN {enrol} e on ue.enrolid = e.id WHERE e.courseid = ? AND ue.userid = ? ORDER by startdate DESC';
+                if ($lowest = $DB->get_records_sql($sql, [$course->id, $USER->id])) {
+                    $lowest = reset($lowest);
+                    $calc = $lowest->startdate + $this->calcdate();
+                }
+                break;
+            default:
+                return '';
         }
-        $str = get_string('direction_' . $frun, 'availability_date');
         $a = new \stdClass();
-        if ($this->relativedwm < 5) {
-            $a->rnumber = $this->relativenumber;
-            if ($this->relativenumber == 1) {
-                $a->rtime = self::option_dwm()[$this->relativedwm];
-            } else {
-                $a->rtime = self::options_dwm()[$this->relativedwm];
-            }
-            $a->rela = self::options_start($this->relativestart);
-            $str = [get_string($frun, 'availability_relativedate', $a)];
-        } else {
-            $str = [];
-        }
+        $a->rnumber = userdate($calc, get_string('strftimedatetime', 'langconfig'));
+        $a->rtime = '';
+        $a->rela = '';
+        $str = get_string($frut, 'availability_relativedate', $a);
         if ($full) {
-            $calc = 0;
-            $course = $info->get_course();
-            switch ($this->relativestart) {
-                case 1:
-                    $calc = $course->startdate + $this->calcdate();
-                    break;
-                case 2:
-                    if ($course->enddate == 0) {
-                        return get_string('noenddate', 'availability_relativedate');
-                    }
-                    $calc = $course->enddate - $this->calcdate();
-                    break;
-                case 3:
-                    $sql = 'SELECT GREATEST(ue.timestart, ue.timecreated) AS startdate FROM {user_enrolments} ue
-                            JOIN {enrol} e on ue.enrolid = e.id WHERE e.courseid = ? AND ue.userid = ? ORDER by startdate DESC';
-                    if ($lowest = $DB->get_records_sql($sql, [$course->id, $USER->id])) {
-                        $lowest = reset($lowest);
-                        $calc = $lowest->startdate + $this->calcdate();
-                    }
-                    break;
-                default:
-                    return '';
+            $str = get_string('direction_' . $frut, 'availability_date');
+            $a = new \stdClass();
+            if ($this->relativedwm < 5) {
+                $a->rnumber = $this->relativenumber;
+                if ($this->relativenumber == 1) {
+                    $a->rtime = self::option_dwm()[$this->relativedwm];
+                } else {
+                    $a->rtime = self::options_dwm()[$this->relativedwm];
+                }
+                $a->rela = self::options_start($this->relativestart);
+                $str .= ' (' . get_string($frut, 'availability_relativedate', $a) . ')';
             }
-            $str[] = '(' . userdate($calc, get_string('strftimedatetime', 'langconfig')) . ')';
         }
-        return implode(' ', $str);
+        return $str;
     }
 
     /**

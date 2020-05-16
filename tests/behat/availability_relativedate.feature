@@ -101,11 +101,11 @@ Feature: availability_relativedate
     And I press "Save changes"
 
     Then I should see "Page 1" in the "region-main" "region"
-    And I should see "Not available unless: From 1 hour after course start date" in the "region-main" "region"
-    And I should see "Not available unless: Until 2 days before course end date" in the "region-main" "region"
-    And I should see "Not available unless: From 3 weeks after user enrolment date" in the "region-main" "region"
-    And I should see "Not available unless: From 5 days after course start dat" in the "region-main" "region"
-    And I should see "Not available unless: Until 6 days before course end date" in the "region-main" "region"
+    And I should see "From 1 hour after course start date" in the "region-main" "region"
+    And I should see "Until 2 days before course end date" in the "region-main" "region"
+    And I should see "From 3 weeks after user enrolment date" in the "region-main" "region"
+    And I should see "From 5 days after course start dat" in the "region-main" "region"
+    And I should see "Until 6 days before course end date" in the "region-main" "region"
 
     # Log back in as student.
     When I log out

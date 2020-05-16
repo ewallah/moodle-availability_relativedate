@@ -161,17 +161,13 @@ class availability_relativedate_testcase extends advanced_testcase {
         $cond = new condition((object)['type' => 'relativedate', 'n' => 1, 'd' => 1, 's' => 1]);
         $this->assertContains('1 hour after course start date', $cond->get_description(true, false, $info));
         $this->assertContains('Until 1 hour after course start date', $cond->get_description(true, true, $info));
-        $this->assertContains('1 hour after course start date',
-            $cond->get_standalone_description(false, false, $info));
-        $this->assertContains('Until 1 hour after course start date',
-            $cond->get_standalone_description(false, true, $info));
+        $this->assertContains('From ', $cond->get_standalone_description(false, false, $info));
+        $this->assertContains('Until ', $cond->get_standalone_description(false, true, $info));
 
         $cond = new condition((object)['type' => 'relativedate', 'n' => 2, 'd' => 2, 's' => 2]);
-        $this->assertEquals('Not available unless: Until 2 days before course end date',
-            $cond->get_standalone_description(false, false, $info));
+        $this->assertContains('Not available unless: Until ', $cond->get_standalone_description(false, false, $info));
         $cond = new condition((object)['type' => 'relativedate', 'n' => 3, 'd' => 3, 's' => 2]);
-        $this->assertEquals('Not available unless: Until 3 weeks before course end date',
-            $cond->get_standalone_description(false, false, $info));
+        $this->assertContains('Not available unless: Until ', $cond->get_standalone_description(false, false, $info));
         $cond = new condition((object)['type' => 'relativedate', 'n' => 4, 'd' => 4, 's' => 3]);
         $this->assertContains('From ', $cond->get_description(true, false, $info));
         $this->assertContains('Until ', $cond->get_description(true, true, $info));
