@@ -9,7 +9,7 @@ Feature: availability_relativedate
       | username |
       | teacher1 |
       | student1 |
-    Given the following "courses" exist:
+    And the following "courses" exist:
       | fullname | shortname | category | startdate     | enddate                    |
       | Course 1 | C1        | 0        | ##yesterday## | ##last day of next month## |
     And the following config values are set as admin:
@@ -18,20 +18,17 @@ Feature: availability_relativedate
       | user     | course | role           |
       | teacher1 | C1     | editingteacher |
       | student1 | C1     | student        |
-
-  Scenario: Restrict section0
-    Given I log in as "teacher1"
+    And I log in as "teacher1"
     And I am on "Course 1" course homepage with editing mode on
+    
+  Scenario: Restrict section0
     When I edit the section "0"
     And I expand all fieldsets
     And I click on "Add restriction..." "button"
     Then "Relative date" "button" should not exist in the "Add restriction..." "dialogue"
 
   Scenario: Test condition
-    Given I log in as "teacher1"
-    And I am on "Course 1" course homepage with editing mode on
-
-    And I add a "Page" to section "1"
+    When I add a "Page" to section "1"
     And I set the following fields to these values:
       | Name         | Page 1 |
       | Description  | Test   |
@@ -106,13 +103,10 @@ Feature: availability_relativedate
     And I should see "From 3 weeks after user enrolment date" in the "region-main" "region"
     And I should see "From 5 days after course start dat" in the "region-main" "region"
     And I should see "Until 6 days before course end date" in the "region-main" "region"
+    And I log out
 
     # Log back in as student.
-    When I log out
-    And I log in as "student1"
-    And I am on "Course 1" course homepage
-
-    # Page 1 should appear, but page 2 does not.
+    When I am on the "C1" "Course" page logged in as "student1"
     Then I should see "Page 1" in the "region-main" "region"
     And I should not see "Page 2" in the "region-main" "region"
     And I should not see "Page 3" in the "region-main" "region"
