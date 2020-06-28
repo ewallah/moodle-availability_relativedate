@@ -20,7 +20,7 @@ Feature: availability_relativedate
       | student1 | C1     | student        |
     And I log in as "teacher1"
     And I am on "Course 1" course homepage with editing mode on
-    
+
   Scenario: Restrict section0
     When I edit the section "0"
     And I expand all fieldsets
