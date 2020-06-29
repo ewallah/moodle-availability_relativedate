@@ -1,4 +1,4 @@
-@availability @availability_relativedate @javascript
+@eWallah @availability @availability_relativedate @javascript
 Feature: availability_relativedate
   In order to control student access to activities
   As a teacher
