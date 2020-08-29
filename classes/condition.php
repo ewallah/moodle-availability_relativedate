@@ -107,9 +107,10 @@ class condition extends \core_availability\condition {
                     JOIN {enrol} e on ue.enrolid = e.id
                     WHERE e.courseid = ? AND ue.userid = ?
                     ORDER by uedate DESC';
-            if ($lowest = $DB->get_records_sql($sql, [$course->id, $uid])) {
+            if ($lowest = $DB->get_records_sql($sql, [$uid, $course->id, $uid])) {
                 $lowest = reset($lowest);
-                $calc = $lowest->uedate + $this->calcdate();
+                $low = isset($lowest->uedate) ? $lowest->uedate : time();
+                $calc = $low + $this->calcdate();
             }
         } else if ($this->relativestart === 4) {
             $uid = ($userid != $USER->id) ? $userid : $USER->id;
@@ -119,7 +120,8 @@ class condition extends \core_availability\condition {
                     WHERE e.courseid = ? AND ue.userid = ?';
             if ($lowest = $DB->get_records_sql($sql, [$course->id, $uid])) {
                 $lowest = reset($lowest);
-                $calc = $lowest->uedate + $this->calcdate();
+                $low = isset($lowest->uedate) ? $lowest->uedate : time();
+                $calc = $low + $this->calcdate();
             }
         }
         $allow = ($calc == 0 ) ? false : time() >= $calc;
@@ -151,17 +153,19 @@ class condition extends \core_availability\condition {
             $frut = $not ? 'from' : 'until';
             $calc = $course->enddate - $this->calcdate();
         } else if ($this->relativestart === 3) {
-            $sql = 'SELECT GREATEST(ue.timestart, ue.timecreated) AS startdate FROM {user_enrolments} ue
+            $sql = 'SELECT MAX(GREATEST(ue.timestart, ue.timecreated)) AS startdate FROM {user_enrolments} ue
                     JOIN {enrol} e on ue.enrolid = e.id WHERE e.courseid = ? AND ue.userid = ? ORDER by startdate DESC';
             if ($lowest = $DB->get_records_sql($sql, [$course->id, $USER->id])) {
                 $lowest = reset($lowest);
-                $calc = $lowest->startdate + $this->calcdate();
+                $low = isset($lowest->uedate) ? $lowest->uedate : time();
+                $calc = $low + $this->calcdate();
             }
         } else if ($this->relativestart === 4) {
             $sql = 'SELECT id, enrolenddate FROM {enrol} WHERE courseid = ?  AND enrolenddate > 0 ORDER by enrolenddate DESC';
             if ($lowest = $DB->get_records_sql($sql, [$course->id])) {
                 $lowest = reset($lowest);
-                $calc = $lowest->enrolenddate + $this->calcdate();
+                $low = isset($lowest->enrolenddate) ? $lowest->enrolenddate : time();
+                $calc = $low + $this->calcdate();
             }
         } else {
             return '';
@@ -239,7 +243,7 @@ class condition extends \core_availability\condition {
     private function calcdate() {
         switch ($this->relativedwm) {
             case 1:
-                return 3600 * $this->relativenumber;
+                return HOURSECS * $this->relativenumber;
             case 2:
                 return DAYSECS * $this->relativenumber;
             case 3:

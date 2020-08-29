@@ -68,7 +68,7 @@ class availability_relativedate_testcase extends advanced_testcase {
         $stru5 = (object)['op' => '|', 'show' => true,
             'c' => [(object)['type' => 'relativedate', 'n' => 5, 'd' => 5, 's' => 4]]];
         $stru6 = (object)['op' => '|', 'show' => false,
-            'c' => [(object)['type' => 'relativedate', 'n' => 5, 'd' => 5, 's' => 5]]];
+            'c' => [(object)['type' => 'relativedate', 'n' => 5, 'd' => 5, 's' => 4]]];
         $tree1 = new \core_availability\tree($stru1);
         $tree2 = new \core_availability\tree($stru2);
         $tree3 = new \core_availability\tree($stru3);
@@ -97,17 +97,15 @@ class availability_relativedate_testcase extends advanced_testcase {
         $nau = 'Not available unless:';
         $calc = userdate($now + 3600, $strf);
         $this->assertEquals("$nau From $calc", $tree1->get_full_information($info));
-        $calc = userdate($course->enddate - (3600 * 48), $strf);
+        $calc = userdate($course->enddate - (HOURSECS * 48), $strf);
         $this->assertEquals("$nau Until $calc", $tree2->get_full_information($info));
-        $calc = userdate($now + 1000 + (3 * WEEKSECS), $strf);
-        // TODO returns 1jan1970.
-        // $this->assertEquals("$nau From $calc", $tree3->get_full_information($info));
+        $calc = userdate($now + (3 * WEEKSECS), $strf);
+        $this->assertEquals("$nau From $calc", $tree3->get_full_information($info));
         $calc = userdate($now + 1000 + (16 * WEEKSECS), $strf);
         $this->assertEquals("$nau From $calc", $tree4->get_full_information($info));
-        // TODO:  Check.
         $calc = userdate($now + 1000 + (0 * WEEKSECS), $strf);
         $this->assertEquals("$nau From $calc", $tree5->get_full_information($info));
-        $this->assertEquals('Not available unless:  (hidden otherwise)', $tree6->get_full_information($info));
+        $this->assertEquals("$nau From $calc (hidden otherwise)", $tree6->get_full_information($info));
         $this->assertFalse($tree1->is_available_for_all());
         $this->assertFalse($tree2->is_available_for_all());
         $this->assertFalse($tree3->is_available_for_all());

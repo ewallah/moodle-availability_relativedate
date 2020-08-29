@@ -119,8 +119,8 @@ Feature: availability_relativedate
     Then I should see "Page 1" in the "region-main" "region"
     And I should see "From 1 July 2020, 4:00 PM" in the "region-main" "region"
     And I should see "Until 8 July 2020, 3:00 PM" in the "region-main" "region"
-    And I should see "From 30 July 2020" in the "region-main" "region"
-    And I should see "From 29 October 2020" in the "region-main" "region"
+    And I should see "From 19 September 2020" in the "region-main" "region"
+    And I should see "From 19 December 2020" in the "region-main" "region"
     And I should see "From 6 July 2020, 3:00 PM" in the "region-main" "region"
     And I should see "Until 4 July 2020, 3:00 PM" in the "region-main" "region"
     And I log out
