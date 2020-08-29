@@ -9,16 +9,22 @@ Feature: availability_relativedate
       | username |
       | teacher1 |
       | student1 |
+      | student2 |
     And the following "courses" exist:
-      | fullname | shortname | category | startdate     | enddate                    |
-      | Course 1 | C1        | 0        | ##yesterday## | ##last day of next month## |
+      | fullname | shortname | category | startdate  | enddate    |
+      | Course 1 | C1        | 0        | 1593586800 | 1594364400 |
     And the following config values are set as admin:
       | enableavailability   | 1 |
     And the following "course enrolments" exist:
       | user     | course | role           |
       | teacher1 | C1     | editingteacher |
       | student1 | C1     | student        |
+      | student2 | C1     | student        |
     And I log in as "teacher1"
+    And I am on "Course 1" course homepage
+    And I add "Self enrolment" enrolment method with:
+      | id_name                 | Test student enrolment |
+      | id_enrolenddate_enabled | 1                      |
     And I am on "Course 1" course homepage with editing mode on
 
   Scenario: Restrict section0
@@ -69,6 +75,19 @@ Feature: availability_relativedate
     And I click on ".availability-item .availability-eye img" "css_element"
     And I press "Save and return to course"
 
+    And I add a "Page" to section "1"
+    And I set the following fields to these values:
+      | Name         | Page 4 |
+      | Description  | Test   |
+      | Page content | Test   |
+    And I expand all fieldsets
+    And I click on "Add restriction..." "button"
+    And I click on "Relative date" "button" in the "Add restriction..." "dialogue"
+    And I set the field "relativenumber" to "4"
+    And I set the field "relativednw" to "4"
+    And I set the field "relativestart" to "4"
+    And I press "Save and return to course"
+
     And I edit the section "2"
     And I expand all fieldsets
     Then I should see "None" in the "Restrict access" "fieldset"
@@ -98,17 +117,19 @@ Feature: availability_relativedate
     And I press "Save changes"
 
     Then I should see "Page 1" in the "region-main" "region"
-    And I should see "From 1 hour after course start date" in the "region-main" "region"
-    And I should see "Until 2 days before course end date" in the "region-main" "region"
-    And I should see "From 3 weeks after user enrolment date" in the "region-main" "region"
-    And I should see "From 5 days after course start dat" in the "region-main" "region"
-    And I should see "Until 6 days before course end date" in the "region-main" "region"
+    And I should see "From 1 July 2020, 4:00 PM" in the "region-main" "region"
+    And I should see "Until 8 July 2020, 3:00 PM" in the "region-main" "region"
+    And I should see "From 30 July 2020" in the "region-main" "region"
+    And I should see "From 29 October 2020" in the "region-main" "region"
+    And I should see "From 6 July 2020, 3:00 PM" in the "region-main" "region"
+    And I should see "Until 4 July 2020, 3:00 PM" in the "region-main" "region"
     And I log out
 
     # Log back in as student.
     When I am on the "C1" "Course" page logged in as "student1"
     Then I should see "Page 1" in the "region-main" "region"
-    And I should not see "Page 2" in the "region-main" "region"
-    And I should not see "Page 3" in the "region-main" "region"
+    And I should see "Page 2" in the "region-main" "region"
+    But I should not see "Page 3" in the "region-main" "region"
+    And I should see "Page 4" in the "region-main" "region"
     And I should not see "Section 2" in the "region-main" "region"
     And I should not see "Section 3" in the "region-main" "region"

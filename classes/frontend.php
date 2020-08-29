@@ -46,10 +46,16 @@ class frontend extends \core_availability\frontend {
      * @return array Array of parameters for the JavaScript function
      */
     protected function get_javascript_init_params($course, \cm_info $cm = null, \section_info $section = null) {
+        global $DB;
         $optionsdwm = self::convert_associative_array_for_js(condition::options_dwm(), 'field', 'display');
         $optionsstart = [(object)['field' => 1, 'display' => condition::options_start(1)],
                          (object)['field' => 2, 'display' => condition::options_start(2)],
                          (object)['field' => 3, 'display' => condition::options_start(3)]];
+        $cond = 'courseid = :courseid AND enrolenddate > 0';
+        $cnt = $DB->count_records_select('enrol', $cond, ['courseid' => $course->id]);
+        if ($cnt > 0) {
+            $optionsstart[3] = (object)['field' => 4, 'display' => condition::options_start(4)];
+        }
         $warnings = [];
         if ($course->enddate == 0) {
             $warnings[] = get_string('noenddate', 'availability_relativedate');
