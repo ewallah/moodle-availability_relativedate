@@ -32,13 +32,13 @@ use availability_relativedate\condition;
  * @package availability_relativedate
  * @copyright 2019 Renaat Debleu <info@eWallah.net>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- * @coversDefaultClass availability_relativedate
+ * @coversDefaultClass availability_relativedate\frontend
  */
 class availability_relativedate_frontend_testcase extends advanced_testcase {
 
     /**
      * Tests using relativedate condition in front end.
-     * @covers availability_relativedate\frontend
+     * @coversDefaultClass availability_relativedate\frontend
      */
     public function test_frontend() {
         global $CFG, $DB;

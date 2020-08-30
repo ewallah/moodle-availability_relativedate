@@ -37,7 +37,7 @@ class availability_relativedate_privacy_testcase extends provider_testcase {
 
     /**
      * Test returning metadata.
-     * @covers availability_relativedate\privacy\provider
+     * @coversDefaultClass availability_relativedate\privacy\provider
      */
     public function test_get_metadata() {
         $this->resetAfterTest(true);
