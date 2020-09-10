@@ -12,7 +12,7 @@ Feature: availability_relativedate
       | student2 |
     And the following "courses" exist:
       | fullname | shortname | category | startdate  | enddate    |
-      | Course 1 | C1        | 0        | 1593586800 | 1594364400 |
+      | Course 1 | C1        | 0        | 1594803600 | 1600160400 |
     And the following config values are set as admin:
       | enableavailability   | 1 |
     And the following "course enrolments" exist:
@@ -111,25 +111,26 @@ Feature: availability_relativedate
     Then I should see "None" in the "Restrict access" "fieldset"
     When I click on "Add restriction..." "button"
     And  I click on "Relative date" "button" in the "Add restriction..." "dialogue"
-    And I set the field "relativenumber" to "6"
+    And I set the field "relativenumber" to "5"
     And I set the field "relativednw" to "2"
     And I set the field "relativestart" to "2"
+    And I click on ".availability-item .availability-eye img" "css_element"
     And I press "Save changes"
 
     Then I should see "Page 1" in the "region-main" "region"
-    And I should see "From 1 July 2020, 4:00 PM" in the "region-main" "region"
-    And I should see "Until 8 July 2020, 3:00 PM" in the "region-main" "region"
-    And I should see " September 2020" in the "region-main" "region"
+    And I should see "From 15 July 2020" in the "region-main" "region"
+    And I should see "Until 13 September 2020" in the "region-main" "region"
+    And I should see " October 2020" in the "region-main" "region"
     And I should see " December 2020" in the "region-main" "region"
-    And I should see "From 6 July 2020, 3:00 PM" in the "region-main" "region"
-    And I should see "Until 4 July 2020, 3:00 PM" in the "region-main" "region"
+    And I should see "From 20 July 2020" in the "region-main" "region"
+    And I should see "Until 10 September 2020" in the "region-main" "region"
     And I log out
 
     # Log back in as student.
     When I am on the "C1" "Course" page logged in as "student1"
     Then I should see "Page 1" in the "region-main" "region"
-    And I should see "Page 2" in the "region-main" "region"
+    And I should not see "Page 2" in the "region-main" "region"
     But I should not see "Page 3" in the "region-main" "region"
     And I should see "Page 4" in the "region-main" "region"
-    And I should not see "Section 2" in the "region-main" "region"
-    And I should not see "Section 3" in the "region-main" "region"
+    And I should see "Topic 2" in the "region-main" "region"
+    And I should not see "Topic 3" in the "region-main" "region"

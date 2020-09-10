@@ -38,7 +38,6 @@ class availability_relativedate_frontend_testcase extends advanced_testcase {
 
     /**
      * Tests using relativedate condition in front end.
-     * @coversDefaultClass availability_relativedate\frontend
      */
     public function test_frontend() {
         global $CFG, $DB;

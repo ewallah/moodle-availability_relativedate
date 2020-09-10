@@ -49,6 +49,8 @@ class availability_relativedate_testcase extends advanced_testcase {
 
     /**
      * Tests constructing and using relative date condition as part of tree.
+     * @coversDefaultClass availability_relativedate\condition
+     * @coversDefaultClass availability_relativedate\frontend
      */
     public function test_in_tree() {
         global $CFG, $DB;
