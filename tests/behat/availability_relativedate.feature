@@ -10,9 +10,12 @@ Feature: availability_relativedate
       | teacher1 |
       | student1 |
       | student2 |
-    And the following "courses" exist:
-      | fullname | shortname | category | startdate  | enddate    |
-      | Course 1 | C1        | 0        | 1594803600 | 1600160400 |
+    And the following "course" exists:
+      | fullname  | Course 1   |
+      | shortname | C1         |
+      | category  | 0          |
+      | startdate | 1594803600 |
+      | enddate   | 1600160400 |
     And the following config values are set as admin:
       | enableavailability   | 1 |
     And the following "course enrolments" exist:
@@ -34,6 +37,7 @@ Feature: availability_relativedate
     Then "Relative date" "button" should not exist in the "Add restriction..." "dialogue"
 
   Scenario: Test condition
+    # 2 hours after course start date.
     When I add a "Page" to section "1"
     And I set the following fields to these values:
       | Name         | Page 1 |
@@ -42,11 +46,12 @@ Feature: availability_relativedate
     And I expand all fieldsets
     And I click on "Add restriction..." "button"
     And I click on "Relative date" "button" in the "Add restriction..." "dialogue"
-    And I set the field "relativenumber" to "1"
+    And I set the field "relativenumber" to "2"
     And I set the field "relativednw" to "1"
     And I set the field "relativestart" to "1"
     And I press "Save and return to course"
 
+    # 4 days before course end date.
     And I add a "Page" to section "1"
     And I set the following fields to these values:
       | Name         | Page 2 |
@@ -55,12 +60,13 @@ Feature: availability_relativedate
     And I expand all fieldsets
     And I click on "Add restriction..." "button"
     And I click on "Relative date" "button" in the "Add restriction..." "dialogue"
-    And I set the field "relativenumber" to "2"
+    And I set the field "relativenumber" to "4"
     And I set the field "relativednw" to "2"
     And I set the field "relativestart" to "2"
     And I click on ".availability-item .availability-eye img" "css_element"
     And I press "Save and return to course"
 
+    # 6 weeks after user enrolment date.
     And I add a "Page" to section "1"
     And I set the following fields to these values:
       | Name         | Page 3 |
@@ -69,12 +75,13 @@ Feature: availability_relativedate
     And I expand all fieldsets
     And I click on "Add restriction..." "button"
     And I click on "Relative date" "button" in the "Add restriction..." "dialogue"
-    And I set the field "relativenumber" to "3"
+    And I set the field "relativenumber" to "6"
     And I set the field "relativednw" to "3"
     And I set the field "relativestart" to "3"
     And I click on ".availability-item .availability-eye img" "css_element"
     And I press "Save and return to course"
 
+    # 8 months after enrolment method end date.
     And I add a "Page" to section "1"
     And I set the following fields to these values:
       | Name         | Page 4 |
@@ -83,11 +90,12 @@ Feature: availability_relativedate
     And I expand all fieldsets
     And I click on "Add restriction..." "button"
     And I click on "Relative date" "button" in the "Add restriction..." "dialogue"
-    And I set the field "relativenumber" to "4"
+    And I set the field "relativenumber" to "8"
     And I set the field "relativednw" to "4"
     And I set the field "relativestart" to "4"
     And I press "Save and return to course"
 
+    # 5 days after course start date.
     And I edit the section "2"
     And I expand all fieldsets
     Then I should see "None" in the "Restrict access" "fieldset"
@@ -106,6 +114,7 @@ Feature: availability_relativedate
     And I should see "after course start date" in the "Restrict access" "fieldset"
     And I press "Cancel"
 
+    # 5 days before course end date.
     And I edit the section "3"
     And I expand all fieldsets
     Then I should see "None" in the "Restrict access" "fieldset"
@@ -119,9 +128,9 @@ Feature: availability_relativedate
 
     Then I should see "Page 1" in the "region-main" "region"
     And I should see "From 15 July 2020" in the "region-main" "region"
-    And I should see "Until 13 September 2020" in the "region-main" "region"
+    And I should see "Until 11 September 2020" in the "region-main" "region"
     And I should see " October 2020" in the "region-main" "region"
-    And I should see " December 2020" in the "region-main" "region"
+    And I should see " April 2021" in the "region-main" "region"
     And I should see "From 20 July 2020" in the "region-main" "region"
     And I should see "Until 10 September 2020" in the "region-main" "region"
     And I log out
@@ -129,8 +138,8 @@ Feature: availability_relativedate
     # Log back in as student.
     When I am on the "C1" "Course" page logged in as "student1"
     Then I should see "Page 1" in the "region-main" "region"
-    And I should not see "Page 2" in the "region-main" "region"
+    And I should see "Page 2" in the "region-main" "region"
     But I should not see "Page 3" in the "region-main" "region"
     And I should see "Page 4" in the "region-main" "region"
     And I should see "Topic 2" in the "region-main" "region"
-    And I should not see "Topic 3" in the "region-main" "region"
+    And I should see "Topic 3" in the "region-main" "region"
