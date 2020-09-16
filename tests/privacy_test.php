@@ -22,6 +22,8 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+namespace availability_relativedate\privacy;
+
 defined('MOODLE_INTERNAL') || die();
 
 use \core_privacy\tests\provider_testcase;
@@ -33,7 +35,7 @@ use \core_privacy\tests\provider_testcase;
  * @copyright 2019 Renaat Debleu <info@eWallah.net>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class availability_relativedate_privacy_testcase extends provider_testcase {
+class privacy_testcase extends provider_testcase {
 
     /**
      * Test returning metadata.
@@ -42,7 +44,7 @@ class availability_relativedate_privacy_testcase extends provider_testcase {
     public function test_get_metadata() {
         $this->resetAfterTest(true);
         $collection = new \core_privacy\local\metadata\collection('availability_relativedate');
-        $reason = \availability_relativedate\privacy\provider::get_reason($collection);
+        $reason = provider::get_reason($collection);
         $this->assertEquals($reason, 'privacy:metadata');
         $this->assertContains('does not store private user data.', get_string($reason, 'availability_relativedate'));
     }

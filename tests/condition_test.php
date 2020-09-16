@@ -136,21 +136,23 @@ class availability_relativedate_testcase extends advanced_testcase {
      */
     public function test_constructor() {
         $structure = (object)['type' => 'relativedate'];
-        $condc = new condition($structure);
+        $cond = new condition($structure);
+        $this->assertNotEquals($structure, $cond->save());
         $structure->n = 1;
-        $condc = new condition($structure);
-
+        $this->assertNotEquals($structure, $cond->save());
+        $cond = new condition($structure);
         $structure->d = 1;
-        $condc = new condition($structure);
-
+        $this->assertNotEquals($structure, $cond->save());
+        $cond = new condition($structure);
         $structure->d = '2';
-        $condc = new condition($structure);
-
+        $this->assertNotEquals($structure, $cond->save());
+        $cond = new condition($structure);
         $structure->n = 'a';
-        $condc = new condition($structure);
-
+        $this->assertNotEquals($structure, $cond->save());
+        $cond = new condition($structure);
         $structure->e = 'a';
-        $condc = new condition($structure);
+        $cond = new condition($structure);
+        $this->assertNotEquals($structure, $cond->save());
     }
 
     /**
