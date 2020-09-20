@@ -91,39 +91,7 @@ class condition extends \core_availability\condition {
      * @return bool True if this item is available to the user, false otherwise
      */
     public function is_available($not, \core_availability\info $info, $grabthelot, $userid) {
-        global $DB, $USER;
-        $course = $info->get_course();
-        $calc = 0;
-        if ($this->relativestart === 1) {
-            $calc = $course->startdate + $this->calcdate();
-        } else if ($this->relativestart === 2) {
-            if ($course->enddate !== 0) {
-                $calc = $course->enddate - $this->calcdate();
-            }
-        } else if ($this->relativestart === 3) {
-            $uid = ($userid != $USER->id) ? $userid : $USER->id;
-            $sql = 'SELECT MAX(GREATEST(ue.timestart, ue.timecreated)) AS uedate
-                    FROM {user_enrolments} ue
-                    JOIN {enrol} e on ue.enrolid = e.id
-                    WHERE e.courseid = ? AND ue.userid = ?
-                    ORDER by uedate DESC';
-            if ($lowest = $DB->get_records_sql($sql, [$uid, $course->id, $uid])) {
-                $lowest = reset($lowest);
-                $low = isset($lowest->uedate) ? $lowest->uedate : time();
-                $calc = $low + $this->calcdate();
-            }
-        } else if ($this->relativestart === 4) {
-            $uid = ($userid != $USER->id) ? $userid : $USER->id;
-            $sql = 'SELECT MAX(e.enrolenddate) AS uedate
-                    FROM {user_enrolments} ue
-                    JOIN {enrol} e on ue.enrolid = e.id
-                    WHERE e.courseid = ? AND ue.userid = ?';
-            if ($lowest = $DB->get_records_sql($sql, [$course->id, $uid])) {
-                $lowest = reset($lowest);
-                $low = isset($lowest->uedate) ? $lowest->uedate : time();
-                $calc = $low + $this->calcdate();
-            }
-        }
+        $calc = $this->calc($info->get_course(), $userid);
         $allow = ($calc == 0 ) ? false : time() >= $calc;
         if ($not) {
             $allow = !$allow;
@@ -139,35 +107,19 @@ class condition extends \core_availability\condition {
      * @param info $info Item we're checking
      * @return string Information string (for admin) about all restrictions on this item
      */
-    public function get_description($full, $not, \core_availability\info $info) {
-        global $DB, $USER;
-        $frut = $not ? 'until' : 'from';
-        $calc = 0;
+    public function get_description($full, $not, \core_availability\info $info): string {
+        global $USER;
         $course = $info->get_course();
-        if ($this->relativestart === 1) {
-            $calc = $course->startdate + $this->calcdate();
-        } else if ($this->relativestart === 2) {
+        if ($this->relativestart === 2) {
             if ($course->enddate == 0) {
                 return get_string('noenddate', 'availability_relativedate');
             }
             $frut = $not ? 'from' : 'until';
-            $calc = $course->enddate - $this->calcdate();
-        } else if ($this->relativestart === 3) {
-            $sql = 'SELECT MAX(GREATEST(ue.timestart, ue.timecreated)) AS startdate FROM {user_enrolments} ue
-                    JOIN {enrol} e on ue.enrolid = e.id WHERE e.courseid = ? AND ue.userid = ? ORDER by startdate DESC';
-            if ($lowest = $DB->get_records_sql($sql, [$course->id, $USER->id])) {
-                $lowest = reset($lowest);
-                $low = isset($lowest->uedate) ? $lowest->uedate : time();
-                $calc = $low + $this->calcdate();
-            }
-        } else if ($this->relativestart === 4) {
-            $sql = 'SELECT id, enrolenddate FROM {enrol} WHERE courseid = ?  AND enrolenddate > 0 ORDER by enrolenddate DESC';
-            if ($lowest = $DB->get_records_sql($sql, [$course->id])) {
-                $lowest = reset($lowest);
-                $low = isset($lowest->enrolenddate) ? $lowest->enrolenddate : time();
-                $calc = $low + $this->calcdate();
-            }
         } else {
+            $frut = $not ? 'until' : 'from';
+        }
+        $calc = $this->calc($course, $USER->id);
+        if ($calc == 0) {
             return '';
         }
         $a = new \stdClass();
@@ -220,36 +172,69 @@ class condition extends \core_availability\condition {
         ];
     }
 
-
     /**
      * Obtains a the options for hour day week month.
      *
-     * @return array
+     * @param int $i
+     * @return string
      */
-    public static function option_dwm() {
-        return [
-            1 => get_string('hour', 'availability_relativedate'),
-            2 => get_string('day', 'availability_relativedate'),
-            3 => get_string('week', 'availability_relativedate'),
-            4 => get_string('month', 'availability_relativedate')
-        ];
+    public static function option_dwm(int $i):string {
+        switch ($i) {
+            case 1:
+                return 'hour';
+            case 2:
+                return 'day';
+            case 3:
+                return 'week';
+            case 4:
+                return 'month';
+        }
+        return '';
     }
 
     /**
-     * Calculates days/weeks/months.
+     * Perform the calculation.
      *
-     * @return int seconds.
+     * @param stdClass $course
+     * @param int $userid
+     * @return int relative date.
      */
-    private function calcdate() {
-        switch ($this->relativedwm) {
-            case 1:
-                return HOURSECS * $this->relativenumber;
-            case 2:
-                return DAYSECS * $this->relativenumber;
-            case 3:
-                return WEEKSECS * $this->relativenumber;
-            case 4:
-                return WEEKSECS * 4 * $this->relativenumber;
+    private function calc($course, $userid):int {
+        global $DB, $USER;
+        $calc = 0;
+        $x = $this->option_dwm($this->relativedwm);
+        if ($this->relativestart === 1) {
+            $calc = strtotime("+$this->relativenumber $x", $course->startdate);
+        } else if ($this->relativestart === 2) {
+            if ($course->enddate !== 0) {
+                $calc = strtotime("-$this->relativenumber $x", $course->enddate);
+            }
+        } else if ($this->relativestart === 3) {
+            $uid = ($userid != $USER->id) ? $userid : $USER->id;
+            $sql = 'SELECT MAX(GREATEST(ue.timestart, ue.timecreated)) AS uedate
+                    FROM {user_enrolments} ue
+                    JOIN {enrol} e on ue.enrolid = e.id
+                    WHERE e.courseid = ? AND ue.userid = ?
+                    ORDER by uedate DESC
+                    LIMIT 1';
+            if ($lowest = $DB->get_records_sql($sql, [$uid, $course->id, $uid])) {
+                $lowest = reset($lowest);
+                $low = isset($lowest->uedate) ? $lowest->uedate : time();
+                $calc = strtotime("+$this->relativenumber $x", $low);
+            }
+        } else if ($this->relativestart === 4) {
+            $uid = ($userid != $USER->id) ? $userid : $USER->id;
+            $sql = 'SELECT MAX(e.enrolenddate) AS uedate
+                    FROM {user_enrolments} ue
+                    JOIN {enrol} e on ue.enrolid = e.id
+                    WHERE e.courseid = ? AND ue.userid = ?
+                    LIMIT 1';
+            if ($lowest = $DB->get_records_sql($sql, [$course->id, $uid])) {
+                $lowest = reset($lowest);
+                $low = isset($lowest->uedate) ? $lowest->uedate == 0 ? time() : $lowest->uedate : time();
+                $calc = strtotime("+$this->relativenumber $x", $low);
+            }
         }
+        return $calc;
     }
 }

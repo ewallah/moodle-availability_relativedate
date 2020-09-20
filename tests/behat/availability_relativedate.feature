@@ -14,8 +14,10 @@ Feature: availability_relativedate
       | fullname  | Course 1   |
       | shortname | C1         |
       | category  | 0          |
-      | startdate | 1594803600 |
-      | enddate   | 1600160400 |
+      # Wednesday, July 15, 2020 12:00:00 PM GMT
+      | startdate | 1594814400 |
+      # Tuesday, September 15, 2020 12:00:00 PM GMT
+      | enddate   | 1600171200 |
     And the following config values are set as admin:
       | enableavailability   | 1 |
     And the following "course enrolments" exist:
@@ -66,7 +68,7 @@ Feature: availability_relativedate
     And I click on ".availability-item .availability-eye img" "css_element"
     And I press "Save and return to course"
 
-    # 6 weeks after user enrolment date.
+    # 5 weeks after user enrolment date.
     And I add a "Page" to section "1"
     And I set the following fields to these values:
       | Name         | Page 3 |
@@ -75,13 +77,13 @@ Feature: availability_relativedate
     And I expand all fieldsets
     And I click on "Add restriction..." "button"
     And I click on "Relative date" "button" in the "Add restriction..." "dialogue"
-    And I set the field "relativenumber" to "6"
+    And I set the field "relativenumber" to "5"
     And I set the field "relativednw" to "3"
     And I set the field "relativestart" to "3"
     And I click on ".availability-item .availability-eye img" "css_element"
     And I press "Save and return to course"
 
-    # 8 months after enrolment method end date.
+    # 7 months after enrolment method end date.
     And I add a "Page" to section "1"
     And I set the following fields to these values:
       | Name         | Page 4 |
@@ -90,7 +92,7 @@ Feature: availability_relativedate
     And I expand all fieldsets
     And I click on "Add restriction..." "button"
     And I click on "Relative date" "button" in the "Add restriction..." "dialogue"
-    And I set the field "relativenumber" to "8"
+    And I set the field "relativenumber" to "7"
     And I set the field "relativednw" to "4"
     And I set the field "relativestart" to "4"
     And I press "Save and return to course"
@@ -127,11 +129,17 @@ Feature: availability_relativedate
     And I press "Save changes"
 
     Then I should see "Page 1" in the "region-main" "region"
+    # 2 hours after course start date.
     And I should see "From 15 July 2020" in the "region-main" "region"
+    # 4 days before course end date.
     And I should see "Until 11 September 2020" in the "region-main" "region"
-    And I should see " October 2020" in the "region-main" "region"
-    And I should see " April 2021" in the "region-main" "region"
+    # 5 weeks after user enrolment date.
+    And I should see "From 25 October 2020" in the "region-main" "region"
+    # 7 months after enrolment method end date.
+    And I should see "From 20 April 2021" in the "region-main" "region"
+    # 5 days after course start date.
     And I should see "From 20 July 2020" in the "region-main" "region"
+    # 5 days before course end date.
     And I should see "Until 10 September 2020" in the "region-main" "region"
     And I log out
 

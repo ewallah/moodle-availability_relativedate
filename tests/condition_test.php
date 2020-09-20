@@ -68,9 +68,9 @@ class availability_relativedate_testcase extends advanced_testcase {
         $stru4 = (object)['op' => '|', 'show' => true,
             'c' => [(object)['type' => 'relativedate', 'n' => 4, 'd' => 4, 's' => 4]]];
         $stru5 = (object)['op' => '|', 'show' => true,
-            'c' => [(object)['type' => 'relativedate', 'n' => 5, 'd' => 5, 's' => 4]]];
+            'c' => [(object)['type' => 'relativedate', 'n' => 5, 'd' => 4, 's' => 4]]];
         $stru6 = (object)['op' => '|', 'show' => false,
-            'c' => [(object)['type' => 'relativedate', 'n' => 5, 'd' => 5, 's' => 4]]];
+            'c' => [(object)['type' => 'relativedate', 'n' => 5, 'd' => 5, 's' => 5]]];
         $tree1 = new \core_availability\tree($stru1);
         $tree2 = new \core_availability\tree($stru2);
         $tree3 = new \core_availability\tree($stru3);
@@ -97,17 +97,22 @@ class availability_relativedate_testcase extends advanced_testcase {
         $this->assertEquals([], $params);
         $strf = get_string('strftimedatetime', 'langconfig');
         $nau = 'Not available unless:';
-        $calc = userdate($now + 3600, $strf);
+        // 1 Hour after course start date.
+        $calc = userdate(strtotime("+1 hour", $course->startdate), $strf);
         $this->assertEquals("$nau From $calc", $tree1->get_full_information($info));
-        $calc = userdate($course->enddate - (HOURSECS * 48), $strf);
+        // 2 Days before course end date.
+        $calc = userdate(strtotime("-2 day", $course->enddate), $strf);
         $this->assertEquals("$nau Until $calc", $tree2->get_full_information($info));
-        $calc = userdate($now + (3 * WEEKSECS), $strf);
+        // 3 Weeks after user enrolment day.
+        $calc = userdate(strtotime("+3 week", $course->startdate), $strf);
         $this->assertEquals("$nau From $calc", $tree3->get_full_information($info));
-        $calc = userdate($now + 1000 + (16 * WEEKSECS), $strf);
+        // 4 Months after enrolment end date.
+        $calc = userdate(strtotime("+4 month", $now), $strf);
         $this->assertEquals("$nau From $calc", $tree4->get_full_information($info));
-        $calc = userdate($now + 1000 + (0 * WEEKSECS), $strf);
+        // 5 Months after enrolment end date.
+        $calc = userdate(strtotime("+5 month", $now), $strf);
         $this->assertEquals("$nau From $calc", $tree5->get_full_information($info));
-        $this->assertEquals("$nau From $calc (hidden otherwise)", $tree6->get_full_information($info));
+        $this->assertEquals("$nau  (hidden otherwise)", $tree6->get_full_information($info));
         $this->assertFalse($tree1->is_available_for_all());
         $this->assertFalse($tree2->is_available_for_all());
         $this->assertFalse($tree3->is_available_for_all());
@@ -178,7 +183,7 @@ class availability_relativedate_testcase extends advanced_testcase {
         $course = $dg->create_course(['startdate' => $now, 'enddate' => $now + 7 * WEEKSECS]);
         $selfplugin = enrol_get_plugin('self');
         $instance = $DB->get_record('enrol', ['courseid' => $course->id, 'enrol' => 'self'], '*', MUST_EXIST);
-        $DB->set_field('enrol', 'enrolenddate', time() + 1000, ['id' => $instance->id]);
+        $DB->set_field('enrol', 'enrolenddate', $now + 1000, ['id' => $instance->id]);
         $instance = $DB->get_record('enrol', ['courseid' => $course->id, 'enrol' => 'self'], '*', MUST_EXIST);
         $user = $dg->create_user();
         $selfplugin->enrol_user($instance, $user->id);
@@ -189,7 +194,7 @@ class availability_relativedate_testcase extends advanced_testcase {
 
         // Course start date.
         $cond = new condition((object)['type' => 'relativedate', 'n' => 1, 'd' => 1, 's' => 1]);
-        $calc = userdate($now + HOURSECS, $strf);
+        $calc = userdate(strtotime("+1 hour", $now), $strf);
         $this->assertEquals("From $calc", $cond->get_description(true, false, $info));
         $this->assertEquals("Until $calc", $cond->get_description(true, true, $info));
         $this->assertEquals("$nau From $calc", $cond->get_standalone_description(false, false, $info));
@@ -197,7 +202,7 @@ class availability_relativedate_testcase extends advanced_testcase {
 
         // Course end date.
         $cond = new condition((object)['type' => 'relativedate', 'n' => 2, 'd' => 2, 's' => 2]);
-        $calc = userdate($course->enddate - (2 * DAYSECS), $strf);
+        $calc = userdate(strtotime("-2 day", $course->enddate), $strf);
         $this->assertEquals("Until $calc", $cond->get_description(true, false, $info));
         $this->assertEquals("From $calc", $cond->get_description(true, true, $info));
         $this->assertEquals("$nau Until $calc", $cond->get_standalone_description(false, false, $info));
@@ -205,7 +210,7 @@ class availability_relativedate_testcase extends advanced_testcase {
 
         // Enrolment start date.
         $cond = new condition((object)['type' => 'relativedate', 'n' => 3, 'd' => 3, 's' => 3]);
-        $calc = userdate($now + (3 * WEEKSECS), $strf);
+        $calc = userdate(strtotime("+3 week", $now), $strf);
         $this->assertEquals("From $calc", $cond->get_description(true, false, $info));
         $this->assertEquals("Until $calc", $cond->get_description(true, true, $info));
         $this->assertEquals("$nau From $calc", $cond->get_standalone_description(false, false, $info));
@@ -214,9 +219,9 @@ class availability_relativedate_testcase extends advanced_testcase {
         // Enrolment end date.
         $selfplugin = enrol_get_plugin('self');
         $instance = $DB->get_record('enrol', ['courseid' => $course->id, 'enrol' => 'self'], '*', MUST_EXIST);
-        $DB->set_field('enrol', 'enrolenddate', $now + 10, ['id' => $instance->id]);
+        $DB->set_field('enrol', 'enrolenddate', $now + 1000, ['id' => $instance->id]);
         $cond = new condition((object)['type' => 'relativedate', 'n' => 4, 'd' => 4, 's' => 4]);
-        $calc = userdate($now + 10 + (16 * WEEKSECS), $strf);
+        $calc = userdate(strtotime("+4 month", $now + 1000), $strf);
         $this->assertEquals("From $calc", $cond->get_description(true, false, $info));
         $this->assertEquals("Until $calc", $cond->get_description(true, true, $info));
         $this->assertEquals("$nau From $calc", $cond->get_standalone_description(false, false, $info));
@@ -282,15 +287,21 @@ class availability_relativedate_testcase extends advanced_testcase {
      * @covers availability_relativedate\condition
      */
     public function test_reflection() {
+        global $USER;
+        $this->resetAfterTest();
+        $this->setAdminUser();
+        $dg = $this->getDataGenerator();
+        $now = time();
+        $course = $dg->create_course(['startdate' => $now, 'enddate' => $now + 1000]);
         $cond = new condition((object)['type' => 'relativedate', 'n' => 1, 'd' => 1, 's' => 1]);
         $condition = new \availability_relativedate\condition($cond);
         $class = new ReflectionClass('availability_relativedate\condition');
         $method = $class->getMethod('get_debug_string');
         $method->setAccessible(true);
         $this->assertEquals(' 1 days after course start date', $method->invokeArgs($condition, []));
-        $method = $class->getMethod('calcdate');
+        $method = $class->getMethod('calc');
         $method->setAccessible(true);
-        $this->assertEquals(86400, $method->invokeArgs($condition, []));
+        $this->assertEquals($now + 24 * 3600, $method->invokeArgs($condition, [$course, $USER->id]));
     }
 
     /**
@@ -299,7 +310,7 @@ class availability_relativedate_testcase extends advanced_testcase {
      */
     public function test_static() {
         $this->assertCount(4, \availability_relativedate\condition::options_dwm());
-        $this->assertCount(4, \availability_relativedate\condition::option_dwm());
+        $this->assertEquals('hour', \availability_relativedate\condition::option_dwm(1));
         $this->assertEquals('after course start date', \availability_relativedate\condition::options_start(1));
         $this->assertEquals('before course end date', \availability_relativedate\condition::options_start(2));
         $this->assertEquals('after user enrolment date', \availability_relativedate\condition::options_start(3));
