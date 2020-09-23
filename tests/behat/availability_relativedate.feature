@@ -6,10 +6,10 @@ Feature: availability_relativedate
 
   Background:
     Given the following "users" exist:
-      | username |
-      | teacher1 |
-      | student1 |
-      | student2 |
+      | username | timezone |
+      | teacher1 | 5        |
+      | student1 | 5        |
+      | student2 | 5        |
     And the following "course" exists:
       | fullname  | Course 1   |
       | shortname | C1         |
@@ -39,12 +39,11 @@ Feature: availability_relativedate
     Then "Relative date" "button" should not exist in the "Add restriction..." "dialogue"
 
   Scenario: Test condition
-    # 2 hours after course start date.
     When I add a "Page" to section "1"
     And I set the following fields to these values:
-      | Name         | Page 1 |
-      | Description  | Test   |
-      | Page content | Test   |
+      | Name         | Page 1: 2 hours after course start date |
+      | Description  | Test |
+      | Page content | Test |
     And I expand all fieldsets
     And I click on "Add restriction..." "button"
     And I click on "Relative date" "button" in the "Add restriction..." "dialogue"
@@ -53,12 +52,11 @@ Feature: availability_relativedate
     And I set the field "relativestart" to "1"
     And I press "Save and return to course"
 
-    # 4 days before course end date.
     And I add a "Page" to section "1"
     And I set the following fields to these values:
-      | Name         | Page 2 |
-      | Description  | Test   |
-      | Page content | Test   |
+      | Name         | Page 2: 4 days before course end date |
+      | Description  | Test |
+      | Page content | Test |
     And I expand all fieldsets
     And I click on "Add restriction..." "button"
     And I click on "Relative date" "button" in the "Add restriction..." "dialogue"
@@ -68,10 +66,9 @@ Feature: availability_relativedate
     And I click on ".availability-item .availability-eye img" "css_element"
     And I press "Save and return to course"
 
-    # 5 weeks after user enrolment date.
     And I add a "Page" to section "1"
     And I set the following fields to these values:
-      | Name         | Page 3 |
+      | Name         | Page 3: 5 weeks after user enrolment date |
       | Description  | Test   |
       | Page content | Test   |
     And I expand all fieldsets
@@ -83,10 +80,9 @@ Feature: availability_relativedate
     And I click on ".availability-item .availability-eye img" "css_element"
     And I press "Save and return to course"
 
-    # 7 months after enrolment method end date.
     And I add a "Page" to section "1"
     And I set the following fields to these values:
-      | Name         | Page 4 |
+      | Name         | Page 4: 7 months after enrolment method end date|
       | Description  | Test   |
       | Page content | Test   |
     And I expand all fieldsets
@@ -130,9 +126,9 @@ Feature: availability_relativedate
 
     Then I should see "Page 1" in the "region-main" "region"
     # 2 hours after course start date.
-    And I should see "From 15 July 2020" in the "region-main" "region"
+    And I should see "From 15 July 2020, 5:00 PM" in the "region-main" "region"
     # 4 days before course end date.
-    And I should see "Until 11 September 2020" in the "region-main" "region"
+    And I should see "Until 15 September 2020, 5:00 PM" in the "region-main" "region"
     # 5 weeks after user enrolment date.
     And I should see "From 25 October 2020" in the "region-main" "region"
     # 7 months after enrolment method end date.

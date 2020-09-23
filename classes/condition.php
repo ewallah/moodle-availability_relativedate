@@ -205,9 +205,11 @@ class condition extends \core_availability\condition {
         $x = $this->option_dwm($this->relativedwm);
         if ($this->relativestart === 1) {
             $calc = strtotime("+$this->relativenumber $x", $course->startdate);
+            $calc = $this->fixcalc($calc, $course->startdate);
         } else if ($this->relativestart === 2) {
             if ($course->enddate !== 0) {
                 $calc = strtotime("-$this->relativenumber $x", $course->enddate);
+                $calc = $this->fixcalc($calc, $course->enddate);
             }
         } else if ($this->relativestart === 3) {
             $uid = ($userid != $USER->id) ? $userid : $USER->id;
@@ -221,6 +223,7 @@ class condition extends \core_availability\condition {
                 $lowest = reset($lowest);
                 $low = isset($lowest->uedate) ? $lowest->uedate : time();
                 $calc = strtotime("+$this->relativenumber $x", $low);
+                $calc = $this->fixcalc($calc, $low);
             }
         } else if ($this->relativestart === 4) {
             $uid = ($userid != $USER->id) ? $userid : $USER->id;
@@ -233,8 +236,18 @@ class condition extends \core_availability\condition {
                 $lowest = reset($lowest);
                 $low = isset($lowest->uedate) ? $lowest->uedate == 0 ? time() : $lowest->uedate : time();
                 $calc = strtotime("+$this->relativenumber $x", $low);
+                $calc = $this->fixcalc($calc, $low);
             }
         }
         return $calc;
+    }
+
+    private function fixcalc ($olddate, $newdate) {
+        if ($this->relativedwm > 2) {
+            $arr1 = getdate($olddate);
+            $arr2 = getdate($newdate);
+            return mktime($arr1['hours'], $arr1['minutes'], $arr1['seconds'], $arr2['mon'], $arr2['mday'], $arr2['year']);
+        }
+        return $newdate;
     }
 }

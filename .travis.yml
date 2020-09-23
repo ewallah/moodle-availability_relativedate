@@ -43,9 +43,9 @@ before_install:
 
 install:
   - moodle-plugin-ci install
-  - cd moodle
 
 script:
+  - cd moodle
   - moodle-plugin-ci phplint
   - moodle-plugin-ci phpcpd
   - moodle-plugin-ci phpmd

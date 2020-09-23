@@ -15,5 +15,5 @@ Installation:
  1. Unpack the zip file into the availability/condition/ directory. A new directory will be created called relativedate.
  2. Go to Site administration > Notifications to complete the plugin installation.
 
-[![travis](https://travis-ci.org/ewallah/moodle-availability_relativedate.svg)](https://travis-ci.org/ewallah/moodle-availability_relativedate)
+[![travis](https://travis-ci.com/ewallah/moodle-availability_relativedate.svg)](https://travis-ci.org/ewallah/moodle-availability_relativedate)
 [![Coverage Status](https://coveralls.io/repos/github/ewallah/moodle-availability_relativedate/badge.svg?branch=master)](https://coveralls.io/github/ewallah/moodle-availability_relativedate?branch=master)
