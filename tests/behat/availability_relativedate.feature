@@ -23,8 +23,9 @@ Feature: availability_relativedate
     And the following "course enrolments" exist:
       | user     | course | role           | timestart  |
       | teacher1 | C1     | editingteacher | 1594814400 |
-      | student1 | C1     | student        | 1594814400 |
-      | student2 | C1     | student        | 1594814400 |
+      # Saturday, August 15, 2020 12:00:00 PM GMT
+      | student1 | C1     | student        | 1597492800 |
+      | student2 | C1     | student        | 1597492800 |
     And I log in as "teacher1"
     And I am on "Course 1" course homepage
     And I add "Self enrolment" enrolment method with:
@@ -68,13 +69,13 @@ Feature: availability_relativedate
 
     And I add a "Page" to section "1"
     And I set the following fields to these values:
-      | Name         | Page 3: 5 weeks after user enrolment date |
+      | Name         | Page 3: 6 weeks after user enrolment date |
       | Description  | Test   |
       | Page content | Test   |
     And I expand all fieldsets
     And I click on "Add restriction..." "button"
     And I click on "Relative date" "button" in the "Add restriction..." "dialogue"
-    And I set the field "relativenumber" to "5"
+    And I set the field "relativenumber" to "6"
     And I set the field "relativednw" to "3"
     And I set the field "relativestart" to "3"
     And I click on ".availability-item .availability-eye img" "css_element"
@@ -129,10 +130,10 @@ Feature: availability_relativedate
     And I should see "From 15 July 2020, 7:00 PM" in the "region-main" "region"
     # 4 days before course end date.
     And I should see "Until 11 September 2020, 5:00 PM" in the "region-main" "region"
-    # 5 weeks after user enrolment date.
-    And I should see "From 31 October 2020" in the "region-main" "region"
+    # 6 weeks after user enrolment date.
+    And I should see "November 2020, " in the "region-main" "region"
     # 7 months after enrolment method end date.
-    And I should see "From 26 April 2021" in the "region-main" "region"
+    And I should see "April 2021, " in the "region-main" "region"
     # 5 days after course start date.
     And I should see "From 20 July 2020, 5:00" in the "region-main" "region"
     # 5 days before course end date.

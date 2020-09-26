@@ -32,13 +32,12 @@ use availability_relativedate\frontend;
  * @package availability_relativedate
  * @copyright 2019 Renaat Debleu <info@eWallah.net>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- * @coversDefaultClass \availability_relativedate\condition
+ * @coversDefaultClass \availability_relativedate\frontend
  */
 class availability_relativedate_front_testcase extends \advanced_testcase {
 
     /**
      * Tests using relativedate condition in front end.
-     * @covers availability_relativedate\frontend
      */
     public function test_frontend() {
         global $CFG, $DB;
@@ -59,8 +58,8 @@ class availability_relativedate_front_testcase extends \advanced_testcase {
         $user = $dg->create_user();
         $selfplugin->enrol_user($instance, $user->id);
 
-        $frontend = new \availability_relativedate\frontend();
-        $class = new \ReflectionClass('availability_relativedate\frontend');
+        $frontend = new frontend();
+        $class = new \ReflectionClass('\availability_relativedate\frontend');
         $method = $class->getMethod('get_javascript_strings');
         $method->setAccessible(true);
         $this->assertEquals([], $method->invokeArgs($frontend, []));
