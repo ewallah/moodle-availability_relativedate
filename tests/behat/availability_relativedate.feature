@@ -21,10 +21,10 @@ Feature: availability_relativedate
     And the following config values are set as admin:
       | enableavailability   | 1 |
     And the following "course enrolments" exist:
-      | user     | course | role           |
-      | teacher1 | C1     | editingteacher |
-      | student1 | C1     | student        |
-      | student2 | C1     | student        |
+      | user     | course | role           | timestart  |
+      | teacher1 | C1     | editingteacher | 1594814400 |
+      | student1 | C1     | student        | 1594814400 |
+      | student2 | C1     | student        | 1594814400 |
     And I log in as "teacher1"
     And I am on "Course 1" course homepage
     And I add "Self enrolment" enrolment method with:
@@ -126,17 +126,17 @@ Feature: availability_relativedate
 
     Then I should see "Page 1" in the "region-main" "region"
     # 2 hours after course start date.
-    And I should see "From 15 July 2020, 5:00 PM" in the "region-main" "region"
+    And I should see "From 15 July 2020, 7:00 PM" in the "region-main" "region"
     # 4 days before course end date.
-    And I should see "Until 15 September 2020, 5:00 PM" in the "region-main" "region"
+    And I should see "Until 11 September 2020, 5:00 PM" in the "region-main" "region"
     # 5 weeks after user enrolment date.
-    And I should see "From 25 October 2020" in the "region-main" "region"
+    And I should see "From 31 October 2020" in the "region-main" "region"
     # 7 months after enrolment method end date.
-    And I should see "From 20 April 2021" in the "region-main" "region"
+    And I should see "From 26 April 2021" in the "region-main" "region"
     # 5 days after course start date.
-    And I should see "From 20 July 2020" in the "region-main" "region"
+    And I should see "From 20 July 2020, 5:00" in the "region-main" "region"
     # 5 days before course end date.
-    And I should see "Until 10 September 2020" in the "region-main" "region"
+    And I should see "Until 10 September 2020, 5:00" in the "region-main" "region"
     And I log out
 
     # Log back in as student.

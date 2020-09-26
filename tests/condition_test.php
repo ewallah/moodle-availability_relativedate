@@ -55,6 +55,7 @@ class availability_relativedate_testcase extends advanced_testcase {
     public function test_in_tree() {
         global $CFG, $DB;
         $this->resetAfterTest();
+        $this->setTimezone('UTC');
 
         $CFG->enableavailability = true;
         $dg = $this->getDataGenerator();
@@ -81,16 +82,17 @@ class availability_relativedate_testcase extends advanced_testcase {
         $studentroleid = $DB->get_field('role', 'id', ['shortname' => 'student']);
         $now = time();
         $course = $dg->create_course(['startdate' => $now, 'enddate' => $now + 7 * WEEKSECS]);
-        $user = $dg->create_user();
+        $user = $dg->create_user(['timezone' => 'UTC']);
         $dg->enrol_user($user->id, $course->id, $studentroleid);
 
         $selfplugin = enrol_get_plugin('self');
         $instance = $DB->get_record('enrol', ['courseid' => $course->id, 'enrol' => 'self'], '*', MUST_EXIST);
         $DB->set_field('enrol', 'enrolenddate', $now + 1000, ['id' => $instance->id]);
         $instance = $DB->get_record('enrol', ['courseid' => $course->id, 'enrol' => 'self'], '*', MUST_EXIST);
-        $user = $dg->create_user();
+        $user = $dg->create_user(['timezone' => 'UTC']);
         $selfplugin->enrol_user($instance, $user->id, $studentroleid);
 
+        $this->setUser($user);
         $info = new \core_availability\mock_info($course, $user->id);
         list($sql, $params) = $tree1->get_user_list_sql(false, $info, false);
         $this->assertEquals('', $sql);
@@ -98,7 +100,7 @@ class availability_relativedate_testcase extends advanced_testcase {
         $strf = get_string('strftimedatetime', 'langconfig');
         $nau = 'Not available unless:';
         // 1 Hour after course start date.
-        $calc = userdate(strtotime("+1 hour", $course->startdate), $strf);
+        $calc = userdate(strtotime("+1 hour", $course->startdate), $strf, 0);
         $this->assertEquals("$nau From $calc", $tree1->get_full_information($info));
         // 2 Days before course end date.
         $calc = userdate(strtotime("-2 day", $course->enddate), $strf);
@@ -107,10 +109,10 @@ class availability_relativedate_testcase extends advanced_testcase {
         $calc = userdate(strtotime("+3 week", $course->startdate), $strf);
         $this->assertEquals("$nau From $calc", $tree3->get_full_information($info));
         // 4 Months after enrolment end date.
-        $calc = userdate(strtotime("+4 month", $now), $strf);
+        $calc = userdate(strtotime("+4 month", $now + 1000), $strf);
         $this->assertEquals("$nau From $calc", $tree4->get_full_information($info));
         // 5 Months after enrolment end date.
-        $calc = userdate(strtotime("+5 month", $now), $strf);
+        $calc = userdate(strtotime("+5 month", $now + 1000), $strf);
         $this->assertEquals("$nau From $calc", $tree5->get_full_information($info));
         $this->assertEquals("$nau  (hidden otherwise)", $tree6->get_full_information($info));
         $this->assertFalse($tree1->is_available_for_all());
@@ -265,8 +267,8 @@ class availability_relativedate_testcase extends advanced_testcase {
         $this->assertEquals('This course has no end date', $information);
         $this->assertEquals('{relativedate: 7 days before course end date}', "$cond");
         // No enddate.
-        $this->assertTrue($cond->is_available(false, $info, false, $user->id));
-        $this->assertFalse($cond->is_available(true, $info, false, $user->id));
+        $this->assertFalse($cond->is_available(false, $info, false, $user->id));
+        $this->assertTrue($cond->is_available(true, $info, false, $user->id));
 
         $PAGE->set_url('/course/modedit.php', ['update' => $page2->cmid]);
         \core_availability\frontend::include_all_javascript($course2, $cm2);

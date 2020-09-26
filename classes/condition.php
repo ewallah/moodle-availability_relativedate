@@ -92,7 +92,7 @@ class condition extends \core_availability\condition {
      */
     public function is_available($not, \core_availability\info $info, $grabthelot, $userid) {
         $calc = $this->calc($info->get_course(), $userid);
-        $allow = ($calc == 0 ) ? false : time() >= $calc;
+        $allow = ($calc == 0) ? false : time() >= $calc;
         if ($not) {
             $allow = !$allow;
         }
@@ -201,17 +201,16 @@ class condition extends \core_availability\condition {
      */
     private function calc($course, $userid):int {
         global $DB, $USER;
-        $calc = 0;
         $x = $this->option_dwm($this->relativedwm);
-        if ($this->relativestart === 1) {
+        if ($this->relativestart == 1) {
             $calc = strtotime("+$this->relativenumber $x", $course->startdate);
-            $calc = $this->fixcalc($calc, $course->startdate);
-        } else if ($this->relativestart === 2) {
-            if ($course->enddate !== 0) {
+            return $this->fixcalc($calc, $course->startdate);
+        } else if ($this->relativestart == 2) {
+            if ($course->enddate != 0) {
                 $calc = strtotime("-$this->relativenumber $x", $course->enddate);
-                $calc = $this->fixcalc($calc, $course->enddate);
+                return $this->fixcalc($calc, $course->enddate);
             }
-        } else if ($this->relativestart === 3) {
+        } else if ($this->relativestart == 3) {
             $uid = ($userid != $USER->id) ? $userid : $USER->id;
             $sql = 'SELECT MAX(GREATEST(ue.timestart, ue.timecreated)) AS uedate
                     FROM {user_enrolments} ue
@@ -219,35 +218,43 @@ class condition extends \core_availability\condition {
                     WHERE e.courseid = ? AND ue.userid = ?
                     ORDER by uedate DESC
                     LIMIT 1';
-            if ($lowest = $DB->get_records_sql($sql, [$uid, $course->id, $uid])) {
+            if ($lowest = $DB->get_record_sql($sql, [$uid, $course->id, $uid])) {
                 $lowest = reset($lowest);
-                $low = isset($lowest->uedate) ? $lowest->uedate : time();
-                $calc = strtotime("+$this->relativenumber $x", $low);
-                $calc = $this->fixcalc($calc, $low);
+                $lowest = ($lowest == 0) ? time() : $lowest;
+                $calc = strtotime("+$this->relativenumber $x", $lowest);
+                return $this->fixcalc($calc, $lowest);
             }
-        } else if ($this->relativestart === 4) {
+        } else if ($this->relativestart == 4) {
             $uid = ($userid != $USER->id) ? $userid : $USER->id;
-            $sql = 'SELECT MAX(e.enrolenddate) AS uedate
+            $sql = 'SELECT e.enrolenddate
                     FROM {user_enrolments} ue
                     JOIN {enrol} e on ue.enrolid = e.id
                     WHERE e.courseid = ? AND ue.userid = ?
+                    ORDER by e.enrolenddate DESC
                     LIMIT 1';
-            if ($lowest = $DB->get_records_sql($sql, [$course->id, $uid])) {
+            if ($lowest = $DB->get_record_sql($sql, [$course->id, $uid])) {
                 $lowest = reset($lowest);
-                $low = isset($lowest->uedate) ? $lowest->uedate == 0 ? time() : $lowest->uedate : time();
-                $calc = strtotime("+$this->relativenumber $x", $low);
-                $calc = $this->fixcalc($calc, $low);
+                $lowest = ($lowest == 0) ? time() : $lowest;
+                $calc = strtotime("+$this->relativenumber $x", $lowest);
+                return $this->fixcalc($calc, $lowest);
             }
         }
-        return $calc;
+        return 0;
     }
 
+    /**
+     * Keep the original hour.
+     *
+     * @param int $olddate
+     * @param int $newdate
+     * @return int relative date.
+     */
     private function fixcalc ($olddate, $newdate) {
-        if ($this->relativedwm > 2) {
+        if ($this->relativedwm > 1) {
             $arr1 = getdate($olddate);
             $arr2 = getdate($newdate);
-            return mktime($arr1['hours'], $arr1['minutes'], $arr1['seconds'], $arr2['mon'], $arr2['mday'], $arr2['year']);
+            return mktime($arr2['hours'], $arr2['minutes'], $arr2['seconds'], $arr1['mon'], $arr1['mday'], $arr1['year']);
         }
-        return $newdate;
+        return $olddate;
     }
 }
