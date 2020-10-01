@@ -110,8 +110,10 @@ class condition extends \core_availability\condition {
     public function get_description($full, $not, \core_availability\info $info): string {
         global $USER;
         $course = $info->get_course();
+        $context = \context_course::instance($info->get_course()->id);
+        $capability = has_capability('moodle/course:manageactivities', $context);
         if ($this->relativestart === 2) {
-            if ($course->enddate == 0) {
+            if ($course->enddate == 0 and $capability) {
                 return get_string('noenddate', 'availability_relativedate');
             }
             $frut = $not ? 'from' : 'until';
@@ -124,7 +126,7 @@ class condition extends \core_availability\condition {
         }
         $a = new \stdClass();
         $a->rnumber = userdate($calc, get_string('strftimedatetime', 'langconfig'));
-        $a->rtime = '';
+        $a->rtime = $capability ? '('. trim($this->get_debug_string()) . ')' : '';
         $a->rela = '';
         return trim(get_string($frut, 'availability_relativedate', $a));
     }

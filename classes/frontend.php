@@ -52,9 +52,10 @@ class frontend extends \core_availability\frontend {
                          (object)['field' => 2, 'display' => condition::options_start(2)],
                          (object)['field' => 3, 'display' => condition::options_start(3)]];
         $cond = 'courseid = :courseid AND enrolenddate > 0';
-        $cnt = $DB->count_records_select('enrol', $cond, ['courseid' => $course->id]);
-        if ($cnt > 0) {
-            $optionsstart[3] = (object)['field' => 4, 'display' => condition::options_start(4)];
+        if ($cnt = $DB->count_records_select('enrol', $cond, ['courseid' => $course->id])) {
+            if ($cnt > 0) {
+                $optionsstart[3] = (object)['field' => 4, 'display' => condition::options_start(4)];
+            }
         }
         $warnings = [];
         if ($course->enddate == 0) {
