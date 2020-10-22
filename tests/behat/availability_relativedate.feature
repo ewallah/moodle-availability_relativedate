@@ -132,7 +132,7 @@ Feature: availability_relativedate
     # 4 days before course end date.
     And I should see "Until 11 September 2021, 10:00 PM" in the "region-main" "region"
     # 6 weeks after user enrolment date.
-    And I should see "November 2020, " in the "region-main" "region"
+    # And I should see "November 2020, " in the "region-main" "region"
     # 7 months after enrolment method end date.
     And I should see "7 months after enrolment method end date" in the "region-main" "region"
     # 5 days after course start date.

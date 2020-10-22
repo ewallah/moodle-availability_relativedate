@@ -22,9 +22,9 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die();
+namespace availability_relativedate;
 
-use availability_relativedate\frontend;
+defined('MOODLE_INTERNAL') || die();
 
 /**
  * Unit tests for frontend of relativedate condition.
@@ -32,9 +32,9 @@ use availability_relativedate\frontend;
  * @package availability_relativedate
  * @copyright 2019 Renaat Debleu <info@eWallah.net>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- * @coversDefaultClass \availability_relativedate\frontend
+ * @covers \availability_relativedate\frontend
  */
-class availability_relativedate_front_testcase extends \advanced_testcase {
+class front_testcase extends \advanced_testcase {
 
     /**
      * Tests using relativedate condition in front end.
@@ -58,14 +58,14 @@ class availability_relativedate_front_testcase extends \advanced_testcase {
         $user = $dg->create_user();
         $selfplugin->enrol_user($instance, $user->id);
 
-        $frontend = new frontend();
+        $frontend = new \availability_relativedate\frontend();
         $class = new \ReflectionClass('\availability_relativedate\frontend');
         $method = $class->getMethod('get_javascript_strings');
         $method->setAccessible(true);
-        $this->assertEquals([], $method->invokeArgs($frontend, []));
+        $this->assertEqualsCanonicalizing([], $method->invokeArgs($frontend, []));
         $method = $class->getMethod('get_javascript_init_params');
         $method->setAccessible(true);
-        $this->assertEquals(4, count($method->invokeArgs($frontend, [$course])));
+        $this->assertCount(4, $method->invokeArgs($frontend, [$course]));
         $method = $class->getMethod('allow_add');
         $method->setAccessible(true);
 

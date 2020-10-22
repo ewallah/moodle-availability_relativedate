@@ -39,7 +39,7 @@ class availability_relativedate_testcase extends advanced_testcase {
     /**
      * Load required classes.
      */
-    public function setUp() {
+    public function setUp():void {
         // Load the mock info class so that it can be used.
         global $CFG;
         require_once($CFG->dirroot . '/availability/tests/fixtures/mock_info.php');
@@ -144,22 +144,22 @@ class availability_relativedate_testcase extends advanced_testcase {
     public function test_constructor() {
         $structure = (object)['type' => 'relativedate'];
         $cond = new condition($structure);
-        $this->assertNotEquals($structure, $cond->save());
+        $this->assertNotEqualsCanonicalizing($structure, $cond->save());
         $structure->n = 1;
-        $this->assertNotEquals($structure, $cond->save());
+        $this->assertNotEqualsCanonicalizing($structure, $cond->save());
         $cond = new condition($structure);
         $structure->d = 1;
-        $this->assertNotEquals($structure, $cond->save());
+        $this->assertNotEqualsCanonicalizing($structure, $cond->save());
         $cond = new condition($structure);
         $structure->d = '2';
-        $this->assertNotEquals($structure, $cond->save());
+        $this->assertNotEqualsCanonicalizing($structure, $cond->save());
         $cond = new condition($structure);
         $structure->n = 'a';
-        $this->assertNotEquals($structure, $cond->save());
+        $this->assertNotEqualsCanonicalizing($structure, $cond->save());
         $cond = new condition($structure);
         $structure->e = 'a';
         $cond = new condition($structure);
-        $this->assertNotEquals($structure, $cond->save());
+        $this->assertNotEqualsCanonicalizing($structure, $cond->save());
     }
 
     /**
@@ -170,7 +170,7 @@ class availability_relativedate_testcase extends advanced_testcase {
         $structure = (object)['n' => 1, 'd' => 2, 's' => 1];
         $cond = new condition($structure);
         $structure->type = 'relativedate';
-        $this->assertEquals($structure, $cond->save());
+        $this->assertEqualsCanonicalizing($structure, $cond->save());
     }
 
     /**
