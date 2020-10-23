@@ -28,8 +28,6 @@ env:
 jobs:
   include:
     - php: 7.3
-      env: DB=mysqli MOODLE_BRANCH=MOODLE_37_STABLE
-    - php: 7.3
       env: DB=mysqli MOODLE_BRANCH=MOODLE_38_STABLE
     - env: DB=mysqli MOODLE_BRANCH=MOODLE_39_STABLE
     - env: DB=mysqli MOODLE_BRANCH=MOODLE_310_STABLE
@@ -41,10 +39,10 @@ before_install:
   - export PATH="$(cd ci/bin; pwd):$(cd ci/vendor/bin; pwd):$PATH"
 
 install:
-  - moodle-plugin-ci install
+  - moodle-plugin-ci install -q
+  - cd moodle
 
 script:
-  - cd moodle
   - moodle-plugin-ci phplint
   - moodle-plugin-ci phpcpd
   - moodle-plugin-ci phpmd
@@ -61,7 +59,7 @@ script:
   - moodle-plugin-ci behat --suite="classic"
   - moodle-plugin-ci behat --suite="classic" --profile chrome
   - moodle-plugin-ci behat --suite="classic" --profile chrome blocks/admin_bookmarks
-  - vendor/bin/phpunit --testsuite core_privacy_testsuite,tool_dataprivacy_testsuite
+  - vendor/bin/phpunit --testsuite core_privacy_testsuite,tool_dataprivacy_testsuite > /dev/null
 
 after_success:
   - moodle-plugin-ci coveralls-upload
