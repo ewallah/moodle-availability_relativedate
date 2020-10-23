@@ -275,7 +275,7 @@ class availability_relativedate_testcase extends advanced_testcase {
         $info = new \core_availability\info_module($cm2);
         $information = $cond->get_description(true, false, $info);
         $strf = get_string('strftimedatetime', 'langconfig');
-        $this->assertNotContains('(No course enddate)', $information);
+        $this->assertStringNotContainsString('(No course enddate)', $information);
         $str = userdate($course2->enddate - (7 * 24 * 3600), $strf);
         $this->assertEquals("Until $str (7 days before course end date)", $information);
         $this->assertEquals('{relativedate: 7 days before course end date}', "$cond");
