@@ -32,7 +32,7 @@ defined('MOODLE_INTERNAL') || die();
  * @package availability_relativedate
  * @copyright 2019 Renaat Debleu <info@eWallah.net>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- * @covers \availability_relativedate\frontend
+ * @coversDefaultClass \availability_relativedate\frontend
  */
 class front_testcase extends \advanced_testcase {
 
@@ -40,10 +40,10 @@ class front_testcase extends \advanced_testcase {
      * Tests using relativedate condition in front end.
      */
     public function test_frontend() {
-        global $CFG, $DB;
+        global $DB;
         $this->resetAfterTest();
         $this->setAdminUser();
-        $CFG->enableavailability = true;
+        set_config('enableavailability', true);
         $enabled = enrol_get_plugins(true);
         $enabled['self'] = true;
         set_config('enrol_plugins_enabled', implode(',', array_keys($enabled)));
@@ -57,21 +57,12 @@ class front_testcase extends \advanced_testcase {
         $instance = $DB->get_record('enrol', ['courseid' => $course->id, 'enrol' => 'self'], '*', MUST_EXIST);
         $user = $dg->create_user();
         $selfplugin->enrol_user($instance, $user->id);
-
+        $name = '\availability_relativedate\frontend';
         $frontend = new \availability_relativedate\frontend();
-        $class = new \ReflectionClass('\availability_relativedate\frontend');
-        $method = $class->getMethod('get_javascript_strings');
-        $method->setAccessible(true);
-        $this->assertEqualsCanonicalizing([], $method->invokeArgs($frontend, []));
-        $method = $class->getMethod('get_javascript_init_params');
-        $method->setAccessible(true);
-        $this->assertCount(4, $method->invokeArgs($frontend, [$course]));
-        $method = $class->getMethod('allow_add');
-        $method->setAccessible(true);
-
-        $this->assertTrue($method->invokeArgs($frontend, [$course]));
-        $this->assertFalse($method->invokeArgs($frontend, [$course, null, $sections[0]]));
-        $this->assertTrue($method->invokeArgs($frontend, [$course, null, $sections[1]]));
+        $this->assertCount(4, \phpunit_util::call_internal_method($frontend, 'get_javascript_init_params', [$course], $name));
+        $this->assertFalse(\phpunit_util::call_internal_method($frontend, 'allow_add', [$course, null, $sections[0]], $name));
+        $this->assertTrue(\phpunit_util::call_internal_method($frontend, 'allow_add', [$course, null, $sections[1]], $name));
+        $this->assertTrue(\phpunit_util::call_internal_method($frontend, 'allow_add', [$course], $name));
     }
 
 }

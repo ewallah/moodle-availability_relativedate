@@ -50,14 +50,13 @@ class availability_relativedate_testcase extends advanced_testcase {
     /**
      * Tests constructing and using relative date condition as part of tree.
      * @coversDefaultClass availability_relativedate\condition
-     * @coversDefaultClass availability_relativedate\frontend
      */
     public function test_in_tree() {
-        global $CFG, $DB;
+        global $DB;
         $this->resetAfterTest();
         $this->setTimezone('UTC');
 
-        $CFG->enableavailability = true;
+        set_config('enableavailability', true);
         $dg = $this->getDataGenerator();
 
         $stru1 = (object)['op' => '|', 'show' => true,
@@ -241,10 +240,10 @@ class availability_relativedate_testcase extends advanced_testcase {
      * @covers availability_relativedate\condition
      */
     public function test_noenddate() {
-        global $CFG, $DB, $PAGE;
+        global $DB;
         $this->resetAfterTest();
         $this->setAdminUser();
-        $CFG->enableavailability = true;
+        set_config('enableavailability', true);
         $dg = $this->getDataGenerator();
         $now = time();
         $course1 = $dg->create_course();
@@ -259,8 +258,6 @@ class availability_relativedate_testcase extends advanced_testcase {
         $modinfo2 = get_fast_modinfo($course2);
         $cm1 = $modinfo1->get_cm($page1->cmid);
         $cm2 = $modinfo2->get_cm($page2->cmid);
-        $PAGE->set_url('/course/modedit.php', ['update' => $page1->cmid]);
-        \core_availability\frontend::include_all_javascript($course1, $cm1);
         $info = new \core_availability\info_module($cm1);
         $cond = new condition((object)['type' => 'relativedate', 'n' => 7, 'd' => 2, 's' => 2]);
         $information = $cond->get_description(true, false, $info);
@@ -269,9 +266,6 @@ class availability_relativedate_testcase extends advanced_testcase {
         // No enddate.
         $this->assertFalse($cond->is_available(false, $info, false, $user->id));
         $this->assertTrue($cond->is_available(true, $info, false, $user->id));
-
-        $PAGE->set_url('/course/modedit.php', ['update' => $page2->cmid]);
-        \core_availability\frontend::include_all_javascript($course2, $cm2);
         $info = new \core_availability\info_module($cm2);
         $information = $cond->get_description(true, false, $info);
         $strf = get_string('strftimedatetime', 'langconfig');
@@ -298,13 +292,11 @@ class availability_relativedate_testcase extends advanced_testcase {
         $course = $dg->create_course(['startdate' => $now, 'enddate' => $now + 1000]);
         $cond = new condition((object)['type' => 'relativedate', 'n' => 1, 'd' => 1, 's' => 1]);
         $condition = new \availability_relativedate\condition($cond);
-        $class = new ReflectionClass('availability_relativedate\condition');
-        $method = $class->getMethod('get_debug_string');
-        $method->setAccessible(true);
-        $this->assertEquals(' 1 days after course start date', $method->invokeArgs($condition, []));
-        $method = $class->getMethod('calc');
-        $method->setAccessible(true);
-        $this->assertEquals($now + 24 * 3600, $method->invokeArgs($condition, [$course, $USER->id]));
+        $name = 'availability_relativedate\condition';
+        $result = phpunit_util::call_internal_method($condition, 'get_debug_string', [], $name);
+        $this->assertEquals(' 1 days after course start date', $result);
+        $result = phpunit_util::call_internal_method($condition, 'calc', [$course, $USER->id], $name);
+        $this->assertEquals($now + 24 * 3600, $result);
     }
 
     /**
