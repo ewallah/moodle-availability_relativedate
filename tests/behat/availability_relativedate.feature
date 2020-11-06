@@ -28,7 +28,6 @@ Feature: availability_relativedate
     And I log in as "teacher1"
     And I am on "Course 1" course homepage
     And I add "Self enrolment" enrolment method with:
-      | id_name                 | Test student enrolment |
       | id_enrolenddate_enabled | 1                      |
       | id_enrolenddate_day     | 15                     |
       | id_enrolenddate_month   | August                 |
