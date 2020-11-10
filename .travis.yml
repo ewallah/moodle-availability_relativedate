@@ -27,8 +27,6 @@ env:
 
 jobs:
   include:
-    - php: 7.2
-      env: DB=mysqli MOODLE_BRANCH=MOODLE_35_STABLE
     - php: 7.3
       env: DB=mysqli MOODLE_BRANCH=MOODLE_38_STABLE
     - env: DB=mysqli MOODLE_BRANCH=MOODLE_39_STABLE
