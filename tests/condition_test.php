@@ -113,7 +113,6 @@ class availability_relativedate_testcase extends advanced_testcase {
         // 5 Months after enrolment end date.
         $calc = userdate(strtotime("+5 month", $now + 1000), $strf);
         $this->assertEquals("$nau From $calc", $tree5->get_full_information($info));
-        //$this->assertEquals("$nau  (hidden otherwise)", $tree6->get_full_information($info));
         $this->assertFalse($tree1->is_available_for_all());
         $this->assertFalse($tree2->is_available_for_all());
         $this->assertFalse($tree3->is_available_for_all());
@@ -281,8 +280,6 @@ class availability_relativedate_testcase extends advanced_testcase {
         $cond = new condition((object)['type' => 'relativedate', 'n' => 7, 'd' => 2, 's' => 4]);
         $information = $cond->get_description(false, false, $info);
         $this->assertEquals('(7 days after enrolment method end date)', $information);
-        $this->assertFalse($cond->is_available(false, $info, false, 1));
-        $this->assertTrue($cond->is_available(true, $info, false, 2));
     }
 
     /**

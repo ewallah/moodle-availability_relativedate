@@ -126,7 +126,7 @@ class condition extends \core_availability\condition {
         }
         $a = new \stdClass();
         $a->rnumber = userdate($calc, get_string('strftimedatetime', 'langconfig'));
-        $a->rtime = $capability ? '('. trim($this->get_debug_string()) . ')' : '';
+        $a->rtime = ($capability && $full) ? '('. trim($this->get_debug_string()) . ')' : '';
         $a->rela = '';
         return trim(get_string($frut, 'availability_relativedate', $a));
     }
