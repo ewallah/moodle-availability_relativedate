@@ -113,7 +113,6 @@ class availability_relativedate_testcase extends advanced_testcase {
         // 5 Months after enrolment end date.
         $calc = userdate(strtotime("+5 month", $now + 1000), $strf);
         $this->assertEquals("$nau From $calc", $tree5->get_full_information($info));
-        $this->assertEquals("$nau  (hidden otherwise)", $tree6->get_full_information($info));
         $this->assertFalse($tree1->is_available_for_all());
         $this->assertFalse($tree2->is_available_for_all());
         $this->assertFalse($tree3->is_available_for_all());
@@ -227,12 +226,6 @@ class availability_relativedate_testcase extends advanced_testcase {
         $this->assertEquals("Until $calc", $cond->get_description(true, true, $info));
         $this->assertEquals("$nau From $calc", $cond->get_standalone_description(false, false, $info));
         $this->assertEquals("$nau Until $calc", $cond->get_standalone_description(false, true, $info));
-
-        $cond = new condition((object)['type' => 'relativedate', 'n' => 9, 'd' => 9, 's' => 9]);
-        $this->assertEquals('', $cond->get_description(true, false, $info));
-        $this->assertEquals('', $cond->get_description(true, true, $info));
-        $this->assertEquals("$nau ", $cond->get_standalone_description(false, false, $info));
-        $this->assertEquals("$nau ", $cond->get_standalone_description(false, true, $info));
     }
 
     /**
@@ -240,7 +233,7 @@ class availability_relativedate_testcase extends advanced_testcase {
      * @covers availability_relativedate\condition
      */
     public function test_noenddate() {
-        global $DB;
+        global $DB, $USER;
         $this->resetAfterTest();
         $this->setAdminUser();
         set_config('enableavailability', true);
@@ -277,6 +270,16 @@ class availability_relativedate_testcase extends advanced_testcase {
         $this->assertTrue($cond->is_available(true, $info, false, $user->id));
         $this->assertFalse($cond->is_available(false, $info, false, null));
         $this->assertTrue($cond->is_available(true, $info, false, null));
+
+        $cond = new condition((object)['type' => 'relativedate', 'n' => 7, 'd' => 2, 's' => 3]);
+        $information = $cond->get_description(true, false, $info);
+        $this->assertEquals('(7 days after user enrolment date)', $information);
+        $this->assertFalse($cond->is_available(false, $info, false, $USER->id));
+        $this->assertTrue($cond->is_available(true, $info, false, $USER->id));
+
+        $cond = new condition((object)['type' => 'relativedate', 'n' => 7, 'd' => 2, 's' => 4]);
+        $information = $cond->get_description(false, false, $info);
+        $this->assertEquals('(7 days after enrolment method end date)', $information);
     }
 
     /**
@@ -310,6 +313,5 @@ class availability_relativedate_testcase extends advanced_testcase {
         $this->assertEquals('before course end date', \availability_relativedate\condition::options_start(2));
         $this->assertEquals('after user enrolment date', \availability_relativedate\condition::options_start(3));
         $this->assertEquals('after enrolment method end date', \availability_relativedate\condition::options_start(4));
-        $this->assertEquals('', \availability_relativedate\condition::options_start(5));
     }
 }

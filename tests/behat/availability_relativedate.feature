@@ -126,23 +126,23 @@ Feature: availability_relativedate
     And I press "Save changes"
 
     Then I should see "Page 1" in the "region-main" "region"
-    # 2 hours after course start day.
+    And I should see "2 hours after course start date" in the "region-main" "region"
     And I should see "From 15 July 2020, 7:00 PM" in the "region-main" "region"
-    # 4 days before course end date.
+    And I should see "4 days before course end date" in the "region-main" "region"
     And I should see "Until 11 September 2021, 10:00 PM" in the "region-main" "region"
-    # 6 weeks after user enrolment date.
+    And I should see "6 weeks after user enrolment date" in the "region-main" "region"
     # And I should see "November 2020, " in the "region-main" "region"
-    # 7 months after enrolment method end date.
     And I should see "7 months after enrolment method end date" in the "region-main" "region"
-    # 5 days after course start date.
+    And I should see "5 days after course start date" in the "region-main" "region"
     And I should see "From 20 July 2020, 5:00 PM" in the "region-main" "region"
-    # 5 days before course end date.
+    And I should see "5 days before course end date" in the "region-main" "region"
     And I should see "Until 10 September 2021, 10:00 PM" in the "region-main" "region"
     And I log out
 
     # Log back in as student 1.
     When I am on the "C1" "Course" page logged in as "student1"
     Then I should see "Page 1" in the "region-main" "region"
+    And I should see "2 hours after course start date" in the "region-main" "region"
     And I should not see "Page 2" in the "region-main" "region"
     But I should not see "Page 3" in the "region-main" "region"
     And I should see "Page 4" in the "region-main" "region"
@@ -161,3 +161,13 @@ Feature: availability_relativedate
     And I should see "Topic 2" in the "region-main" "region"
     And I should see "Topic 3" in the "region-main" "region"
     And I should see "Until 10 September 2021, 10:00 PM" in the "region-main" "region"
+    And I log out
+
+    # Log back in as admin.
+    When I am on the "C1" "Course" page logged in as "admin"
+    Then I should see "2 hours after course start date" in the "region-main" "region"
+    And I should see "4 days before course end date" in the "region-main" "region"
+    And I should see "6 weeks after user enrolment date" in the "region-main" "region"
+    And I should see "7 months after enrolment method end date" in the "region-main" "region"
+    And I should see "5 days after course start date" in the "region-main" "region"
+    And I should see "5 days before course end date" in the "region-main" "region"
