@@ -9,19 +9,19 @@
         processIsolation="false"
         backupGlobals="false"
         backupStaticAttributes="false"
+        cacheResult="false"
         stopOnError="false"
         stopOnFailure="false"
         stopOnIncomplete="false"
         stopOnSkipped="false"
         beStrictAboutTestsThatDoNotTestAnything="false"
         beStrictAboutOutputDuringTests="true"
-        printerClass="Hint_ResultPrinter"
         testSuiteLoaderClass="phpunit_autoloader"
         >
 
     <php>
         <!--<const name="PHPUNIT_LONGTEST" value="1"/> uncomment to execute also slow or otherwise expensive tests-->
-        <const name="PHPUNIT_SEQUENCE_START" value="102000"/>
+        <const name="PHPUNIT_SEQUENCE_START" value="163000"/>
 
         <!--Following constants instruct tests to fetch external test files from alternative location or skip tests if empty, clone https://github.com/moodlehq/moodle-exttests to local web server-->
         <!--<const name="TEST_EXTERNAL_FILES_HTTP_URL" value="http://download.moodle.org/unittest"/> uncomment and alter to fetch external test files from alternative location-->
@@ -35,15 +35,13 @@
         </testsuite>
     </testsuites>
     <filter>
-        <whitelist>
-            <directory suffix=".php">classes</directory>
-            <exclude>
-                <directory suffix=".php">lang/en</directory>
-                <directory suffix=".php">tests</directory>
-                <file>version.php</file>
-            </exclude>
-        </whitelist>
 
+            <whitelist processUncoveredFilesFromWhitelist="false">
+                <directory suffix=".php">.</directory>
+                <exclude>
+                    <directory suffix="_test.php">.</directory>
+                </exclude>
+            </whitelist>
     </filter>
 
 </phpunit>

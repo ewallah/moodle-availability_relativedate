@@ -158,6 +158,7 @@ class condition extends \core_availability\condition {
             case 4:
                 return get_string('dateendenrol', 'availability_relativedate');
         }
+        return '';
     }
 
     /**

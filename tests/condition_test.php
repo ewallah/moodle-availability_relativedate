@@ -313,5 +313,6 @@ class availability_relativedate_testcase extends advanced_testcase {
         $this->assertEquals('before course end date', \availability_relativedate\condition::options_start(2));
         $this->assertEquals('after user enrolment date', \availability_relativedate\condition::options_start(3));
         $this->assertEquals('after enrolment method end date', \availability_relativedate\condition::options_start(4));
+        $this->assertEquals('', \availability_relativedate\condition::options_start(5));
     }
 }
