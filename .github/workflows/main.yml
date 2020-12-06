@@ -43,7 +43,7 @@ jobs:
           - php: '7.4'
             moodle-branch: 'MOODLE_39_STABLE'
           - php: '7.4'
-            moodle-branch: 'MOODLE_38_STABLE'            
+            moodle-branch: 'MOODLE_38_STABLE'
 
     steps:
       - name: Checkout plugin
@@ -95,6 +95,7 @@ jobs:
 
       - name: grunt
         run: moodle-plugin-ci grunt
+        if: matrix.moodle-branch != 'MOODLE_38_STABLE'
 
       - name: phpunit 
         run: moodle-plugin-ci phpunit --coverage-text --coverage-clover
