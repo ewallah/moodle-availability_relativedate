@@ -57,8 +57,11 @@ jobs:
           tools: composer, behat, phpunit, phpmd, phpcbf, phpcpd, psalm, phpcs
           coverage: xdebug
 
-      - name: Install moodle-plugin-ci
-        run: composer create-project --no-interaction --no-dev --no-progress --prefer-dist moodlehq/moodle-plugin-ci ci ^3
+      - name: checkout moodle-plugin-ci
+        uses: actions/checkout@v2
+        with:
+          repository: moodlehq/moodle-plugin-ci
+          path: ci
 
       - name: other
         run: |
