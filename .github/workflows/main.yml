@@ -105,9 +105,7 @@ jobs:
         run: moodle-plugin-ci behat --profile chrome
 
       - name: init classic
-        run: php admin/tool/behat/cli/init.php -a="classic"
-        with:
-          path: moodle
+        run: php moodle/admin/tool/behat/cli/init.php -a="classic"
 
       - name: firefox classic
         run: moodle-plugin-ci behat --suite="classic"
