@@ -1,17 +1,11 @@
 name: Tests
 
-on:
-  push:
-    branches:
-    - main
-  pull_request:
-    branches:
-    - main
+on: [push, pull_request]
 
 jobs:
   ci:
     name: ci
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-18.04
 
     services:
       postgres:
@@ -34,7 +28,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        moodle-branch: ['master', 'MOODLE_311_STABLE', 'MOODLE_310_STABLE', 'MOODLE_39_STABLE', 'MOODLE_38_STABLE']
+        moodle-branch: ['master', 'MOODLE_311_STABLE', 'MOODLE_310_STABLE', 'MOODLE_39_STABLE']
         php: ['7.4', '7.3']
         database: ['mariadb', 'pgsql']
 
@@ -60,11 +54,11 @@ jobs:
 
       - name: other
         run: |
-           cd ci
            composer install
            echo "$(cd bin; pwd)" >> $GITHUB_PATH
            echo "$(cd vendor/bin; pwd)" >> $GITHUB_PATH
            sudo locale-gen en_AU.UTF-8
+        working-directory: ci
 
       - name: install Moodle
         run: moodle-plugin-ci install --db-host=127.0.0.1 --plugin this-plugin
@@ -73,43 +67,43 @@ jobs:
           MOODLE_BRANCH: ${{ matrix.moodle-branch }}
       
       - name: phplint
-        run: moodle-plugin-ci phplint
+        run: moodle-plugin-ci --ansi phplint
 
       - name: phpcpd
-        run: moodle-plugin-ci phpcpd
+        run: moodle-plugin-ci --ansi phpcpd
 
       - name: phpmd
-        run: moodle-plugin-ci phpmd
+        run: moodle-plugin-ci --ansi phpmd
 
       - name: codechecker
-        run: moodle-plugin-ci codechecker
+        run: moodle-plugin-ci --ansi codechecker
 
       - name: validate
-        run: moodle-plugin-ci validate
+        run: moodle-plugin-ci --ansi validate
 
       - name: savepoints
-        run: moodle-plugin-ci savepoints
+        run: moodle-plugin-ci --ansi savepoints
 
       - name: mustache
-        run: moodle-plugin-ci mustache
+        run: moodle-plugin-ci --ansi mustache
 
       - name: phpunit 
-        run: moodle-plugin-ci phpunit --coverage-text --coverage-clover
+        run: moodle-plugin-ci --ansi phpunit --coverage-text --coverage-clover
 
       - name: firefox
-        run: moodle-plugin-ci behat
+        run: moodle-plugin-ci --ansi behat
       
       - name: chrome
-        run: moodle-plugin-ci behat --profile chrome
+        run: moodle-plugin-ci --ansi behat --profile chrome
 
       - name: init classic
         run: php moodle/admin/tool/behat/cli/init.php -a="classic"
 
       - name: firefox classic
-        run: moodle-plugin-ci behat --suite="classic"
+        run: moodle-plugin-ci --ansi behat --suite="classic"
       
       - name: chrome classic
-        run: moodle-plugin-ci behat  --suite="classic" --profile chrome
+        run: moodle-plugin-ci --ansi behat  --suite="classic" --profile chrome
 
       - name: admin bookmarks
         run: php admin/tool/behat/cli/run.php --profile=chrome --tags=@block_admin_bookmarks
@@ -123,5 +117,5 @@ jobs:
         env:
           COVERALLS_RUN_LOCALLY: true
           COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
-        run: moodle-plugin-ci coveralls-upload
+        run: moodle-plugin-ci --ansi coveralls-upload
         if: matrix.moodle-branch == 'master'
