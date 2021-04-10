@@ -75,6 +75,9 @@ jobs:
       - name: phpmd
         run: moodle-plugin-ci --ansi phpmd
 
+      - name: phpdoc
+        run: moodle-plugin-ci --ansi phpdoc
+
       - name: codechecker
         run: moodle-plugin-ci --ansi codechecker
 
