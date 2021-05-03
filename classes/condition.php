@@ -209,7 +209,7 @@ class condition extends \core_availability\condition {
             $calc = strtotime("+$this->relativenumber $x", $course->startdate);
             return $this->fixcalc($calc, $course->startdate);
         } else if ($this->relativestart == 2) {
-            if ($course->enddate != 0) {
+            if (property_exists($course, 'enddate') && $course->enddate != 0) {
                 $calc = strtotime("-$this->relativenumber $x", $course->enddate);
                 return $this->fixcalc($calc, $course->enddate);
             }
