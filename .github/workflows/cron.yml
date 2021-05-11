@@ -26,19 +26,13 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php }}
-          extensions: mbstring, mysqli, gd, zip
-
-      - name: checkout moodle-plugin-ci
-        uses: actions/checkout@v2
-        with:
-          repository: moodlehq/moodle-plugin-ci
-          path: ci
-
-      - name: other
+          extensions: mbstring, pgsql, mysqli, gd, zip
+ 
+      - name: composer
         run: |
-           composer install
-           echo "$(cd bin; pwd)" >> $GITHUB_PATH
-           echo "$(cd vendor/bin; pwd)" >> $GITHUB_PATH
+           composer create-project -n --no-dev --prefer-dist moodlehq/moodle-plugin-ci ci ^3
+           echo $(cd ci/bin; pwd) >> $GITHUB_PATH
+           echo $(cd ci/vendor/bin; pwd) >> $GITHUB_PATH
            sudo locale-gen en_AU.UTF-8
            sudo systemctl start mysql.service
         working-directory: ci

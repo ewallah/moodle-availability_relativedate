@@ -5,7 +5,7 @@ on: [push, pull_request]
 jobs:
   ci:
     name: ci
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-latest
 
     services:
       postgres:
@@ -29,7 +29,7 @@ jobs:
       fail-fast: false
       matrix:
         moodle-branch: ['master', 'MOODLE_311_STABLE', 'MOODLE_310_STABLE', 'MOODLE_39_STABLE']
-        php: ['7.4', '7.3']
+        php: ['7.4']
         database: ['mariadb', 'pgsql']
 
     steps:
@@ -42,26 +42,17 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php }}
-          extensions: mbstring, pgsql, mysqli
-          tools: composer, behat, phpunit, phpmd, phpcbf, phpcpd, psalm, phpcs
-          coverage: xdebug
-
-      - name: checkout moodle-plugin-ci
-        uses: actions/checkout@v2
-        with:
-          repository: moodlehq/moodle-plugin-ci
-          path: ci
-
-      - name: other
+          extensions: mbstring, pgsql, mysqli, gd, zip
+ 
+      - name: composer
         run: |
-           composer install
-           echo "$(cd bin; pwd)" >> $GITHUB_PATH
-           echo "$(cd vendor/bin; pwd)" >> $GITHUB_PATH
+           composer create-project -n --no-dev --prefer-dist moodlehq/moodle-plugin-ci ci ^3
+           echo $(cd ci/bin; pwd) >> $GITHUB_PATH
+           echo $(cd ci/vendor/bin; pwd) >> $GITHUB_PATH
            sudo locale-gen en_AU.UTF-8
-        working-directory: ci
 
       - name: install Moodle
-        run: moodle-plugin-ci install --db-host=127.0.0.1 --plugin this-plugin
+        run: moodle-plugin-ci --ansi install --db-host=127.0.0.1 --plugin this-plugin
         env:
           DB: ${{ matrix.database }}
           MOODLE_BRANCH: ${{ matrix.moodle-branch }}
@@ -90,6 +81,9 @@ jobs:
       - name: mustache
         run: moodle-plugin-ci --ansi mustache
 
+      - name: grunt
+        run: moodle-plugin-ci --ansi grunt
+
       - name: phpunit 
         run: moodle-plugin-ci --ansi phpunit --coverage-text --coverage-clover
 
@@ -98,9 +92,6 @@ jobs:
       
       - name: chrome
         run: moodle-plugin-ci --ansi behat --profile chrome
-
-      - name: init classic
-        run: php moodle/admin/tool/behat/cli/init.php -a="classic"
 
       - name: firefox classic
         run: moodle-plugin-ci --ansi behat --suite="classic"
