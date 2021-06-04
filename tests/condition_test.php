@@ -132,7 +132,7 @@ class availability_relativedate_testcase extends advanced_testcase {
         $this->assertTrue($tree3->check_available(true, $info, false, $user->id)->is_available());
         $this->assertTrue($tree4->check_available(true, $info, false, $user->id)->is_available());
         $this->assertTrue($tree5->check_available(true, $info, false, $user->id)->is_available());
-        $this->assertTrue($tree6->check_available(true, $info, false, $user->id)->is_available());
+        $this->assertFalse($tree6->check_available(true, $info, false, $user->id)->is_available());
     }
 
     /**
@@ -256,9 +256,9 @@ class availability_relativedate_testcase extends advanced_testcase {
         $information = $cond->get_description(true, false, $info);
         $this->assertEquals('This course has no end date', $information);
         $this->assertEquals('{relativedate: 7 days before course end date}', "$cond");
-        // No enddate.
+        // No enddate => Never available
         $this->assertFalse($cond->is_available(false, $info, false, $user->id));
-        $this->assertTrue($cond->is_available(true, $info, false, $user->id));
+        $this->assertFalse($cond->is_available(true, $info, false, $user->id));
         $info = new \core_availability\info_module($cm2);
         $information = $cond->get_description(true, false, $info);
         $strf = get_string('strftimedatetime', 'langconfig');
@@ -275,7 +275,7 @@ class availability_relativedate_testcase extends advanced_testcase {
         $information = $cond->get_description(true, false, $info);
         $this->assertEquals('(7 days after user enrolment date)', $information);
         $this->assertFalse($cond->is_available(false, $info, false, $USER->id));
-        $this->assertTrue($cond->is_available(true, $info, false, $USER->id));
+        $this->assertFalse($cond->is_available(true, $info, false, $USER->id));
 
         $cond = new condition((object)['type' => 'relativedate', 'n' => 7, 'd' => 2, 's' => 4]);
         $information = $cond->get_description(false, false, $info);

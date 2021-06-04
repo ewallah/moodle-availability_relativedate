@@ -92,7 +92,11 @@ class condition extends \core_availability\condition {
      */
     public function is_available($not, \core_availability\info $info, $grabthelot, $userid) {
         $calc = $this->calc($info->get_course(), $userid);
-        $allow = ($calc == 0) ? false : time() >= $calc;
+        if ($calc === 0) {
+            // Always not available if for some reason the value could not be calculated.
+            return false;
+        }
+        $allow = time() >= $calc;
         if ($not) {
             $allow = !$allow;
         }
