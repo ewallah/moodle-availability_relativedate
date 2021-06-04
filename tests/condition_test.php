@@ -89,7 +89,7 @@ class availability_relativedate_testcase extends advanced_testcase {
         $DB->set_field('enrol', 'enrolenddate', $now + 1000, ['id' => $instance->id]);
         $instance = $DB->get_record('enrol', ['courseid' => $course->id, 'enrol' => 'self'], '*', MUST_EXIST);
         $user = $dg->create_user(['timezone' => 'UTC']);
-        $selfplugin->enrol_user($instance, $user->id, $studentroleid);
+        $selfplugin->enrol_user($instance, $user->id, $studentroleid, $now);
 
         $this->setUser($user);
         $info = new \core_availability\mock_info($course, $user->id);
@@ -186,7 +186,7 @@ class availability_relativedate_testcase extends advanced_testcase {
         $DB->set_field('enrol', 'enrolenddate', $now + 1000, ['id' => $instance->id]);
         $instance = $DB->get_record('enrol', ['courseid' => $course->id, 'enrol' => 'self'], '*', MUST_EXIST);
         $user = $dg->create_user();
-        $selfplugin->enrol_user($instance, $user->id);
+        $selfplugin->enrol_user($instance, $user->id, 5, $now);
         $info = new \core_availability\mock_info($course, $user->id);
         $this->setUser($user);
         $strf = get_string('strftimedatetime', 'langconfig');

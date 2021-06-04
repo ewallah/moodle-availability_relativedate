@@ -211,26 +211,31 @@ class condition extends \core_availability\condition {
         $x = $this->option_dwm($this->relativedwm);
         if ($this->relativestart == 1) {
             // Course start date.
-            $calc = strtotime("+$this->relativenumber $x", $course->startdate);
-            return $this->fixcalc($calc, $course->startdate);
+            return $this->fixdate("+$this->relativenumber $x", $course->startdate);
         } else if ($this->relativestart == 2 && $course->enddate != 0) {
             // Course end date.
-            $calc = strtotime("-$this->relativenumber $x", $course->enddate);
-            return $this->fixcalc($calc, $course->enddate);
+            return $this->fixdate("-$this->relativenumber $x", $course->enddate);
         } else if ($this->relativestart == 3) {
-             // Latest enrolment date.
-             $sql = 'SELECT GREATEST(ue.timestart, ue.timecreated) AS uedate
+            // Latest enrolment date.
+            $sql = 'SELECT ue.timestart
                     FROM {user_enrolments} ue
                     JOIN {enrol} e on ue.enrolid = e.id
-                    WHERE e.courseid = :courseid AND ue.userid = :userid
-                    ORDER by uedate DESC
+                    WHERE e.courseid = :courseid AND ue.userid = :userid AND ue.timestart > 0
+                    ORDER by ue.timestart DESC
                     LIMIT 1';
-            if ($lowest = $DB->get_record_sql($sql, ['courseid' => $course->id, 'userid' => $userid])) {
-                $lowest = reset($lowest);
-                if ($lowest > 0) {
-                    $calc = strtotime("+$this->relativenumber $x", $lowest);
-                    return $this->fixcalc($calc, $lowest);
-                }
+            $lowest = $DB->get_field_sql($sql, ['courseid' => $course->id, 'userid' => $userid]);
+            if ($lowest == 0) {
+                // A teacher or admin without restriction - or a student with no limit set?
+                $sql = 'SELECT ue.timecreated
+                        FROM {user_enrolments} ue
+                        JOIN {enrol} e on (e.id = ue.enrolid AND e.courseid = :courseid)
+                        WHERE ue.userid = :userid
+                        ORDER by ue.timecreated DESC
+                        LIMIT 1';
+                $lowest = $DB->get_field_sql($sql, ['courseid' => $course->id, 'userid' => $userid]);
+            }
+            if ($lowest > 0) {
+                return $this->fixdate("+$this->relativenumber $x", $lowest);
             }
         } else if ($this->relativestart == 4) {
             // Latest enrolment end date.
@@ -240,12 +245,9 @@ class condition extends \core_availability\condition {
                     WHERE e.courseid = :courseid AND ue.userid = :userid
                     ORDER by e.enrolenddate DESC
                     LIMIT 1';
-            if ($lowest = $DB->get_record_sql($sql, ['courseid' => $course->id, 'userid' => $userid])) {
-                $lowest = reset($lowest);
-                if ($lowest > 0) {
-                    $calc = strtotime("+$this->relativenumber $x", $lowest);
-                    return $this->fixcalc($calc, $lowest);
-                }
+            $lowest = $DB->get_field_sql($sql, ['courseid' => $course->id, 'userid' => $userid]);
+            if ($lowest > 0) {
+                return $this->fixdate("+$this->relativenumber $x", $lowest);
             }
         }
         return 0;
@@ -254,11 +256,12 @@ class condition extends \core_availability\condition {
     /**
      * Keep the original hour.
      *
-     * @param int $olddate
+     * @param string $calc
      * @param int $newdate
      * @return int relative date.
      */
-    private function fixcalc ($olddate, $newdate) {
+    private function fixdate($calc, $newdate): int {
+        $olddate = strtotime($calc, $newdate);
         if ($this->relativedwm > 1) {
             $arr1 = getdate($olddate);
             $arr2 = getdate($newdate);
