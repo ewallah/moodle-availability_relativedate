@@ -38,7 +38,7 @@ Feature: availability_relativedate
     When I edit the section "0"
     And I expand all fieldsets
     And I click on "Add restriction..." "button"
-    Then "Relative date" "button" should not exist in the "Add restriction..." "dialogue"
+    Then "Relative date" "button" should exist in the "Add restriction..." "dialogue"
 
   Scenario: Test condition
     When I add a "Page" to section "1"

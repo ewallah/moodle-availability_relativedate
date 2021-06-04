@@ -60,7 +60,7 @@ class front_testcase extends \advanced_testcase {
         $name = '\availability_relativedate\frontend';
         $frontend = new \availability_relativedate\frontend();
         $this->assertCount(4, \phpunit_util::call_internal_method($frontend, 'get_javascript_init_params', [$course], $name));
-        $this->assertFalse(\phpunit_util::call_internal_method($frontend, 'allow_add', [$course, null, $sections[0]], $name));
+        $this->assertTrue(\phpunit_util::call_internal_method($frontend, 'allow_add', [$course, null, $sections[0]], $name));
         $this->assertTrue(\phpunit_util::call_internal_method($frontend, 'allow_add', [$course, null, $sections[1]], $name));
         $this->assertTrue(\phpunit_util::call_internal_method($frontend, 'allow_add', [$course], $name));
     }
