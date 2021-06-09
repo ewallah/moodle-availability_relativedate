@@ -35,7 +35,6 @@ jobs:
            echo $(cd ci/vendor/bin; pwd) >> $GITHUB_PATH
            sudo locale-gen en_AU.UTF-8
            sudo systemctl start mysql.service
-        working-directory: ci
 
       - name: install Moodle
         run: moodle-plugin-ci --ansi install --db-user=root --db-pass=root --db-host=127.0.0.1 --plugin this-plugin
