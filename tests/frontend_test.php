@@ -64,5 +64,4 @@ class front_testcase extends \advanced_testcase {
         $this->assertTrue(\phpunit_util::call_internal_method($frontend, 'allow_add', [$course, null, $sections[1]], $name));
         $this->assertTrue(\phpunit_util::call_internal_method($frontend, 'allow_add', [$course], $name));
     }
-
 }
