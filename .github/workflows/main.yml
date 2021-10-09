@@ -95,6 +95,11 @@ jobs:
       - name: phpunit 
         run: moodle-plugin-ci --ansi phpunit
 
+      - name: prepere 4.0
+        if: ${{ moodle-branch == 'master' }}
+        run: sed -i -e 's/Edit s/S/g' availability_relative_course_end.feature && sed -i -e 's/Edit s/S/g' availability_relative_course_start.feature
+        working-directory: moodle/availability/condition/relativedate/tests/behat
+
       - name: firefox
         run: moodle-plugin-ci --ansi behat || true
       
