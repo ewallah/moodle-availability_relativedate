@@ -96,7 +96,7 @@ jobs:
         run: moodle-plugin-ci --ansi phpunit
 
       - name: prepare 4.0
-        if: ${{ matrix.MOODLE_BRANCH == 'master' }}
+        if: ${{ matrix.moodle-branch == 'master' }}
         run: sed -i -e 's/Edit s/S/g' availability_relative_course_end.feature && sed -i -e 's/Edit s/S/g' availability_relative_course_start.feature
         working-directory: moodle/availability/condition/relativedate/tests/behat
 
