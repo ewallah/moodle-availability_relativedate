@@ -73,7 +73,7 @@ jobs:
         run: moodle-plugin-ci --ansi phpunit --coverage-text --coverage-clover
      
       - name: firefox
-        run: moodle-plugin-ci --ansi behat --profile firefox
+        run: moodle-plugin-ci --ansi behat
 
       - name: coveralls
         env:
