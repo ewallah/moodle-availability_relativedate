@@ -28,7 +28,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        moodle-branch: ['master', 'MOODLE_311_STABLE']
+        moodle-branch: ['MOODLE_311_STABLE']
         php: ['8.0', '7.4']
         database: ['mariadb', 'pgsql']
         include:
@@ -75,7 +75,7 @@ jobs:
         run: moodle-plugin-ci --ansi phpmd
 
       - name: phpdoc
-        run: moodle-plugin-ci --ansi phpdoc || true
+        run: moodle-plugin-ci --ansi phpdoc
 
       - name: codechecker
         run: moodle-plugin-ci --ansi codechecker
@@ -95,22 +95,17 @@ jobs:
       - name: phpunit 
         run: moodle-plugin-ci --ansi phpunit
 
-      - name: prepare 4.0
-        if: ${{ matrix.moodle-branch == 'master' }}
-        run: sed -i -e 's/Edit s/S/g' availability_relative_course_end.feature && sed -i -e 's/Edit s/S/g' availability_relative_course_start.feature
-        working-directory: moodle/availability/condition/relativedate/tests/behat
-
       - name: firefox
-        run: moodle-plugin-ci --ansi behat || true
+        run: moodle-plugin-ci --ansi behat
       
       - name: chrome
-        run: moodle-plugin-ci --ansi behat --profile chrome  || true
+        run: moodle-plugin-ci --ansi behat --profile chrome
 
       - name: firefox classic
-        run: moodle-plugin-ci --ansi behat --suite="classic"  || true
+        run: moodle-plugin-ci --ansi behat --suite="classic"
       
       - name: chrome classic
-        run: moodle-plugin-ci --ansi behat  --suite="classic" --profile chrome  || true
+        run: moodle-plugin-ci --ansi behat  --suite="classic" --profile chrome
 
       - name: admin bookmarks
         run: php admin/tool/behat/cli/run.php --tags=@block_admin_bookmarks
