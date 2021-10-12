@@ -7,15 +7,15 @@ Feature: availability relative course startdate
 
   Background:
     Given the following "courses" exist:
-      | fullname  | shortname | category | format | startdate    | enablecompletion |
-      | Course 1  | C1        | 0        | topics | ##-10 days## | 1                |
-      | Course 2  | C2        | 0        | topics | ##+10 days## | 1                |
+      | fullname  | shortname | category | format | startdate          | enablecompletion |
+      | Course 1  | C1        | 0        | topics | ##-10 days noon ## | 1                |
+      | Course 2  | C2        | 0        | topics | ##+10 days noon ## | 1                |
     And the following "activities" exist:
       | activity   | name   | intro | course | idnumber    | section | visible |
-      | page       | Page A | intro | C1     | page1       | 1       | 1       |
-      | page       | Page B | intro | C1     | page2       | 2       | 1       |
-      | page       | Page A | intro | C2     | page1       | 1       | 1       |
-      | page       | Page B | intro | C2     | page2       | 2       | 1       |
+      | page       | Page A | intro | C1     | pageA       | 1       | 1       |
+      | page       | Page B | intro | C1     | pageB       | 2       | 1       |
+      | page       | Page C | intro | C2     | pageC       | 1       | 1       |
+      | page       | Page D | intro | C2     | pageD       | 2       | 1       |
     And the following "users" exist:
       | username | timezone |
       | teacher1 | 5        |
@@ -29,16 +29,7 @@ Feature: availability relative course startdate
 
   @javascript
   Scenario: Test start date condition
-    When I log in as "teacher1"
-    And I am on "Course 1" course homepage with editing mode on
-    And I navigate to "Edit settings" in current page administration
-    And I expand all fieldsets
-    And I set the field "startdate[hour]" to "10"
-    And I set the field "startdate[minute]" to "0"
-    And I press "Save and display"
-
-    When I follow "Page A"
-    And I navigate to "Edit settings" in current page administration
+    When I am on the "pageA" "page activity editing" page logged in as teacher1
     And I expand all fieldsets
     And I click on "Add restriction..." "button"
     And I click on "Relative date" "button" in the "Add restriction..." "dialogue"
@@ -48,8 +39,7 @@ Feature: availability relative course startdate
     And I press "Save and return to course"
     And I should see "Not available unless" in the "region-main" "region"
 
-    When I follow "Page B"
-    And I navigate to "Edit settings" in current page administration
+    When I am on the "pageB" "page activity editing" page
     And I expand all fieldsets
     And I click on "Add restriction..." "button"
     And I click on "Relative date" "button" in the "Add restriction..." "dialogue"
@@ -62,15 +52,7 @@ Feature: availability relative course startdate
     Then I should see "1 days after course start date" in the "region-main" "region"
     And I should see "2 days after course start date" in the "region-main" "region"
 
-    When I am on "Course 2" course homepage with editing mode on
-    And I navigate to "Edit settings" in current page administration
-    And I expand all fieldsets
-    And I set the field "startdate[hour]" to "5"
-    And I set the field "startdate[minute]" to "0"
-    And I press "Save and display"
-
-    When I follow "Page A"
-    And I navigate to "Edit settings" in current page administration
+    When I am on the "pageC" "page activity editing" page
     And I expand all fieldsets
     And I click on "Add restriction..." "button"
     And I click on "Relative date" "button" in the "Add restriction..." "dialogue"
@@ -80,8 +62,7 @@ Feature: availability relative course startdate
     And I press "Save and return to course"
     And I should see "Not available unless" in the "region-main" "region"
 
-    When I follow "Page B"
-    And I navigate to "Edit settings" in current page administration
+    When I am on the "pageD" "page activity editing" page
     And I expand all fieldsets
     And I click on "Add restriction..." "button"
     And I click on "Relative date" "button" in the "Add restriction..." "dialogue"
@@ -102,7 +83,7 @@ Feature: availability relative course startdate
     And I should see "Page B" in the "region-main" "region"
 
     When I am on the "C2" "Course" page
-    Then I should see "Page A" in the "region-main" "region"
+    Then I should see "Page C" in the "region-main" "region"
     And I should see "Not available unless" in the "region-main" "region"
     And I should not see "1 days after course start date" in the "region-main" "region"
-    And I should not see "Page B" in the "region-main" "region"
+    And I should not see "Page D" in the "region-main" "region"

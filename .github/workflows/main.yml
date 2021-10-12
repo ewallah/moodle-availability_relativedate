@@ -28,7 +28,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        moodle-branch: ['MOODLE_311_STABLE']
+        moodle-branch: ['master', 'MOODLE_311_STABLE']
         php: ['8.0', '7.4']
         database: ['mariadb', 'pgsql']
         include:
