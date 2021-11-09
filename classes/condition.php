@@ -207,7 +207,6 @@ class condition extends \core_availability\condition {
      * @return int relative date.
      */
     private function calc($course, $userid): int {
-        global $DB;
         $x = $this->option_dwm($this->relativedwm);
         if ($this->relativestart == 1) {
             // Course start date.
@@ -221,18 +220,16 @@ class condition extends \core_availability\condition {
                     FROM {user_enrolments} ue
                     JOIN {enrol} e on ue.enrolid = e.id
                     WHERE e.courseid = :courseid AND ue.userid = :userid AND ue.timestart > 0
-                    ORDER by ue.timestart DESC
-                    LIMIT 1';
-            $lowest = $DB->get_field_sql($sql, ['courseid' => $course->id, 'userid' => $userid]);
+                    ORDER by ue.timestart DESC';
+            $lowest = $this->getlowest($sql, ['courseid' => $course->id, 'userid' => $userid]);
             if ($lowest == 0) {
                 // A teacher or admin without restriction - or a student with no limit set?
                 $sql = 'SELECT ue.timecreated
                         FROM {user_enrolments} ue
                         JOIN {enrol} e on (e.id = ue.enrolid AND e.courseid = :courseid)
                         WHERE ue.userid = :userid
-                        ORDER by ue.timecreated DESC
-                        LIMIT 1';
-                $lowest = $DB->get_field_sql($sql, ['courseid' => $course->id, 'userid' => $userid]);
+                        ORDER by ue.timecreated DESC';
+                $lowest = $this->getlowest($sql, ['courseid' => $course->id, 'userid' => $userid]);
             }
             if ($lowest > 0) {
                 return $this->fixdate("+$this->relativenumber $x", $lowest);
@@ -243,15 +240,30 @@ class condition extends \core_availability\condition {
                     FROM {user_enrolments} ue
                     JOIN {enrol} e on ue.enrolid = e.id
                     WHERE e.courseid = :courseid AND ue.userid = :userid
-                    ORDER by e.enrolenddate DESC
-                    LIMIT 1';
-            $lowest = $DB->get_field_sql($sql, ['courseid' => $course->id, 'userid' => $userid]);
+                    ORDER by e.enrolenddate DESC';
+            $lowest = $this->getlowest($sql, ['courseid' => $course->id, 'userid' => $userid]);
             if ($lowest > 0) {
                 return $this->fixdate("+$this->relativenumber $x", $lowest);
             }
         }
         return 0;
     }
+
+    /**
+     * Get the record with the lowest value.
+     *
+     * @param string $sql
+     * @param array $parameters
+     * @return int lowest value.
+     */
+    private function getlowest($sql, $parameters): int {
+        global $DB;
+        if ($lowestrec = $DB->get_record_sql($sql, $parameters, IGNORE_MULTIPLE)) {
+            return reset($lowestrec);
+        }
+        return 0;
+    }
+
 
     /**
      * Keep the original hour.
