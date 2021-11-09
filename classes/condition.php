@@ -259,7 +259,7 @@ class condition extends \core_availability\condition {
     private function getlowest($sql, $parameters): int {
         global $DB;
         if ($lowestrec = $DB->get_record_sql($sql, $parameters, IGNORE_MULTIPLE)) {
-           return reset($lowestrec);
+            return reset($lowestrec);
         }
         return 0;
     }
