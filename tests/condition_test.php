@@ -21,6 +21,7 @@
  * @copyright 2019 Renaat Debleu <info@eWallah.net>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+namespace availability_relativedate;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -34,7 +35,7 @@ use availability_relativedate\condition;
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @coversDefaultClass availability_relativedate
  */
-class availability_relativedate_testcase extends advanced_testcase {
+class condition_test extends \advanced_testcase {
 
     /**
      * Load required classes.
@@ -296,9 +297,9 @@ class availability_relativedate_testcase extends advanced_testcase {
         $cond = new condition((object)['type' => 'relativedate', 'n' => 1, 'd' => 1, 's' => 1]);
         $condition = new \availability_relativedate\condition($cond);
         $name = 'availability_relativedate\condition';
-        $result = phpunit_util::call_internal_method($condition, 'get_debug_string', [], $name);
+        $result = \phpunit_util::call_internal_method($condition, 'get_debug_string', [], $name);
         $this->assertEquals(' 1 days after course start date', $result);
-        $result = phpunit_util::call_internal_method($condition, 'calc', [$course, $USER->id], $name);
+        $result = \phpunit_util::call_internal_method($condition, 'calc', [$course, $USER->id], $name);
         $this->assertEquals($now + 24 * 3600, $result);
     }
 

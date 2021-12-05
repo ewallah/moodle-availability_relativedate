@@ -34,7 +34,7 @@ defined('MOODLE_INTERNAL') || die();
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @coversDefaultClass \availability_relativedate\frontend
  */
-class front_testcase extends \advanced_testcase {
+class frontend_test extends \advanced_testcase {
 
     /**
      * Tests using relativedate condition in front end.
