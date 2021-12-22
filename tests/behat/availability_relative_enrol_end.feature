@@ -30,6 +30,7 @@ Feature: availability relative enrol end date
   @javascript
   Scenario: Test enrol end date condition
     When I log in as "teacher1"
+    # And I add "Self enrolment" enrolment method in "Course 1" with:
     And I am on "Course 1" course homepage
     And I add "Self enrolment" enrolment method with:
       | id_enrolenddate_enabled | 1                 |
@@ -62,6 +63,7 @@ Feature: availability relative enrol end date
     Then I should see "1 days after enrolment method end date" in the "region-main" "region"
 
     When I am on "Course 2" course homepage
+    # When I add "Self enrolment" enrolment method in "Course 2" with:
     And I add "Self enrolment" enrolment method with:
       | id_enrolenddate_enabled | 1                 |
       | id_enrolenddate_day     | ##+10days##%d## |

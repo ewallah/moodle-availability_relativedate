@@ -32,6 +32,7 @@ Feature: availability_relativedate
       | student1 | C1     | student        | ##today##     |
     And I log in as "teacher1"
     And I am on "Course 1" course homepage
+    #And I add "Self enrolment" enrolment method in "Course 1" with:
     And I add "Self enrolment" enrolment method with:
       | id_enrolenddate_enabled | 1                 |
       | id_enrolenddate_day     | ##yesterday##%d## |

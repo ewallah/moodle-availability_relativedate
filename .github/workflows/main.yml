@@ -66,7 +66,11 @@ jobs:
         env:
           DB: ${{ matrix.database }}
           MOODLE_BRANCH: ${{ matrix.moodle-branch }}
-      
+
+      - name: usedeprecated
+        if: ${{ matrix.moodle-branch == 'master' }}
+        run: moodle-plugin-ci addconfig "$CFG->behat_usedeprecated = true"
+
       - name: phplint
         if: ${{ always() }}
         run: moodle-plugin-ci --ansi phplint
