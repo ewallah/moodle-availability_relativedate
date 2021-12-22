@@ -69,7 +69,7 @@ jobs:
 
       - name: usedeprecated
         if: ${{ matrix.moodle-branch == 'master' }}
-        run: moodle-plugin-ci add-config "$CFG->behat_usedeprecated = true"
+        run: moodle-plugin-ci add-config '$CFG->behat_usedeprecated = true;'
 
       - name: phplint
         if: ${{ always() }}
