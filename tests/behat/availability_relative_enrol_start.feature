@@ -10,6 +10,8 @@ Feature: availability relative enrol start date
       | fullname  | shortname | category | format | startdate          | enablecompletion |
       | Course 1  | C1        | 0        | topics | ##-10 days noon ## | 1                |
       | Course 2  | C2        | 0        | topics | ##-10 days noon ## | 1                |
+    And selfenrolment exists in course "C1" starting "##-5 days 17:00##"
+    And selfenrolment exists in course "C2" starting "##+5 days 17:00##"
     And the following "activities" exist:
       | activity   | name   | intro | course | idnumber    | section | visible |
       | page       | Page A | intro | C1     | pageA       | 1       | 1       |
@@ -21,11 +23,11 @@ Feature: availability relative enrol start date
       | teacher1 | 5        |
       | student1 | 5        |
     And the following "course enrolments" exist:
-      | user     | course | role           | timestart    |
-      | teacher1 | C1     | editingteacher | 0            |
-      | student1 | C1     | student        | ##-10 days noon ## |
-      | teacher1 | C2     | editingteacher | ##-10 days noon ## |
-      | student1 | C2     | student        | 0            |
+      | user     | course | role           |
+      | teacher1 | C1     | editingteacher |
+      | student1 | C1     | student        |
+      | teacher1 | C2     | editingteacher |
+      | student1 | C2     | student        |
 
   @javascript
   Scenario: Test enrol start date condition
@@ -79,10 +81,10 @@ Feature: availability relative enrol start date
     # Log in as student 1.
     When I am on the "C1" "Course" page logged in as "student1"
     Then I should see "Page A" in the "region-main" "region"
+    And I should see "Not available unless" in the "region-main" "region"
     And I should not see "1 days after user enrolment date" in the "region-main" "region"
-    And I should see "Page B" in the "region-main" "region"
+    And I should not see "Page B" in the "region-main" "region"
     And I should not see "2 days after user enrolment date" in the "region-main" "region"
-    And I should not see "Not available unless" in the "region-main" "region"
 
     When I am on the "C2" "Course" page
     Then I should see "Page C" in the "region-main" "region"

@@ -64,4 +64,21 @@ class frontend_test extends \advanced_testcase {
         $this->assertTrue(\phpunit_util::call_internal_method($frontend, 'allow_add', [$course, null, $sections[1]], $name));
         $this->assertTrue(\phpunit_util::call_internal_method($frontend, 'allow_add', [$course], $name));
     }
+
+    /**
+     * Test behat funcs
+     * @coversDefaultClass behat_availability_relativedate
+     */
+    public function test_behat() {
+        global $CFG;
+        require_once($CFG->dirroot . '/availability/condition/relativedate/tests/behat/behat_availability_relativedate.php');
+        $this->resetAfterTest();
+        set_config('enableavailability', true);
+        $course = $this->getDataGenerator()->create_course(['enablecompletion' => true]);
+        $class = new \behat_availability_relativedate();
+        $class->selfenrolment_exists_in_course_starting($course->fullname, '');
+        $class->selfenrolment_exists_in_course_starting($course->fullname, '##-10 days noon##');
+        $class->selfenrolment_exists_in_course_ending($course->fullname, '');
+        $class->selfenrolment_exists_in_course_ending($course->fullname, '## today ##');
+    }
 }
