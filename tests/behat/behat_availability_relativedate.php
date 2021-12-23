@@ -38,6 +38,20 @@ use Behat\Mink\Exception\ElementNotFoundException as ElementNotFoundException;
  */
 class behat_availability_relativedate extends behat_base {
 
+
+    /**
+     * See a relative date
+     * @Then /^I should see relativedate "([^"]*)"$/
+     * @param string $date
+     */
+    public function i_should_see_relativedate($date) {
+        global $USER;
+        $times = array_filter(explode('##', $date));
+        $time = reset($times);
+        $stime = userdate($time, get_string('strftimedate', 'langconfig'), $USER->timezone);
+        $this->execute("behat_general::assert_element_contains_text", [$stime, '.course-content', 'css_element']);
+    }
+
     /**
      * Add a self enrolment method starting
      * @Given /^selfenrolment exists in course "(?P<course>[^"]*)" starting "(?P<date>[^"]*)"$/

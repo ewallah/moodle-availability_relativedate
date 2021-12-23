@@ -10,36 +10,21 @@ Feature: availability_relativedate
       | teacher1 | 5        |
       | student1 | 5        |
       | student2 | 5        |
-    And the following "course" exists:
-      | fullname          | Course 1          |
-      | shortname         | C1                |
-      | category          | 0                 |
-      | startdate[day]    | ##-10 days##%d## |
-      | startdate[month]  | ##-10 days##%B## |
-      | startdate[year]   | ##-10 days##%Y## |
-      | startdate[hour]   | ##-10 days##17## |
-      | startdate[minute] | ##-10 days##0##  |
-      | enddate[day]      | ##+2 weeks##%d##  |
-      | enddate[month]    | ##+2 weeks##%B##  |
-      | enddate[year]     | ##+2 weeks##%Y##  |
-      | enddate[hour]     | ##+2 weeks##17##  |
-      | enddate[minute]   | ##+2 weeks##0##   |
     And the following config values are set as admin:
       | enableavailability   | 1 |
+    And the following "course" exists:
+      | fullname          | Course 1             |
+      | shortname         | C1                   |
+      | category          | 0                    |
+      | enablecompletion  | 1                    |
+      | startdate         | ## -10 days 17:00 ## |
+      | enddate           | ## +2 weeks 17:00 ## |
+    And selfenrolment exists in course "C1" ending "## tomorrow 17:00 ##"
     And the following "course enrolments" exist:
-      | user     | course | role           | timestart     |
-      | teacher1 | C1     | editingteacher | ##yesterday## |
-      | student1 | C1     | student        | ##today##     |
+      | user     | course | role           | timestart             |
+      | teacher1 | C1     | editingteacher | ## yesterday 17:00 ## |
+      | student1 | C1     | student        | ## yesterday 17:00 ## |
     And I log in as "teacher1"
-    And I am on "Course 1" course homepage
-    #And I add "Self enrolment" enrolment method in "Course 1" with:
-    And I add "Self enrolment" enrolment method with:
-      | id_enrolenddate_enabled | 1                 |
-      | id_enrolenddate_day     | ##yesterday##%d## |
-      | id_enrolenddate_month   | ##yesterday##%B## |
-      | id_enrolenddate_year    | ##yesterday##%Y## |
-      | id_enrolenddate_hour    | ##yesterday##17## |
-      | id_enrolenddate_minute  | ##yesterday##00## |
     And I am on "Course 1" course homepage with editing mode on
 
   Scenario: Restrict section0
@@ -135,19 +120,31 @@ Feature: availability_relativedate
 
     Then I should see "Page 1" in the "region-main" "region"
     And I should see "2 hours after course start date" in the "region-main" "region"
-    #Then I see date "##-10 days##"
     And I should see "4 days before course end date" in the "region-main" "region"
-    #Then I see date "##+10 days##"
+    And I should see relativedate "##+2 weeks -4 days 17:00##"
     And I should see "6 weeks after user enrolment date" in the "region-main" "region"
-    #Then I see date "##+6 weeks##"
+    And I should see relativedate "##+6 weeks -1 days 17:00##"
     And I should see "7 months after enrolment method end date" in the "region-main" "region"
-    #Then I see date "##+7 months -1days##"
-    #And I should see "5 days after course start date" in the "region-main" "region"
-    #And I should see "5 days before course end date" in the "region-main" "region"
+    And I should see "5 days after course start date" in the "region-main" "region"
     And I log out
 
     # Log back in as student 1.
     When I am on the "C1" "Course" page logged in as "student1"
+    Then I should see "Page 1" in the "region-main" "region"
+    And I should see "2 hours after course start date" in the "region-main" "region"
+    And I should see "Page 2" in the "region-main" "region"
+    And I should see relativedate "##+2 weeks -4 days 17:00##"
+    But I should see "Page 3" in the "region-main" "region"
+    And I should see relativedate "##+6 weeks -1 days 17:00##"
+    And I should see "Page 4" in the "region-main" "region"
+    And I should see "Topic 2" in the "region-main" "region"
+    And I should see "Topic 3" in the "region-main" "region"
+    #And I should see "Until 10 September 2021, 10:00 PM" in the "region-main" "region"
+    And I log out
+
+    # Log back in as student 2.
+    When I am on the "C1" "Course" page logged in as "student2"
+    And I press "Enrol me"
     Then I should see "Page 1" in the "region-main" "region"
     And I should see "2 hours after course start date" in the "region-main" "region"
     And I should see "Page 2" in the "region-main" "region"
