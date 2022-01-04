@@ -43,7 +43,7 @@ class privacy_test extends provider_testcase {
      */
     public function test_get_metadata() {
         $collection = new \core_privacy\local\metadata\collection('availability_relativedate');
-        $reason = provider::get_reason($collection);
+        $reason = \availability_relativedate\privacy\provider::get_reason($collection);
         $this->assertEquals($reason, 'privacy:metadata');
         $this->assertStringContainsString('does not store private user data.', get_string($reason, 'availability_relativedate'));
     }
