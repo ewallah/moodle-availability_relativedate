@@ -9,9 +9,9 @@ Feature: availability relative enrol end date
     Given the following "courses" exist:
       | fullname  | shortname | category | format | startdate         | enddate           | enablecompletion |
       | Course 1  | C1        | 0        | topics | ##-10 days noon## | ##+10 days noon## | 1                |
-      | Course 2  | C2        | 0        | topics | ##-10 days noon## | ##+10 days noon## | 1                |
+      | Course 2  | C2        | 0        | topics | ##-10 days noon## | ##+20 days noon## | 1                |
     And selfenrolment exists in course "C1" ending "##tomorrow 17:00##"
-    And selfenrolment exists in course "C2" ending "##+10days 17:00##"
+    And selfenrolment exists in course "C2" ending "##+10 days noon ##"
     And the following "activities" exist:
       | activity | name   | intro | course | idnumber    | section |
       | page     | Page A | intro | C1     | page1       | 1       |
