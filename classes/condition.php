@@ -24,7 +24,8 @@
 
 namespace availability_relativedate;
 
-defined('MOODLE_INTERNAL') || die();
+use \core_availability\info;
+use stdClass;
 
 /**
  * relativedate from course start condition.
@@ -59,7 +60,7 @@ class condition extends \core_availability\condition {
     /**
      * Constructor.
      *
-     * @param \stdClass $structure Data structure from JSON decode
+     * @param stdClass $structure Data structure from JSON decode
      * @throws \coding_exception If invalid data structure.
      */
     public function __construct($structure) {
@@ -85,12 +86,12 @@ class condition extends \core_availability\condition {
      * Determines whether this particular item is currently available.
      *
      * @param bool $not
-     * @param \core_availability\info $info
+     * @param info $info
      * @param bool $grabthelot
      * @param int $userid If set, specifies a different user ID to check availability for
      * @return bool True if this item is available to the user, false otherwise
      */
-    public function is_available($not, \core_availability\info $info, $grabthelot, $userid) {
+    public function is_available($not, info $info, $grabthelot, $userid) {
         $calc = $this->calc($info->get_course(), $userid);
         if ($calc === 0) {
             // Always not available if for some reason the value could not be calculated.
@@ -111,7 +112,7 @@ class condition extends \core_availability\condition {
      * @param info $info Item we're checking
      * @return string Information string (for admin) about all restrictions on this item
      */
-    public function get_description($full, $not, \core_availability\info $info): string {
+    public function get_description($full, $not, info $info): string {
         global $USER;
         $course = $info->get_course();
         $context = \context_course::instance($course->id);
@@ -128,7 +129,7 @@ class condition extends \core_availability\condition {
         if ($calc == 0) {
             return '('. trim($this->get_debug_string()) . ')';
         }
-        $a = new \stdClass();
+        $a = new stdClass();
         $a->rnumber = userdate($calc, get_string('strftimedatetime', 'langconfig'));
         $a->rtime = ($capability && $full) ? '('. trim($this->get_debug_string()) . ')' : '';
         $a->rela = '';

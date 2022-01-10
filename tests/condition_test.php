@@ -23,9 +23,10 @@
  */
 namespace availability_relativedate;
 
-defined('MOODLE_INTERNAL') || die();
-
 use availability_relativedate\condition;
+use \core_availability\tree;
+use \core_availability\mock_info;
+use \core_availability\info_module;
 
 /**
  * Unit tests for the relativedate condition.
@@ -72,12 +73,12 @@ class condition_test extends \advanced_testcase {
             'c' => [(object)['type' => 'relativedate', 'n' => 5, 'd' => 4, 's' => 4]]];
         $stru6 = (object)['op' => '|', 'show' => false,
             'c' => [(object)['type' => 'relativedate', 'n' => 5, 'd' => 5, 's' => 5]]];
-        $tree1 = new \core_availability\tree($stru1);
-        $tree2 = new \core_availability\tree($stru2);
-        $tree3 = new \core_availability\tree($stru3);
-        $tree4 = new \core_availability\tree($stru4);
-        $tree5 = new \core_availability\tree($stru5);
-        $tree6 = new \core_availability\tree($stru6);
+        $tree1 = new tree($stru1);
+        $tree2 = new tree($stru2);
+        $tree3 = new tree($stru3);
+        $tree4 = new tree($stru4);
+        $tree5 = new tree($stru5);
+        $tree6 = new tree($stru6);
 
         $studentroleid = $DB->get_field('role', 'id', ['shortname' => 'student']);
         $now = time();
@@ -93,7 +94,7 @@ class condition_test extends \advanced_testcase {
         $selfplugin->enrol_user($instance, $user->id, $studentroleid, $now);
 
         $this->setUser($user);
-        $info = new \core_availability\mock_info($course, $user->id);
+        $info = new mock_info($course, $user->id);
         list($sql, $params) = $tree1->get_user_list_sql(false, $info, false);
         $this->assertEquals('', $sql);
         $this->assertEquals([], $params);
@@ -188,7 +189,7 @@ class condition_test extends \advanced_testcase {
         $instance = $DB->get_record('enrol', ['courseid' => $course->id, 'enrol' => 'self'], '*', MUST_EXIST);
         $user = $dg->create_user();
         $selfplugin->enrol_user($instance, $user->id, 5, $now);
-        $info = new \core_availability\mock_info($course, $user->id);
+        $info = new mock_info($course, $user->id);
         $this->setUser($user);
         $strf = get_string('strftimedatetime', 'langconfig');
         $nau = 'Not available unless:';
@@ -252,7 +253,7 @@ class condition_test extends \advanced_testcase {
         $modinfo2 = get_fast_modinfo($course2);
         $cm1 = $modinfo1->get_cm($page1->cmid);
         $cm2 = $modinfo2->get_cm($page2->cmid);
-        $info = new \core_availability\info_module($cm1);
+        $info = new info_module($cm1);
         $cond = new condition((object)['type' => 'relativedate', 'n' => 7, 'd' => 2, 's' => 2]);
         $information = $cond->get_description(true, false, $info);
         $this->assertEquals('This course has no end date', $information);
@@ -260,7 +261,7 @@ class condition_test extends \advanced_testcase {
         // No enddate => Never available.
         $this->assertFalse($cond->is_available(false, $info, false, $user->id));
         $this->assertFalse($cond->is_available(true, $info, false, $user->id));
-        $info = new \core_availability\info_module($cm2);
+        $info = new info_module($cm2);
         $information = $cond->get_description(true, false, $info);
         $strf = get_string('strftimedatetime', 'langconfig');
         $this->assertStringNotContainsString('(No course enddate)', $information);

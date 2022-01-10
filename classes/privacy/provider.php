@@ -23,8 +23,6 @@
  */
 namespace availability_relativedate\privacy;
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * Provider class.
  *

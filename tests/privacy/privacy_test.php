@@ -24,9 +24,8 @@
 
 namespace availability_relativedate\privacy;
 
-defined('MOODLE_INTERNAL') || die();
-
 use \core_privacy\tests\provider_testcase;
+use \core_privacy\local\metadata\collection;
 
 /**
  * Privacy tests for relative date availability.
@@ -42,8 +41,8 @@ class privacy_test extends provider_testcase {
      * @coversDefaultClass availability_relativedate\privacy\provider
      */
     public function test_get_metadata() {
-        $collection = new \core_privacy\local\metadata\collection('availability_relativedate');
-        $reason = \availability_relativedate\privacy\provider::get_reason($collection);
+        $collection = new collection('availability_relativedate');
+        $reason = provider::get_reason($collection);
         $this->assertEquals($reason, 'privacy:metadata');
         $this->assertStringContainsString('does not store private user data.', get_string($reason, 'availability_relativedate'));
     }
