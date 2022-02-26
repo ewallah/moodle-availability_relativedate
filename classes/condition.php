@@ -24,7 +24,8 @@
 
 namespace availability_relativedate;
 
-use \core_availability\info;
+use context_course;
+use core_availability\info;
 use stdClass;
 
 /**
@@ -61,7 +62,6 @@ class condition extends \core_availability\condition {
      * Constructor.
      *
      * @param stdClass $structure Data structure from JSON decode
-     * @throws \coding_exception If invalid data structure.
      */
     public function __construct($structure) {
         $this->relativenumber = property_exists($structure, 'n') ? (int)$structure->n : 1;
@@ -115,10 +115,10 @@ class condition extends \core_availability\condition {
     public function get_description($full, $not, info $info): string {
         global $USER;
         $course = $info->get_course();
-        $context = \context_course::instance($course->id);
+        $context = context_course::instance($course->id);
         $capability = has_capability('moodle/course:manageactivities', $context);
         if ($this->relativestart === 2) {
-            if ($course->enddate == 0 and $capability) {
+            if ((!isset($course->enddate) || $course->enddate == 0) && $capability) {
                 return get_string('noenddate', 'availability_relativedate');
             }
             $frut = $not ? 'from' : 'until';
@@ -212,7 +212,7 @@ class condition extends \core_availability\condition {
         if ($this->relativestart == 1) {
             // Course start date.
             return $this->fixdate("+$this->relativenumber $x", $course->startdate);
-        } else if ($this->relativestart == 2 && $course->enddate != 0) {
+        } else if ($this->relativestart == 2 && isset($course->enddate) && $course->enddate != 0) {
             // Course end date.
             return $this->fixdate("-$this->relativenumber $x", $course->enddate);
         } else if ($this->relativestart == 3) {
