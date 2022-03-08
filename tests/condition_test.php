@@ -17,8 +17,9 @@
 /**
  * Unit tests for the relativedate condition.
  *
- * @package availability_relativedate
- * @copyright 2019 Renaat Debleu <info@eWallah.net>
+ * @package   availability_relativedate
+ * @copyright 2019 eWallah.net
+ * @author    Renaat Debleu <info@eWallah.net>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 namespace availability_relativedate;
@@ -31,10 +32,11 @@ use \core_availability\info_module;
 /**
  * Unit tests for the relativedate condition.
  *
- * @package availability_relativedate
- * @copyright 2019 Renaat Debleu <info@eWallah.net>
+ * @package   availability_relativedate
+ * @copyright 2019 eWallah.net
+ * @author    Renaat Debleu <info@eWallah.net>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- * @coversDefaultClass availability_relativedate
+ * @coversDefaultClass \availability_relativedate\condition
  */
 class condition_test extends \advanced_testcase {
 
@@ -51,7 +53,7 @@ class condition_test extends \advanced_testcase {
 
     /**
      * Tests constructing and using relative date condition as part of tree.
-     * @coversDefaultClass availability_relativedate\condition
+     * @covers \availability_relativedate\condition
      */
     public function test_in_tree() {
         global $DB;
@@ -139,7 +141,7 @@ class condition_test extends \advanced_testcase {
 
     /**
      * Tests the constructor including error conditions.
-     * @covers availability_relativedate\condition
+     * @covers \availability_relativedate\condition
      */
     public function test_constructor() {
         $structure = (object)['type' => 'relativedate'];
@@ -164,7 +166,7 @@ class condition_test extends \advanced_testcase {
 
     /**
      * Tests the save() function.
-     * @covers availability_relativedate\condition
+     * @covers \availability_relativedate\condition
      */
     public function test_save() {
         $structure = (object)['n' => 1, 'd' => 2, 's' => 1];
@@ -175,7 +177,7 @@ class condition_test extends \advanced_testcase {
 
     /**
      * Tests the get_description and get_standalone_description functions.
-     * @covers availability_relativedate\condition
+     * @covers \availability_relativedate\condition
      */
     public function test_get_description() {
         global $DB;
@@ -232,7 +234,7 @@ class condition_test extends \advanced_testcase {
 
     /**
      * Tests a course with no enddate.
-     * @covers availability_relativedate\condition
+     * @covers \availability_relativedate\condition
      */
     public function test_noenddate() {
         global $DB, $USER;
@@ -286,7 +288,7 @@ class condition_test extends \advanced_testcase {
 
     /**
      * Tests a reflection.
-     * @covers availability_relativedate\condition
+     * @covers \availability_relativedate\condition
      */
     public function test_reflection() {
         global $USER;
@@ -306,7 +308,7 @@ class condition_test extends \advanced_testcase {
 
     /**
      * Tests static methods.
-     * @covers availability_relativedate\condition
+     * @covers \availability_relativedate\condition
      */
     public function test_static() {
         $this->assertCount(4, \availability_relativedate\condition::options_dwm());

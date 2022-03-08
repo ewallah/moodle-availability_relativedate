@@ -17,8 +17,9 @@
 /**
  * Privacy tests for relative date availability.
  *
- * @package availability_relativedate
- * @copyright 2019 Renaat Debleu <info@eWallah.net>
+ * @package   availability_relativedate
+ * @copyright 2019 eWallah.net
+ * @author    Renaat Debleu <info@eWallah.net>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -30,15 +31,17 @@ use \core_privacy\local\metadata\collection;
 /**
  * Privacy tests for relative date availability.
  *
- * @package availability_relativedate
- * @copyright 2019 Renaat Debleu <info@eWallah.net>
+ * @package   availability_relativedate
+ * @copyright 2019 eWallah.net
+ * @author    Renaat Debleu <info@eWallah.net>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @coversDefaultClass \availability_relativedate\privacy\provider
  */
 class privacy_test extends provider_testcase {
 
     /**
      * Test returning metadata.
-     * @coversDefaultClass availability_relativedate\privacy\provider
+     * @covers \availability_relativedate\privacy\provider
      */
     public function test_get_metadata() {
         $collection = new collection('availability_relativedate');

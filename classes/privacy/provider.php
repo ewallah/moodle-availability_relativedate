@@ -17,18 +17,20 @@
 /**
  * Relative date availability privacy provider class.
  *
- * @package availability_relativedate
- * @copyright 2019 Renaat Debleu <info@eWallah.net>
- * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package   availability_relativedate
+ * @copyright 2019 eWallah.net
+ * @author    Renaat Debleu <info@eWallah.net>
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 namespace availability_relativedate\privacy;
 
 /**
  * Provider class.
  *
- * @package availability_relativedate
- * @copyright 2019 Renaat Debleu <info@eWallah.net>
- * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package   availability_relativedate
+ * @copyright 2019 eWallah.net
+ * @author    Renaat Debleu <info@eWallah.net>
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class provider implements \core_privacy\local\metadata\null_provider {
     /**

@@ -17,8 +17,9 @@
 /**
  * Unit tests for frontend of relativedate condition.
  *
- * @package availability_relativedate
- * @copyright 2019 Renaat Debleu <info@eWallah.net>
+ * @package   availability_relativedate
+ * @copyright 2019 eWallah.net
+ * @author    Renaat Debleu <info@eWallah.net>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -27,8 +28,9 @@ namespace availability_relativedate;
 /**
  * Unit tests for frontend of relativedate condition.
  *
- * @package availability_relativedate
- * @copyright 2019 Renaat Debleu <info@eWallah.net>
+ * @package   availability_relativedate
+ * @copyright 2019 eWallah.net
+ * @author    Renaat Debleu <info@eWallah.net>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @coversDefaultClass \availability_relativedate\frontend
  */
@@ -36,6 +38,7 @@ class frontend_test extends \advanced_testcase {
 
     /**
      * Tests using relativedate condition in front end.
+     * @covers \availability_relativedate\frontend
      */
     public function test_frontend() {
         global $DB;
@@ -65,7 +68,7 @@ class frontend_test extends \advanced_testcase {
 
     /**
      * Test behat funcs
-     * @coversDefaultClass behat_availability_relativedate
+     * @covers \behat_availability_relativedate
      */
     public function test_behat() {
         global $CFG;

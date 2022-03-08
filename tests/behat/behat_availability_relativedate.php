@@ -18,7 +18,8 @@
  * Step definitions to add enrolment.
  *
  * @package   availability_relativedate
- * @copyright 2021 Renaat Debleu <info@eWallah.net>
+ * @copyright 2019 eWallah.net
+ * @author    Renaat Debleu <info@eWallah.net>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -33,7 +34,8 @@ use Behat\Mink\Exception\ElementNotFoundException as ElementNotFoundException;
  * Step definitions to add enrolment.
  *
  * @package   availability_relativedate
- * @copyright 2021 Renaat Debleu <info@eWallah.net>
+ * @copyright 2019 eWallah.net
+ * @author    Renaat Debleu <info@eWallah.net>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class behat_availability_relativedate extends behat_base {

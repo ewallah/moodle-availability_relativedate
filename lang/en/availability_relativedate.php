@@ -17,9 +17,10 @@
 /**
  * Language strings.
  *
- * @package availability_relativedate
- * @copyright 2019 Renaat Debleu <info@eWallah.net>
- * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package   availability_relativedate
+ * @copyright 2019 eWallah.net
+ * @author    Renaat Debleu <info@eWallah.net>
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 $string['after'] = ' after ';
