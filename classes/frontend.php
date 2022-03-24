@@ -58,6 +58,7 @@ class frontend extends \core_availability\frontend {
         if ($DB->count_records_select('enrol', 'courseid = :courseid AND enrolenddate > 0', ['courseid' => $course->id]) > 0) {
             $optionsstart[] = (object)['field' => 4, 'display' => condition::options_start(4)];
         }
+        $optionsstart[] = (object)['field' => 5, 'display' => condition::options_start(5)];
         $warnings = [];
         if ($course->enddate == 0) {
             $warnings[] = get_string('noenddate', 'availability_relativedate');
