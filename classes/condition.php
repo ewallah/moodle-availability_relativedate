@@ -27,7 +27,6 @@ namespace availability_relativedate;
 
 use context_course;
 use core_availability\info;
-use quizaccess_seb\property_list;
 use stdClass;
 
 /**
