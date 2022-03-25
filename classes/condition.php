@@ -27,6 +27,7 @@ namespace availability_relativedate;
 
 use context_course;
 use core_availability\info;
+use quizaccess_seb\property_list;
 use stdClass;
 
 /**
@@ -58,8 +59,17 @@ class condition extends \core_availability\condition {
      * 3 => After User enrolment date
      * 4 => After Enrolment method end date
      * 5 => After last visit
+     * 6 => After completion of an activity
      */
     private $relativestart;
+
+    /**
+     * @var int Course module id of the activity used by type 6
+     */
+    private $relativecoursemodule;
+
+    /** @var array Array of modules used in these conditions for course */
+    protected static $modsusedincondition = [];
 
     /**
      * Constructor.
@@ -70,6 +80,7 @@ class condition extends \core_availability\condition {
         $this->relativenumber = property_exists($structure, 'n') ? (int)$structure->n : 1;
         $this->relativedwm = property_exists($structure, 'd') ? (int)$structure->d : 2;
         $this->relativestart = property_exists($structure, 's') ? (int)$structure->s : 1;
+        $this->relativecoursemodule = property_exists($structure, 'c') ? (int)$structure->c : 0;
     }
 
     /**
@@ -145,8 +156,12 @@ class condition extends \core_availability\condition {
      * @return string Text representation of parameters
      */
     protected function get_debug_string() {
+        $modname = '';
+        if($this->relativestart == 6) {
+            $modname = ' ' . \core_availability\condition::description_cm_name($this->relativecoursemodule);
+        }
         return ' ' . $this->relativenumber . ' ' . self::options_dwm()[$this->relativedwm] . ' ' .
-               self::options_start($this->relativestart);
+               self::options_start($this->relativestart) . $modname;
     }
 
     /**
@@ -167,6 +182,8 @@ class condition extends \core_availability\condition {
                 return get_string('dateendenrol', 'availability_relativedate');
             case 5:
                 return get_string('datelastvisit', 'availability_relativedate');
+            case 6:
+                return get_string('datecompletion', 'availability_relativedate');
         }
         return '';
     }
@@ -259,6 +276,17 @@ class condition extends \core_availability\condition {
                 $lastaccess = 0;
             }
             return $this->fixdate("+$this->relativenumber $x", $lastaccess);
+        } else if ($this->relativestart == 6) {
+            $cm = new stdClass;
+            $cm->id = $this->relativecoursemodule;
+            $cm->course = $course->id;
+            $completion = new \completion_info($course);
+            $completiondata = $completion->get_data($cm);
+            if ($completiondata->completionstate>0) {
+                return $this->fixdate("+$this->relativenumber $x", $completiondata->timemodified);
+            } else {
+                return 0;
+            }
         }
         return 0;
     }
@@ -294,5 +322,50 @@ class condition extends \core_availability\condition {
             return mktime($arr2['hours'], $arr2['minutes'], $arr2['seconds'], $arr1['mon'], $arr1['mday'], $arr1['year']);
         }
         return $olddate;
+    }
+
+    public static function completion_value_used($course, $cmid): bool {
+        if (!array_key_exists($course->id, self::$modsusedincondition)) {
+            $modinfo = get_fast_modinfo($course);
+            self::$modsusedincondition[$course->id] = [];
+
+            foreach ($modinfo->cms as $othercm) {
+                if (is_null($othercm->availability)) {
+                    continue;
+                }
+                $ci = new \core_availability\info_module($othercm);
+                $tree = $ci->get_availability_tree();
+                foreach ($tree->get_all_children('availability_relativedate\condition') as $cond) {
+                    $condcmid = $cond->get_cmid();
+                    if (!empty($condcmid)) {
+                        self::$modsusedincondition[$course->id][$condcmid] = true;
+                    }
+                }
+            }
+
+            foreach ($modinfo->get_section_info_all() as $section) {
+                if (is_null($section->availability)) {
+                    continue;
+                }
+                $ci = new \core_availability\info_section($section);
+                $tree = $ci->get_availability_tree();
+                foreach ($tree->get_all_children('availability_relativedate\condition') as $cond) {
+                    $condcmid = $cond->get_cmid();
+                    if (!empty($condcmid)) {
+                        self::$modsusedincondition[$course->id][$condcmid] = true;
+                    }
+                }
+            }
+        }
+        return array_key_exists($cmid, self::$modsusedincondition[$course->id]);
+    }
+
+    /**
+     * Get the cmid referenced in the access restriction.
+     *
+     * @return int cmid of the referenced cm
+     */
+    public function get_cmid(): int {
+        return $this->relativecoursemodule;
     }
 }

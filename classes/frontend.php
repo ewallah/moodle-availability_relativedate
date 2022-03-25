@@ -59,10 +59,38 @@ class frontend extends \core_availability\frontend {
             $optionsstart[] = (object)['field' => 4, 'display' => condition::options_start(4)];
         }
         $optionsstart[] = (object)['field' => 5, 'display' => condition::options_start(5)];
+        if($course->enablecompletion != 0) {
+            $cm = get_fast_modinfo($course);
+
+            $s = [];
+            $activitysel = [];
+            // Gets only sections with content.
+            foreach ($cm->get_sections() as $sectionnum => $section) {
+                $sectioninfo = $cm->get_section_info($sectionnum);
+                $s['name'] = $sectioninfo->name;
+                if (empty($s['name'])) {
+                    $s['name'] = get_string('section') . ' ' . $sectionnum;
+                }
+                $s['coursemodules'] = [];
+                foreach ($section as $cmid) {
+                    $module = $cm->get_cm($cmid);
+                    // Get only course modules which are not deleted.
+                    if ($module->deletioninprogress == 0) {
+                        $s['coursemodules'][] = [
+                            'id' => $cmid,
+                            'name' => $module->name,
+                            'completionenabled' => $module->completion > 0
+                        ];
+                    }
+                }
+                $activitysel[] = $s;
+            }
+            $optionsstart[] = (object)['field' => 6, 'display' => condition::options_start(6)];
+        }
         $warnings = [];
         if ($course->enddate == 0) {
             $warnings[] = get_string('noenddate', 'availability_relativedate');
         }
-        return [$optionsdwm, $optionsstart, is_null($section), $warnings];
+        return [$optionsdwm, $optionsstart, is_null($section), $warnings, $activitysel];
     }
 }

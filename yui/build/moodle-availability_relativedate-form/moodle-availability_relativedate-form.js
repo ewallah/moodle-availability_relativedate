@@ -32,11 +32,12 @@ M.availability_relativedate.form.warningStrings = null;
  * @param {boolean} isSection Is this a section
  * @param {array} warningStrings Collection of warning strings
  */
-M.availability_relativedate.form.initInner = function(timeFields, startFields, isSection, warningStrings) {
+M.availability_relativedate.form.initInner = function(timeFields, startFields, isSection, warningStrings, activityselector) {
     this.timeFields = timeFields;
     this.startFields = startFields;
     this.isSection = isSection;
     this.warningStrings = warningStrings;
+    this.activityselector = activityselector;
 };
 
 M.availability_relativedate.form.getNode = function(json) {
@@ -66,6 +67,19 @@ M.availability_relativedate.form.getNode = function(json) {
         html += '<option value="' + fieldInfo.field + '">' + fieldInfo.display + '</option>';
     }
     html += '</select></label>';
+    html += '<label><select name="relativecoursemodule">';
+
+    for (i = 0; i < this.activityselector.length; i++) {
+        html += '<option disabled>' + this.activityselector[i].name + '</option>';
+        for (j = 0; j < this.activityselector[i]['coursemodules'].length; j++) {
+            html += '<option value="' + this.activityselector[i]['coursemodules'][j]['id'];
+            if(this.activityselector[i]['coursemodules'][j]['completionenabled'] == 0) {
+                html += ' disabled';
+            }
+            html += '">' + this.activityselector[i]['coursemodules'][j]['name'] + '</option>';
+        }
+    }
+    html += '</select></label>';
     var node = Y.Node.create('<span>' + html + '</span>');
 
     // Set initial values if specified.
@@ -87,14 +101,30 @@ M.availability_relativedate.form.getNode = function(json) {
     }
     node.one('select[name=relativestart]').set('value', i);
 
+    c = 0;
+    if (json.c !== undefined) {
+        c = json.c;
+    }
+    node.one('select[name=relativecoursemodule]').set('value', c);
+
     // Add event handlers (first time only).
     if (!M.availability_relativedate.form.addedEvents) {
         M.availability_relativedate.form.addedEvents = true;
         var root = Y.one('.availability-field');
         root.delegate('change', function() {
-            // Just update the form fields.
-            M.core_availability.form.update();
+            updateForm(this);
         }, '.availability_relativedate select');
+
+        var updateForm = function(input) {
+            var ancestorNode = input.ancestor('span.availability_relativedate');
+            var op = ancestorNode.one('select[name=relativestart]');
+            if(op.get('value') == '6') {
+                ancestorNode.one('select[name=relativecoursemodule]').set('style', '');
+            } else {
+                ancestorNode.one('select[name=relativecoursemodule]').set('style', 'display: none;');
+            }
+            M.core_availability.form.update();
+        };
     }
 
     return node;
@@ -104,6 +134,7 @@ M.availability_relativedate.form.fillValue = function(value, node) {
     value.n = node.one('select[name=relativenumber]').get('value');
     value.d = node.one('select[name=relativednw]').get('value');
     value.s = node.one('select[name=relativestart]').get('value');
+    value.c = node.one('select[name=relativecoursemodule]').get('value');
 };
 
 M.availability_relativedate.form.fillErrors = function(errors, node) {
