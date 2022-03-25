@@ -59,11 +59,11 @@ class frontend extends \core_availability\frontend {
             $optionsstart[] = (object)['field' => 4, 'display' => condition::options_start(4)];
         }
         $optionsstart[] = (object)['field' => 5, 'display' => condition::options_start(5)];
+        $activitysel = [];
         if($course->enablecompletion != 0) {
             $cm = get_fast_modinfo($course);
 
             $s = [];
-            $activitysel = [];
             // Gets only sections with content.
             foreach ($cm->get_sections() as $sectionnum => $section) {
                 $sectioninfo = $cm->get_section_info($sectionnum);

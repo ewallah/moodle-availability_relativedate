@@ -311,12 +311,14 @@ class condition_test extends \advanced_testcase {
      * @covers \availability_relativedate\condition
      */
     public function test_static() {
-        $this->assertCount(4, \availability_relativedate\condition::options_dwm());
+        $this->assertCount(6, \availability_relativedate\condition::options_dwm());
         $this->assertEquals('hour', \availability_relativedate\condition::option_dwm(1));
         $this->assertEquals('after course start date', \availability_relativedate\condition::options_start(1));
         $this->assertEquals('before course end date', \availability_relativedate\condition::options_start(2));
         $this->assertEquals('after user enrolment date', \availability_relativedate\condition::options_start(3));
         $this->assertEquals('after enrolment method end date', \availability_relativedate\condition::options_start(4));
-        $this->assertEquals('', \availability_relativedate\condition::options_start(5));
+        $this->assertEquals('after last visit', \availability_relativedate\condition::options_start(5));
+        $this->assertEquals('after completion of activity', \availability_relativedate\condition::options_start(6));
+        $this->assertEquals('', \availability_relativedate\condition::options_start(7));
     }
 }
