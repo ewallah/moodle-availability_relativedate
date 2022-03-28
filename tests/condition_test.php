@@ -72,9 +72,9 @@ class condition_test extends \advanced_testcase {
         $stru4 = (object)['op' => '|', 'show' => true,
             'c' => [(object)['type' => 'relativedate', 'n' => 4, 'd' => 4, 's' => 4]]];
         $stru5 = (object)['op' => '|', 'show' => true,
-            'c' => [(object)['type' => 'relativedate', 'n' => 5, 'd' => 4, 's' => 4]]];
+            'c' => [(object)['type' => 'relativedate', 'n' => 7, 'd' => 4, 's' => 4]]];
         $stru6 = (object)['op' => '|', 'show' => false,
-            'c' => [(object)['type' => 'relativedate', 'n' => 5, 'd' => 5, 's' => 5]]];
+            'c' => [(object)['type' => 'relativedate', 'n' => 7, 'd' => 5, 's' => 5]]];
         $tree1 = new tree($stru1);
         $tree2 = new tree($stru2);
         $tree3 = new tree($stru3);
@@ -311,7 +311,7 @@ class condition_test extends \advanced_testcase {
      * @covers \availability_relativedate\condition
      */
     public function test_static() {
-        $this->assertCount(6, \availability_relativedate\condition::options_dwm());
+        $this->assertCount(4, \availability_relativedate\condition::options_dwm());
         $this->assertEquals('hour', \availability_relativedate\condition::option_dwm(1));
         $this->assertEquals('after course start date', \availability_relativedate\condition::options_start(1));
         $this->assertEquals('before course end date', \availability_relativedate\condition::options_start(2));
