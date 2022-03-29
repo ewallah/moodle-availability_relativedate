@@ -325,6 +325,14 @@ class condition extends \core_availability\condition {
         return $olddate;
     }
 
+    /**
+     * This function returns true if a restriction in the course is based on the completion value
+     * of a certain activity. This is used for handling of caching.
+     *
+     * @param stdClass $course course object
+     * @param int $cmid id of the course module
+     * @return boolean true if availability is dependent on this course module
+     */
     public static function completion_value_used($course, $cmid): bool {
         if (!array_key_exists($course->id, self::$modsusedincondition)) {
             $modinfo = get_fast_modinfo($course);
