@@ -92,7 +92,9 @@ class condition extends \core_availability\condition {
             'type' => 'relativedate',
             'n' => intval($this->relativenumber),
             'd' => intval($this->relativedwm),
-            's' => intval($this->relativestart)];
+            's' => intval($this->relativestart),
+            'c' => intval($this->relativecoursemodule)
+        ];
     }
 
     /**
@@ -156,7 +158,7 @@ class condition extends \core_availability\condition {
      */
     protected function get_debug_string() {
         $modname = '';
-        if($this->relativestart == 6) {
+        if ($this->relativestart == 6) {
             $modname = ' ' . \core_availability\condition::description_cm_name($this->relativecoursemodule);
         }
         return ' ' . $this->relativenumber . ' ' . self::options_dwm()[$this->relativedwm] . ' ' .
@@ -281,7 +283,7 @@ class condition extends \core_availability\condition {
             $cm->course = $course->id;
             $completion = new \completion_info($course);
             $completiondata = $completion->get_data($cm);
-            if ($completiondata->completionstate>0) {
+            if ($completiondata->completionstate > 0) {
                 return $this->fixdate("+$this->relativenumber $x", $completiondata->timemodified);
             } else {
                 return 0;

@@ -60,7 +60,7 @@ class frontend extends \core_availability\frontend {
         }
         $optionsstart[] = (object)['field' => 5, 'display' => condition::options_start(5)];
         $activitysel = [];
-        if($course->enablecompletion != 0) {
+        if ($course->enablecompletion != 0) {
             $cm = get_fast_modinfo($course);
 
             $s = [];
