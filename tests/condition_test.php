@@ -72,9 +72,9 @@ class condition_test extends \advanced_testcase {
         $stru4 = (object)['op' => '|', 'show' => true,
             'c' => [(object)['type' => 'relativedate', 'n' => 4, 'd' => 4, 's' => 4]]];
         $stru5 = (object)['op' => '|', 'show' => true,
-            'c' => [(object)['type' => 'relativedate', 'n' => 7, 'd' => 4, 's' => 4]]];
+            'c' => [(object)['type' => 'relativedate', 'n' => 5, 'd' => 4, 's' => 4]]];
         $stru6 = (object)['op' => '|', 'show' => false,
-            'c' => [(object)['type' => 'relativedate', 'n' => 7, 'd' => 5, 's' => 5]]];
+            'c' => [(object)['type' => 'relativedate', 'n' => 5, 'd' => 5, 's' => 7]]];
         $tree1 = new tree($stru1);
         $tree2 = new tree($stru2);
         $tree3 = new tree($stru3);
