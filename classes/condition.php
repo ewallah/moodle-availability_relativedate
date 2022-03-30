@@ -271,8 +271,13 @@ class condition extends \core_availability\condition {
             }
         } else if ($this->relativestart == 5) {
             global $USER;
-            if (isset($USER->lastcourseaccess[$course->id])) {
-                $lastaccess = $USER->lastcourseaccess[$course->id];
+            if ($USER->id == $userid) {
+                $conditionuser = $USER;
+            } else {
+                $conditionuser = \core_user::get_user($userid);
+            }
+            if (isset($conditionuser->lastcourseaccess[$course->id])) {
+                $lastaccess = $conditionuser->lastcourseaccess[$course->id];
             } else {
                 $lastaccess = 0;
             }
