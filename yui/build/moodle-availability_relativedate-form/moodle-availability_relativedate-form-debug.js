@@ -72,12 +72,12 @@ M.availability_relativedate.form.getNode = function(json) {
 
     for (i = 0; i < this.activitySelector.length; i++) {
         html += '<option disabled>' + this.activitySelector[i].name + '</option>';
-        for (j = 0; j < this.activitySelector[i]['coursemodules'].length; j++) {
-            html += '<option value="' + this.activitySelector[i]['coursemodules'][j]['id'];
-            if(this.activitySelector[i]['coursemodules'][j]['completionenabled'] == 0) {
+        for (j = 0; j < this.activitySelector[i].coursemodules.length; j++) {
+            html += '<option value="' + this.activitySelector[i].coursemodules[j].id;
+            if (this.activitySelector[i].coursemodules[j].completionenabled == 0) {
                 html += ' disabled';
             }
-            html += '">' + this.activitySelector[i]['coursemodules'][j]['name'] + '</option>';
+            html += '">' + this.activitySelector[i].coursemodules[j].name + '</option>';
         }
     }
     html += '</select></label>';
@@ -112,20 +112,20 @@ M.availability_relativedate.form.getNode = function(json) {
     if (!M.availability_relativedate.form.addedEvents) {
         M.availability_relativedate.form.addedEvents = true;
         var root = Y.one('.availability-field');
-        root.delegate('change', function() {
-            updateForm(this);
-        }, '.availability_relativedate select');
-
         var updateForm = function(input) {
             var ancestorNode = input.ancestor('span.availability_relativedate');
             var op = ancestorNode.one('select[name=relativestart]');
-            if(op.get('value') == '6') {
+            if (op.get('value') == '6') {
                 ancestorNode.one('select[name=relativecoursemodule]').set('style', '');
             } else {
                 ancestorNode.one('select[name=relativecoursemodule]').set('style', 'display: none;');
             }
             M.core_availability.form.update();
         };
+
+        root.delegate('change', function() {
+            updateForm(this);
+        }, '.availability_relativedate select');
     }
 
     return node;
