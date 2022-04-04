@@ -49,7 +49,8 @@ class frontend_test extends \advanced_testcase {
         $enabled['self'] = true;
         set_config('enrol_plugins_enabled', implode(',', array_keys($enabled)));
         $dg = $this->getDataGenerator();
-        $course = $dg->create_course();
+        $course = $dg->create_course(['enablecompletion' => 1]);
+        $dg->get_plugin_generator('mod_page')->create_instance(['course' => $course]);
         $modinfo = get_fast_modinfo($course);
         $sections = $modinfo->get_section_info_all();
         $selfplugin = enrol_get_plugin('self');
@@ -76,12 +77,16 @@ class frontend_test extends \advanced_testcase {
         $this->resetAfterTest();
         $this->setAdminUser();
         set_config('enableavailability', true);
-        $course = $this->getDataGenerator()->create_course(['enablecompletion' => true]);
+        $dg = $this->getDataGenerator();
+        $course = $dg->create_course(['enablecompletion' => true]);
+        $page1 = $dg->get_plugin_generator('mod_page')->create_instance(['course' => $course, 'name' => 'page1']);
+        $page2 = $dg->get_plugin_generator('mod_page')->create_instance(['course' => $course, 'name' => 'page2']);
         $class = new \behat_availability_relativedate();
         $class->selfenrolment_exists_in_course_starting($course->fullname, '');
         $class->selfenrolment_exists_in_course_starting($course->fullname, '##-10 days noon##');
         $class->selfenrolment_exists_in_course_ending($course->fullname, '');
         $class->selfenrolment_exists_in_course_ending($course->fullname, '## today ##');
+        $class->i_make_activity_relative_date_depending_on($page1->name, $page2->name);
         $this->expectExceptionMessage('behat_context_helper');
         $class->i_should_see_relativedate('##-10 days noon##');
     }

@@ -84,9 +84,10 @@ class behat_availability_relativedate extends behat_base {
         global $DB;
         $cm1 = $this->get_course_module_for_identifier($activity1);
         $cm2 = $this->get_course_module_for_identifier($activity2);
-        $str = '{"op":"|","c":[{"type":"relativedate","n":1,"d":1,"s":6,"c":' . $cm1->id . '}],"show":true}';
-        $DB->set_field('course_modules', 'availability', $str, ['id' => $cm2->id]);
-        mtrace($cm1->id);
+        if ($cm1 && $cm2) {
+            $str = '{"op":"|","c":[{"type":"relativedate","n":1,"d":1,"s":6,"c":' . $cm1->id . '}],"show":true}';
+            $DB->set_field('course_modules', 'availability', $str, ['id' => $cm2->id]);
+        }
     }
 
 

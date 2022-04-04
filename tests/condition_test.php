@@ -68,8 +68,6 @@ class condition_test extends \advanced_testcase {
         $user = $dg->create_user(['timezone' => 'UTC']);
         $course = $dg->create_course(['startdate' => $now, 'enddate' => $now + 7 * WEEKSECS]);
         $page = $dg->get_plugin_generator('mod_page')->create_instance(['course' => $course]);
-        $modinfo = get_fast_modinfo($course);
-        $cm = $modinfo->get_cm($page->cmid);
         $dg->enrol_user($user->id, $course->id, $studentroleid);
         $selfplugin = enrol_get_plugin('self');
         $instance = $DB->get_record('enrol', ['courseid' => $course->id, 'enrol' => 'self'], '*', MUST_EXIST);
@@ -78,19 +76,19 @@ class condition_test extends \advanced_testcase {
         $selfplugin->enrol_user($instance, $user->id, $studentroleid, $now);
 
         $stru1 = (object)['op' => '|', 'show' => true,
-            'c' => [(object)['type' => 'relativedate', 'n' => 1, 'd' => 1, 's' => 1, 'c' => $cm->id]]];
+            'c' => [(object)['type' => 'relativedate', 'n' => 1, 'd' => 1, 's' => 1, 'c' => $page->cmid]]];
         $stru2 = (object)['op' => '|', 'show' => true,
-            'c' => [(object)['type' => 'relativedate', 'n' => 2, 'd' => 2, 's' => 2, 'c' => $cm->id]]];
+            'c' => [(object)['type' => 'relativedate', 'n' => 2, 'd' => 2, 's' => 2, 'c' => $page->cmid]]];
         $stru3 = (object)['op' => '|', 'show' => true,
-            'c' => [(object)['type' => 'relativedate', 'n' => 3, 'd' => 3, 's' => 3, 'c' => $cm->id]]];
+            'c' => [(object)['type' => 'relativedate', 'n' => 3, 'd' => 3, 's' => 3, 'c' => $page->cmid]]];
         $stru4 = (object)['op' => '|', 'show' => true,
-            'c' => [(object)['type' => 'relativedate', 'n' => 4, 'd' => 4, 's' => 4, 'c' => $cm->id]]];
+            'c' => [(object)['type' => 'relativedate', 'n' => 4, 'd' => 4, 's' => 4, 'c' => $page->cmid]]];
         $stru5 = (object)['op' => '|', 'show' => true,
-            'c' => [(object)['type' => 'relativedate', 'n' => 5, 'd' => 5, 's' => 4, 'c' => $cm->id]]];
+            'c' => [(object)['type' => 'relativedate', 'n' => 5, 'd' => 5, 's' => 4, 'c' => $page->cmid]]];
         $stru6 = (object)['op' => '|', 'show' => false,
-            'c' => [(object)['type' => 'relativedate', 'n' => 6, 'd' => 6, 's' => 5, 'c' => $cm->id]]];
+            'c' => [(object)['type' => 'relativedate', 'n' => 6, 'd' => 6, 's' => 5, 'c' => $page->cmid]]];
         $stru7 = (object)['op' => '|', 'show' => false,
-            'c' => [(object)['type' => 'relativedate', 'n' => 7, 'd' => 7, 's' => 6, 'c' => $cm->id]]];
+            'c' => [(object)['type' => 'relativedate', 'n' => 7, 'd' => 7, 's' => 6, 'c' => $page->cmid]]];
         $tree1 = new tree($stru1);
         $tree2 = new tree($stru2);
         $tree3 = new tree($stru3);
@@ -123,7 +121,7 @@ class condition_test extends \advanced_testcase {
         $this->assertEquals("$nau From $calc", $tree5->get_full_information($info));
         // 6 Months after completion of module.
         $calc = userdate(strtotime("+6 month", $now + 1000), $strf);
-        // TODO: $this->assertEquals("$nau From $calc", $tree6->get_full_information($info));
+        // TODO: $this->assertEquals("$nau From $calc", $tree6->get_full_information($info));.
 
         $this->assertFalse($tree1->is_available_for_all());
         $this->assertFalse($tree2->is_available_for_all());
@@ -202,6 +200,7 @@ class condition_test extends \advanced_testcase {
         $instance = $DB->get_record('enrol', ['courseid' => $course->id, 'enrol' => 'self'], '*', MUST_EXIST);
         $user = $dg->create_user();
         $selfplugin->enrol_user($instance, $user->id, 5, $now);
+        $page = $dg->get_plugin_generator('mod_page')->create_instance(['course' => $course]);
         $info = new mock_info($course, $user->id);
         $this->setUser($user);
         $strf = get_string('strftimedatetime', 'langconfig');
@@ -244,9 +243,11 @@ class condition_test extends \advanced_testcase {
 
         $cond = new condition((object)['type' => 'relativedate', 'n' => 4, 'd' => 4, 's' => 5, 'c' => 1]);
         // TODO: Check calc and description.
+        $this->assertStringContainsString('8:00 AM', $cond->get_description(true, false, $info));
 
-        $cond = new condition((object)['type' => 'relativedate', 'n' => 4, 'd' => 4, 's' => 6, 'c' => 1]);
-        // TODO: Check calc and description.
+        $cond = new condition((object)['type' => 'relativedate', 'n' => 4, 'd' => 4, 's' => 6, 'c' => $page->cmid]);
+        $this->assertStringContainsString("4 months after completion of activity", $cond->get_description(true, false, $info));
+        $this->assertFalse($cond->completion_value_used($course, $page->cmid));
     }
 
     /**
