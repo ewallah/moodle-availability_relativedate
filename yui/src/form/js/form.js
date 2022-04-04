@@ -30,18 +30,19 @@ M.availability_relativedate.form.warningStrings = null;
  * @param {boolean} isSection Is this a section
  * @param {array} warningStrings Collection of warning strings
  */
-M.availability_relativedate.form.initInner = function(timeFields, startFields, isSection, warningStrings, activityselector) {
+M.availability_relativedate.form.initInner = function(timeFields, startFields, isSection, warningStrings, activitySelector) {
     this.timeFields = timeFields;
     this.startFields = startFields;
     this.isSection = isSection;
     this.warningStrings = warningStrings;
-    this.activityselector = activityselector;
+    this.activitySelector = activitySelector;
 };
 
 M.availability_relativedate.form.getNode = function(json) {
     var html = '<span class="availability-relativedate">';
     var fieldInfo;
     var i = 0;
+    var j = 0;
 
     for (i = 0; i < this.warningStrings.length; i++) {
         html += '<div class="alert alert-warning alert-block fade in " role="alert">' + this.warningStrings[i] + '</div>';
@@ -67,14 +68,14 @@ M.availability_relativedate.form.getNode = function(json) {
     html += '</select></label>';
     html += '<label><select name="relativecoursemodule">';
 
-    for (i = 0; i < this.activityselector.length; i++) {
-        html += '<option disabled>' + this.activityselector[i].name + '</option>';
-        for (j = 0; j < this.activityselector[i]['coursemodules'].length; j++) {
-            html += '<option value="' + this.activityselector[i]['coursemodules'][j]['id'];
-            if(this.activityselector[i]['coursemodules'][j]['completionenabled'] == 0) {
+    for (i = 0; i < this.activitySelector.length; i++) {
+        html += '<option disabled>' + this.activitySelector[i].name + '</option>';
+        for (j = 0; j < this.activitySelector[i]['coursemodules'].length; j++) {
+            html += '<option value="' + this.activitySelector[i]['coursemodules'][j]['id'];
+            if(this.activitySelector[i]['coursemodules'][j]['completionenabled'] == 0) {
                 html += ' disabled';
             }
-            html += '">' + this.activityselector[i]['coursemodules'][j]['name'] + '</option>';
+            html += '">' + this.activitySelector[i]['coursemodules'][j]['name'] + '</option>';
         }
     }
     html += '</select></label>';
@@ -99,11 +100,11 @@ M.availability_relativedate.form.getNode = function(json) {
     }
     node.one('select[name=relativestart]').set('value', i);
 
-    c = 0;
+    i = 0;
     if (json.c !== undefined) {
-        c = json.c;
+        i = json.c;
     }
-    node.one('select[name=relativecoursemodule]').set('value', c);
+    node.one('select[name=relativecoursemodule]').set('value', i);
 
     // Add event handlers (first time only).
     if (!M.availability_relativedate.form.addedEvents) {
