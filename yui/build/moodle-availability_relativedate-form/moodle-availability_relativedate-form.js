@@ -126,6 +126,7 @@ M.availability_relativedate.form.getNode = function(json) {
         root.delegate('change', function() {
             updateForm(this);
         }, '.availability_relativedate select');
+        updateForm(this);
     }
 
     return node;
