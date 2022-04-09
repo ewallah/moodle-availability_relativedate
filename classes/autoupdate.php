@@ -35,7 +35,7 @@ namespace availability_relativedate;
 class autoupdate {
     /**
      * Called when a course_module_deleted event is triggered. Updates the completion state for all
-     * learningmaps in the course of the activity.
+     * availability_relativedate instances in the course of the activity.
      *
      * @param \core\event\base $event
      * @return void
