@@ -37,6 +37,7 @@ $string['description'] = 'Prevent access until a relative time is reached before
 $string['from'] = 'From {$a->rnumber} {$a->rtime} {$a->rela}';
 $string['hour'] = 'hour';
 $string['hours'] = 'hours';
+$string['missing'] = 'missing activity';
 $string['month'] = 'month';
 $string['months'] = 'months';
 $string['noenddate'] = 'This course has no end date';

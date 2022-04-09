@@ -159,10 +159,11 @@ class condition extends \core_availability\condition {
     protected function get_debug_string() {
         $modname = '';
         if ($this->relativestart == 6) {
-            if (!get_coursemodule_from_id('', $this->relativecoursemodule)) {
-                return 0;
+            if (get_coursemodule_from_id('', $this->relativecoursemodule, false, IGNORE_MISSING + IGNORE_MULTIPLE)) {
+                $modname = ' ' . \core_availability\condition::description_cm_name($this->relativecoursemodule);
+            } else {
+                $modname = ' ' . get_string('missing', 'availability_relativedate');
             }
-            $modname = ' ' . \core_availability\condition::description_cm_name($this->relativecoursemodule);
         }
         return ' ' . $this->relativenumber . ' ' . self::options_dwm()[$this->relativedwm] . ' ' .
                self::options_start($this->relativestart) . $modname;
