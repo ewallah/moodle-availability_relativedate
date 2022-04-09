@@ -159,7 +159,7 @@ class condition extends \core_availability\condition {
     protected function get_debug_string() {
         $modname = '';
         if ($this->relativestart == 6) {
-            if (get_coursemodule_from_id('', $this->relativecoursemodule, false, IGNORE_MISSING + IGNORE_MULTIPLE)) {
+            if ($this->relativecoursemodule != -1 && get_coursemodule_from_id('', $this->relativecoursemodule)) {
                 $modname = ' ' . \core_availability\condition::description_cm_name($this->relativecoursemodule);
             } else {
                 $modname = ' ' . get_string('missing', 'availability_relativedate');
@@ -291,9 +291,7 @@ class condition extends \core_availability\condition {
             $cm->id = $this->relativecoursemodule;
             $cm->course = $course->id;
             $cminfo = get_fast_modinfo($course);
-            try {
-                $cminfo->get_cm($this->relativecoursemodule);
-            } catch (\Exception $e) {
+            if ($this->relativecoursemodule == -1 || !isset($cminfo->get_cms[$this->relativecoursemodule])) {
                 return 0;
             }
             $completion = new \completion_info($course);
@@ -349,9 +347,14 @@ class condition extends \core_availability\condition {
      * @return boolean true if availability is dependent on this course module
      */
     public static function completion_value_used($course, $cmid): bool {
-        if (!array_key_exists($course->id, self::$modsusedincondition)) {
-            $modinfo = get_fast_modinfo($course);
-            self::$modsusedincondition[$course->id] = [];
+        if (is_object($course)) {
+            $courseid = $course->id;
+        } else {
+            $courseid = $course;
+        }
+        if (!array_key_exists($courseid, self::$modsusedincondition)) {
+            $modinfo = get_fast_modinfo($courseid);
+            self::$modsusedincondition[$courseid] = [];
 
             foreach ($modinfo->cms as $othercm) {
                 if (is_null($othercm->availability)) {
@@ -362,7 +365,7 @@ class condition extends \core_availability\condition {
                 foreach ($tree->get_all_children('availability_relativedate\condition') as $cond) {
                     $condcmid = $cond->get_cmid();
                     if (!empty($condcmid)) {
-                        self::$modsusedincondition[$course->id][$condcmid] = true;
+                        self::$modsusedincondition[$courseid][$condcmid] = true;
                     }
                 }
             }
@@ -376,12 +379,28 @@ class condition extends \core_availability\condition {
                 foreach ($tree->get_all_children('availability_relativedate\condition') as $cond) {
                     $condcmid = $cond->get_cmid();
                     if (!empty($condcmid)) {
-                        self::$modsusedincondition[$course->id][$condcmid] = true;
+                        self::$modsusedincondition[$courseid][$condcmid] = true;
                     }
                 }
             }
         }
-        return array_key_exists($cmid, self::$modsusedincondition[$course->id]);
+        return array_key_exists($cmid, self::$modsusedincondition[$courseid]);
+    }
+
+    /**
+     * Helper for updating ids (only implemented for course modules)
+     *
+     * @param string $table
+     * @param int $oldid
+     * @param int $newid
+     * @return bool
+     */
+    public function update_dependency_id($table, $oldid, $newid) {
+        if ($table == 'course_modules' && $this->relativestart == 6 && $this->relativecoursemodule == $oldid) {
+            $this->relativecoursemodule = $newid;
+            return true;
+        }
+        return false;
     }
 
     /**
