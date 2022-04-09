@@ -75,6 +75,23 @@ class behat_availability_relativedate extends behat_base {
     }
 
     /**
+     * Make one activity available after another
+     * @Given /^I make "(?P<activity2>[^"]*)" relative date depending on "(?P<avtivity1>[^"]*)"$/
+     * @param string $activity1
+     * @param string $activity2
+     */
+    public function i_make_activity_relative_date_depending_on($activity1, $activity2) {
+        global $DB;
+        $cm1 = $this->get_course_module_for_identifier($activity1);
+        $cm2 = $this->get_course_module_for_identifier($activity2);
+        if ($cm1 && $cm2) {
+            $str = '{"op":"|","c":[{"type":"relativedate","n":1,"d":1,"s":6,"c":' . $cm1->id . '}],"show":true}';
+            $DB->set_field('course_modules', 'availability', $str, ['id' => $cm2->id]);
+        }
+    }
+
+
+    /**
      * Configure self enrolment
      * @param string $course
      * @param string $start
