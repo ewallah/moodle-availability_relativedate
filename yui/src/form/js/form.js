@@ -66,7 +66,7 @@ M.availability_relativedate.form.getNode = function(json) {
         html += '<option value="' + fieldInfo.field + '">' + fieldInfo.display + '</option>';
     }
     html += '</select></label>';
-    html += '<label><select name="relativecoursemodule">';
+    html += '<label><select name="relativecoursemodule"' + (json.s != 6 ? ' style="display: none;"' : '') + '>';
 
     for (i = 0; i < this.activitySelector.length; i++) {
         html += '<option disabled>' + this.activitySelector[i].name + '</option>';

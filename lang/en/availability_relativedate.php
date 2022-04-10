@@ -39,6 +39,7 @@ $string['hour'] = 'hour';
 $string['hours'] = 'hours';
 $string['minute'] = 'minute';
 $string['minutes'] = 'minutes';
+$string['missing'] = 'missing activity';
 $string['month'] = 'month';
 $string['months'] = 'months';
 $string['noenddate'] = 'This course has no end date';
