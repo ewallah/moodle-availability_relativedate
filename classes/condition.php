@@ -196,6 +196,7 @@ class condition extends \core_availability\condition {
      */
     public static function options_dwm() {
         return [
+            0 => get_string('minutes', 'availability_relativedate'),
             1 => get_string('hours', 'availability_relativedate'),
             2 => get_string('days', 'availability_relativedate'),
             3 => get_string('weeks', 'availability_relativedate'),
@@ -211,6 +212,8 @@ class condition extends \core_availability\condition {
      */
     public static function option_dwm(int $i): string {
         switch ($i) {
+            case 0:
+                return 'minute';
             case 1:
                 return 'hour';
             case 2:
@@ -231,6 +234,7 @@ class condition extends \core_availability\condition {
      * @return int relative date.
      */
     private function calc($course, $userid): int {
+        global $DB, $USER;
         $x = $this->option_dwm($this->relativedwm);
         if ($this->relativestart == 1) {
             // Course start date.
@@ -270,18 +274,10 @@ class condition extends \core_availability\condition {
                 return $this->fixdate("+$this->relativenumber $x", $lowest);
             }
         } else if ($this->relativestart == 5) {
-            global $USER;
-            if ($USER->id == $userid) {
-                $conditionuser = $USER;
-            } else {
-                $conditionuser = \core_user::get_user($userid);
+            $lastaccess = $DB->get_field('user_lastaccess', 'timeaccess', ['userid' => $userid, 'courseid' => $course->id]);
+            if ($lastaccess > 0) {
+                return $this->fixdate("+$this->relativenumber $x", $lastaccess);
             }
-            if (isset($conditionuser->lastcourseaccess[$course->id])) {
-                $lastaccess = $conditionuser->lastcourseaccess[$course->id];
-            } else {
-                $lastaccess = 0;
-            }
-            return $this->fixdate("+$this->relativenumber $x", $lastaccess);
         } else if ($this->relativestart == 6) {
             $cm = new stdClass;
             $cm->id = $this->relativecoursemodule;
@@ -290,8 +286,6 @@ class condition extends \core_availability\condition {
             $completiondata = $completion->get_data($cm);
             if ($completiondata->completionstate > 0) {
                 return $this->fixdate("+$this->relativenumber $x", $completiondata->timemodified);
-            } else {
-                return 0;
             }
         }
         return 0;
@@ -342,7 +336,6 @@ class condition extends \core_availability\condition {
         if (!array_key_exists($course->id, self::$modsusedincondition)) {
             $modinfo = get_fast_modinfo($course);
             self::$modsusedincondition[$course->id] = [];
-
             foreach ($modinfo->cms as $othercm) {
                 if (is_null($othercm->availability)) {
                     continue;
