@@ -2,7 +2,7 @@
 Feature: availability_relativedate relative activities
   In order to control student access to activities
   As a teacher
-  I need to set session date conditions which prevent student access
+  I need to set activitie date conditions which prevent student access
 
   Background:
     Given the following "users" exist:
@@ -81,6 +81,8 @@ Feature: availability_relativedate relative activities
     And I am on the "C1" "Course" page logged in as "student1"
     Then I should see "Page A1" in the "region-main" "region"
     And I press "Mark as done"
+    And I log out
+    And I trigger cron
+    And I am on the "C1" "Course" page logged in as "student1"
     And I should see "1 hours after completion of activity" in the "region-main" "region"
     Then I should see relativedate "## +1 hour ##"
-    #And I should see "boeboe"

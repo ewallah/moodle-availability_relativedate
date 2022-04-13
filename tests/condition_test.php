@@ -40,15 +40,30 @@ use \core_availability\info_module;
  */
 class condition_test extends \advanced_testcase {
 
+    /** @var stdClass course. */
+    private $course;
+
+    /** @var stdClass page. */
+    private $page;
+
     /**
-     * Load required classes.
+     * Create course and page.
      */
     public function setUp():void {
-        // Load the mock info class so that it can be used.
         global $CFG;
         require_once($CFG->dirroot . '/availability/tests/fixtures/mock_info.php');
-        require_once($CFG->dirroot . '/availability/tests/fixtures/mock_condition.php');
+        require_once($CFG->dirroot . '/availability/tests/fixtures/mock_info_module.php');
         require_once($CFG->libdir . '/completionlib.php');
+        $this->resetAfterTest();
+        $this->setAdminUser();
+        $CFG->enablecompletion = true;
+        $CFG->enableavailability = true;
+        set_config('enableavailability', true);
+        $dg = $this->getDataGenerator();
+        $now = time();
+        $this->course = $dg->create_course(['startdate' => $now, 'enddate' => $now + 7 * WEEKSECS, 'enablecompletion' => 1]);
+        $this->page = $dg->get_plugin_generator('mod_page')->create_instance(
+            ['course' => $this->course, 'completion' => COMPLETION_TRACKING_MANUAL]);
     }
 
     /**
@@ -57,66 +72,61 @@ class condition_test extends \advanced_testcase {
      */
     public function test_in_tree() {
         global $DB;
-        $this->resetAfterTest();
         $this->setTimezone('UTC');
 
-        set_config('enableavailability', true);
         $dg = $this->getDataGenerator();
 
         $studentroleid = $DB->get_field('role', 'id', ['shortname' => 'student']);
         $now = time();
         $user = $dg->create_user(['timezone' => 'UTC']);
-        $course = $dg->create_course(['startdate' => $now, 'enddate' => $now + 7 * WEEKSECS]);
         $obj = new \stdClass();
         $obj->userid = $user->id;
-        $obj->courseid = $course->id;
+        $obj->courseid = $this->course->id;
         $obj->timeaccess = $now;
         $DB->insert_record('user_lastaccess', $obj);
-        $page = $dg->get_plugin_generator('mod_page')->create_instance(['course' => $course]);
-        $dg->enrol_user($user->id, $course->id, $studentroleid);
+        $dg->enrol_user($user->id, $this->course->id, $studentroleid);
         $selfplugin = enrol_get_plugin('self');
-        $instance = $DB->get_record('enrol', ['courseid' => $course->id, 'enrol' => 'self'], '*', MUST_EXIST);
+        $instance = $DB->get_record('enrol', ['courseid' => $this->course->id, 'enrol' => 'self'], '*', MUST_EXIST);
         $DB->set_field('enrol', 'enrolenddate', $now + 1000, ['id' => $instance->id]);
-        $instance = $DB->get_record('enrol', ['courseid' => $course->id, 'enrol' => 'self'], '*', MUST_EXIST);
+        $instance = $DB->get_record('enrol', ['courseid' => $this->course->id, 'enrol' => 'self'], '*', MUST_EXIST);
         $selfplugin->enrol_user($instance, $user->id, $studentroleid, $now);
+        $cmid = $this->page->cmid;
 
         $stru1 = (object)['op' => '|', 'show' => true,
-            'c' => [(object)['type' => 'relativedate', 'n' => 1, 'd' => 1, 's' => 1, 'c' => $page->cmid]]];
+            'c' => [(object)['type' => 'relativedate', 'n' => 1, 'd' => 1, 's' => 1, 'c' => $cmid]]];
         $stru2 = (object)['op' => '|', 'show' => true,
-            'c' => [(object)['type' => 'relativedate', 'n' => 2, 'd' => 2, 's' => 2, 'c' => $page->cmid]]];
+            'c' => [(object)['type' => 'relativedate', 'n' => 2, 'd' => 2, 's' => 2, 'c' => $cmid]]];
         $stru3 = (object)['op' => '|', 'show' => true,
-            'c' => [(object)['type' => 'relativedate', 'n' => 3, 'd' => 3, 's' => 3, 'c' => $page->cmid]]];
+            'c' => [(object)['type' => 'relativedate', 'n' => 3, 'd' => 3, 's' => 3, 'c' => $cmid]]];
         $stru4 = (object)['op' => '|', 'show' => true,
-            'c' => [(object)['type' => 'relativedate', 'n' => 4, 'd' => 4, 's' => 4, 'c' => $page->cmid]]];
+            'c' => [(object)['type' => 'relativedate', 'n' => 4, 'd' => 4, 's' => 4, 'c' => $cmid]]];
         $stru5 = (object)['op' => '|', 'show' => true,
-            'c' => [(object)['type' => 'relativedate', 'n' => 5, 'd' => 4, 's' => 5, 'c' => $page->cmid]]];
-        $stru6 = (object)['op' => '|', 'show' => false,
-            'c' => [(object)['type' => 'relativedate', 'n' => 6, 'd' => 0, 's' => 6, 'c' => $page->cmid]]];
-        $stru7 = (object)['op' => '|', 'show' => false,
-            'c' => [(object)['type' => 'relativedate', 'n' => 1, 'd' => 0, 's' => 7, 'c' => $page->cmid]]];
+            'c' => [(object)['type' => 'relativedate', 'n' => 5, 'd' => 4, 's' => 5, 'c' => $cmid]]];
+        $stru6 = (object)['op' => '|', 'show' => true,
+            'c' => [(object)['type' => 'relativedate', 'n' => 6, 'd' => 0, 's' => 6, 'c' => $cmid]]];
+
         $tree1 = new tree($stru1);
         $tree2 = new tree($stru2);
         $tree3 = new tree($stru3);
         $tree4 = new tree($stru4);
         $tree5 = new tree($stru5);
         $tree6 = new tree($stru6);
-        $tree7 = new tree($stru7);
 
         $this->setUser($user);
-        $info = new mock_info($course, $user->id);
+        $info = new mock_info($this->course, $user->id);
         list($sql, $params) = $tree1->get_user_list_sql(false, $info, false);
         $this->assertEquals('', $sql);
         $this->assertEquals([], $params);
         $strf = get_string('strftimedatetime', 'langconfig');
         $nau = 'Not available unless:';
         // 1 Hour after course start date.
-        $calc = userdate(strtotime("+1 hour", $course->startdate), $strf, 0);
+        $calc = userdate(strtotime("+1 hour", $this->course->startdate), $strf, 0);
         $this->assertEquals("$nau From $calc", $tree1->get_full_information($info));
         // 2 Days before course end date.
-        $calc = userdate(strtotime("-2 day", $course->enddate), $strf);
+        $calc = userdate(strtotime("-2 day", $this->course->enddate), $strf);
         $this->assertEquals("$nau Until $calc", $tree2->get_full_information($info));
         // 3 Weeks after user enrolment day.
-        $calc = userdate(strtotime("+3 week", $course->startdate), $strf);
+        $calc = userdate(strtotime("+3 week", $this->course->startdate), $strf);
         $this->assertEquals("$nau From $calc", $tree3->get_full_information($info));
         // 4 Months after enrolment end date.
         $calc = userdate(strtotime("+4 month", $now + 1000), $strf);
@@ -126,7 +136,7 @@ class condition_test extends \advanced_testcase {
         $this->assertEquals("$nau From $calc", $tree5->get_full_information($info));
         // 6 Minutes after completion of module.
         $this->assertStringContainsString('6 minutes after completion of activity', $tree6->get_full_information($info));
-        $this->assertEquals('Not available unless: (1 minutes) (hidden otherwise)', $tree7->get_full_information($info));
+        $this->do_cron();
 
         $this->assertFalse($tree1->is_available_for_all());
         $this->assertFalse($tree2->is_available_for_all());
@@ -134,7 +144,6 @@ class condition_test extends \advanced_testcase {
         $this->assertFalse($tree4->is_available_for_all());
         $this->assertFalse($tree5->is_available_for_all());
         $this->assertFalse($tree6->is_available_for_all());
-        $this->assertFalse($tree7->is_available_for_all());
 
         $this->assertFalse($tree1->check_available(false, $info, false, 0)->is_available());
         $this->assertFalse($tree1->check_available(false, $info, false, $user->id)->is_available());
@@ -143,7 +152,6 @@ class condition_test extends \advanced_testcase {
         $this->assertFalse($tree4->check_available(false, $info, false, $user->id)->is_available());
         $this->assertFalse($tree5->check_available(false, $info, false, $user->id)->is_available());
         $this->assertFalse($tree6->check_available(false, $info, false, $user->id)->is_available());
-        $this->assertFalse($tree7->check_available(false, $info, false, $user->id)->is_available());
 
         $this->assertTrue($tree1->check_available(true, $info, false, 0)->is_available());
         $this->assertTrue($tree1->check_available(true, $info, false, $user->id)->is_available());
@@ -153,7 +161,6 @@ class condition_test extends \advanced_testcase {
         $this->assertTrue($tree5->check_available(true, $info, false, $user->id)->is_available());
         // TOD: Should be true.
         $this->assertFalse($tree6->check_available(true, $info, false, $user->id)->is_available());
-        $this->assertFalse($tree7->check_available(true, $info, false, $user->id)->is_available());
     }
 
     /**
@@ -198,23 +205,23 @@ class condition_test extends \advanced_testcase {
      */
     public function test_get_description() {
         global $DB;
-        $this->resetAfterTest();
         $dg = $this->getDataGenerator();
         $now = time();
-        $course = $dg->create_course(['startdate' => $now, 'enddate' => $now + 7 * WEEKSECS]);
         $selfplugin = enrol_get_plugin('self');
-        $instance = $DB->get_record('enrol', ['courseid' => $course->id, 'enrol' => 'self'], '*', MUST_EXIST);
+        $instance = $DB->get_record('enrol', ['courseid' => $this->course->id, 'enrol' => 'self'], '*', MUST_EXIST);
         $DB->set_field('enrol', 'enrolenddate', $now + 1000, ['id' => $instance->id]);
-        $instance = $DB->get_record('enrol', ['courseid' => $course->id, 'enrol' => 'self'], '*', MUST_EXIST);
+        $instance = $DB->get_record('enrol', ['courseid' => $this->course->id, 'enrol' => 'self'], '*', MUST_EXIST);
         $user = $dg->create_user();
         $obj = new \stdClass();
         $obj->userid = $user->id;
-        $obj->courseid = $course->id;
+        $obj->courseid = $this->course->id;
         $obj->timeaccess = $now;
         $DB->insert_record('user_lastaccess', $obj);
         $selfplugin->enrol_user($instance, $user->id, 5, $now);
-        $page = $dg->get_plugin_generator('mod_page')->create_instance(['course' => $course]);
-        $info = new mock_info($course, $user->id);
+        $info = new mock_info($this->course, $user->id);
+        $this->setUser($user);
+        \core\session\manager::set_user($user);
+        $this->setAdminUser();
         $this->setUser($user);
         \core\session\manager::set_user($user);
         $strf = get_string('strftimedatetime', 'langconfig');
@@ -230,7 +237,7 @@ class condition_test extends \advanced_testcase {
 
         // Course end date.
         $cond = new condition((object)['type' => 'relativedate', 'n' => 2, 'd' => 2, 's' => 2, 'c' => 1]);
-        $calc = userdate(strtotime("-2 day", $course->enddate), $strf);
+        $calc = userdate(strtotime("-2 day", $this->course->enddate), $strf);
         $this->assertEquals("Until $calc", $cond->get_description(true, false, $info));
         $this->assertEquals("From $calc", $cond->get_description(true, true, $info));
         $this->assertEquals("$nau Until $calc", $cond->get_standalone_description(false, false, $info));
@@ -246,7 +253,7 @@ class condition_test extends \advanced_testcase {
 
         // Enrolment end date.
         $selfplugin = enrol_get_plugin('self');
-        $instance = $DB->get_record('enrol', ['courseid' => $course->id, 'enrol' => 'self'], '*', MUST_EXIST);
+        $instance = $DB->get_record('enrol', ['courseid' => $this->course->id, 'enrol' => 'self'], '*', MUST_EXIST);
         $DB->set_field('enrol', 'enrolenddate', $now + 1000, ['id' => $instance->id]);
         $cond = new condition((object)['type' => 'relativedate', 'n' => 4, 'd' => 4, 's' => 4, 'c' => 1]);
         $calc = userdate(strtotime("+4 month", $now + 1000), $strf);
@@ -260,25 +267,31 @@ class condition_test extends \advanced_testcase {
         $this->assertEquals("From $calc", $cond->get_description(true, false, $info));
         $this->assertEquals("Until $calc", $cond->get_description(true, true, $info));
 
-        $cond = new condition((object)['type' => 'relativedate', 'n' => 4, 'd' => 4, 's' => 6, 'c' => $page->cmid]);
+        $cond = new condition((object)['type' => 'relativedate', 'n' => 4, 'd' => 4, 's' => 6, 'c' => $this->page->cmid]);
         $this->assertStringContainsString("4 months after completion of activity", $cond->get_description(true, false, $info));
         $this->assertStringContainsString("4 months after completion of activity", $cond->get_description(true, true, $info));
         $this->assertStringContainsString("4 months after completion of activity", $cond->get_description(false, false, $info));
         $this->assertStringContainsString("4 months after completion of activity", $cond->get_description(false, true, $info));
-        $this->assertFalse($cond->completion_value_used($course, $page->cmid));
-        $str = '{"op":"|","c":[{"type":"relativedate","n":1,"d":1,"s":6,"c":' . $page->cmid . '}], "show":true}';
-        $DB->set_field('course_modules', 'availability', $str, ['id' => $page->cmid]);
-        $modinfo = get_fast_modinfo($course);
+        $this->assertFalse($cond->completion_value_used($this->course, $this->page->cmid));
+        $str = '{"op":"|","show":true},"c":[{"type":"relativedate","n":1,"d":1,"s":6,"c":' . $this->page->cmid . '}]';
+        $DB->set_field('course_modules', 'availability', $str, ['id' => $this->page->cmid]);
+        // TODO: Why false.
+        $cond->wipe_static_cache();
+        $this->assertFalse($cond->completion_value_used($this->course, $this->page->cmid));
+        $modinfo = get_fast_modinfo($this->course);
         foreach ($modinfo->get_section_info_all() as $section) {
             $DB->set_field('course_sections', 'availability', $str, ['id' => $section->id]);
         }
-        rebuild_course_cache($course->id, true);
-        $modinfo = get_fast_modinfo($course);
-        $completion = new \completion_info($course);
-        $completion->reset_all_state($modinfo->get_cm($page->cmid));
+        $this->do_cron();
+        $completion = new \completion_info($this->course);
+        $completion->reset_all_state($modinfo->get_cm($this->page->cmid));
 
-        $cond = new condition((object)['type' => 'relativedate', 'n' => 4, 'd' => 4, 's' => 6, 'c' => $page->cmid]);
-        $this->assertFalse($cond->completion_value_used($course, $page->cmid));
+        $cond = new condition((object)['type' => 'relativedate', 'n' => 4, 'd' => 4, 's' => 6, 'c' => $this->page->cmid]);
+        $cond->add_cmid($this->page->cmid);
+        // TODO: Why false.
+        $this->assertFalse($cond->completion_value_used($this->course, $this->page->cmid));
+        $this->assertFalse($cond->update_dependency_id('courses', $this->page->cmid, 3));
+        $this->assertTrue($cond->update_dependency_id('course_modules', $this->page->cmid, 3));
     }
 
     /**
@@ -287,13 +300,10 @@ class condition_test extends \advanced_testcase {
      */
     public function test_noenddate() {
         global $DB, $USER;
-        $this->resetAfterTest();
-        $this->setAdminUser();
-        set_config('enableavailability', true);
         $dg = $this->getDataGenerator();
         $now = time();
-        $course1 = $dg->create_course();
-        $course2 = $dg->create_course(['enddate' => $now + 14 * WEEKSECS]);
+        $course1 = $dg->create_course(['enablecompletion' => 1]);
+        $course2 = $dg->create_course(['enddate' => $now + 14 * WEEKSECS, 'enablecompletion' => 1]);
         $user = $dg->create_user();
         $roleid = $DB->get_field('role', 'id', ['shortname' => 'student']);
         $dg->enrol_user($user->id, $course1->id, $roleid);
@@ -341,18 +351,13 @@ class condition_test extends \advanced_testcase {
      */
     public function test_reflection() {
         global $USER;
-        $this->resetAfterTest();
-        $this->setAdminUser();
-        $dg = $this->getDataGenerator();
-        $now = time();
-        $course = $dg->create_course(['startdate' => $now, 'enddate' => $now + 1000]);
         $cond = new condition((object)['type' => 'relativedate', 'n' => 1, 'd' => 1, 's' => 1]);
         $condition = new \availability_relativedate\condition($cond);
         $name = 'availability_relativedate\condition';
         $result = \phpunit_util::call_internal_method($condition, 'get_debug_string', [], $name);
         $this->assertEquals(' 1 days after course start date', $result);
-        $result = \phpunit_util::call_internal_method($condition, 'calc', [$course, $USER->id], $name);
-        $this->assertEquals($now + 24 * 3600, $result);
+        $result = \phpunit_util::call_internal_method($condition, 'calc', [$this->course, $USER->id], $name);
+        $this->assertEquals($this->course->startdate + 24 * 3600, $result);
     }
 
     /**
@@ -370,5 +375,42 @@ class condition_test extends \advanced_testcase {
         $this->assertEquals('after last visit', \availability_relativedate\condition::options_start(5));
         $this->assertEquals('after completion of activity', \availability_relativedate\condition::options_start(6));
         $this->assertEquals('', \availability_relativedate\condition::options_start(7));
+    }
+
+    /**
+     * Tests the autoupdate event.
+     * @covers \availability_relativedate\autoupdate
+     */
+    public function test_autoupdate() {
+        global $DB;
+        $dg = $this->getDataGenerator();
+        $page1 = $dg->get_plugin_generator('mod_page')->create_instance(['course' => $this->course]);
+        $str = '{"op":"|","c":[{"type":"relativedate","n":1,"d":1,"s":6,"c":' . $page1->cmid . '}], "show":true}';
+        $DB->set_field('course_modules', 'availability', $str, ['id' => $this->page->cmid]);
+        $this->do_cron();
+        $event = \core\event\course_module_updated::create([
+            'objectid' => $page1->cmid,
+            'relateduserid' => 1,
+            'context' => \context_course::instance($this->course->id),
+            'courseid' => $this->course->id,
+            'other' => ['relateduserid' => 1, 'modulename' => 'page', 'instanceid' => $this->page->cmid, 'name' => $page1->name]]);
+        $event->trigger();
+        \availability_relativedate\autoupdate::update_from_event($event);
+    }
+
+    /**
+     * Cron function.
+     * @coversNothing
+     */
+    private function do_cron() {
+        $task = new \core\task\completion_regular_task();
+        ob_start();
+        $task->execute();
+        sleep(1);
+        $task->execute();
+        \phpunit_util::run_all_adhoc_tasks();
+        ob_end_clean();
+        get_fast_modinfo(0, 0, true);
+        rebuild_course_cache($this->course->id, true);
     }
 }

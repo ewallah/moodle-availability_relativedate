@@ -34,7 +34,6 @@ class autoupdate {
     public static function update_from_event(\core\event\base $event) : void {
         $data = $event->get_data();
         if (isset($data['courseid']) && $data['courseid'] > 0) {
-            $modinfo = get_fast_modinfo($data['courseid']);
             if (condition::completion_value_used($data['courseid'], $data['objectid'])) {
                 \core_availability\info::update_dependency_id_across_course(
                     $data['courseid'],

@@ -50,7 +50,7 @@ M.availability_relativedate.form.getNode = function(json) {
         html += '<div class="alert alert-warning alert-block fade in " role="alert">' + this.warningStrings[i] + '</div>';
     }
     html += '<label><select name="relativenumber">';
-    for (i = 1; i < 52; i++) {
+    for (i = 1; i < 60; i++) {
         html += '<option value="' + i + '">' + i + '</option>';
     }
 
