@@ -272,12 +272,10 @@ class condition_test extends \advanced_testcase {
         $this->assertStringContainsString("4 months after completion of activity", $cond->get_description(true, true, $info));
         $this->assertStringContainsString("4 months after completion of activity", $cond->get_description(false, false, $info));
         $this->assertStringContainsString("4 months after completion of activity", $cond->get_description(false, true, $info));
-        $this->assertFalse($cond->completion_value_used($this->course, $this->page->cmid));
+        $this->assertTrue($cond->completion_value_used($this->course, $this->page->cmid));
         $str = '{"op":"|","show":true},"c":[{"type":"relativedate","n":1,"d":1,"s":6,"c":' . $this->page->cmid . '}]';
         $DB->set_field('course_modules', 'availability', $str, ['id' => $this->page->cmid]);
-        // TODO: Why false.
-        $cond->wipe_static_cache();
-        $this->assertFalse($cond->completion_value_used($this->course, $this->page->cmid));
+        $this->assertTrue($cond->completion_value_used($this->course, $this->page->cmid));
         $modinfo = get_fast_modinfo($this->course);
         foreach ($modinfo->get_section_info_all() as $section) {
             $DB->set_field('course_sections', 'availability', $str, ['id' => $section->id]);
@@ -287,9 +285,7 @@ class condition_test extends \advanced_testcase {
         $completion->reset_all_state($modinfo->get_cm($this->page->cmid));
 
         $cond = new condition((object)['type' => 'relativedate', 'n' => 4, 'd' => 4, 's' => 6, 'c' => $this->page->cmid]);
-        $cond->add_cmid($this->page->cmid);
-        // TODO: Why false.
-        $this->assertFalse($cond->completion_value_used($this->course, $this->page->cmid));
+        $this->assertTrue($cond->completion_value_used($this->course, $this->page->cmid));
         $this->assertFalse($cond->update_dependency_id('courses', $this->page->cmid, 3));
         $this->assertTrue($cond->update_dependency_id('course_modules', $this->page->cmid, 3));
     }
@@ -315,7 +311,7 @@ class condition_test extends \advanced_testcase {
         $cm1 = $modinfo1->get_cm($page1->cmid);
         $cm2 = $modinfo2->get_cm($page2->cmid);
         $info = new info_module($cm1);
-        $cond = new condition((object)['type' => 'relativedate', 'n' => 7, 'd' => 2, 's' => 2]);
+        $cond = new condition((object)['type' => 'relativedate', 'n' => 7, 'd' => 2, 's' => 2, 'c' => 1]);
         $information = $cond->get_description(true, false, $info);
         $this->assertEquals('This course has no end date', $information);
         $this->assertEquals('{relativedate: 7 days before course end date}', "$cond");
@@ -334,13 +330,13 @@ class condition_test extends \advanced_testcase {
         $this->assertFalse($cond->is_available(false, $info, false, null));
         $this->assertTrue($cond->is_available(true, $info, false, null));
 
-        $cond = new condition((object)['type' => 'relativedate', 'n' => 7, 'd' => 2, 's' => 3]);
+        $cond = new condition((object)['type' => 'relativedate', 'n' => 7, 'd' => 2, 's' => 3, 'c' => 1]);
         $information = $cond->get_description(true, false, $info);
         $this->assertEquals('(7 days after user enrolment date)', $information);
         $this->assertFalse($cond->is_available(false, $info, false, $USER->id));
         $this->assertFalse($cond->is_available(true, $info, false, $USER->id));
 
-        $cond = new condition((object)['type' => 'relativedate', 'n' => 7, 'd' => 2, 's' => 4]);
+        $cond = new condition((object)['type' => 'relativedate', 'n' => 7, 'd' => 2, 's' => 4, 'c' => 1]);
         $information = $cond->get_description(false, false, $info);
         $this->assertEquals('(7 days after enrolment method end date)', $information);
     }
@@ -351,13 +347,15 @@ class condition_test extends \advanced_testcase {
      */
     public function test_reflection() {
         global $USER;
-        $cond = new condition((object)['type' => 'relativedate', 'n' => 1, 'd' => 1, 's' => 1]);
+        $cond = new condition((object)['type' => 'relativedate', 'n' => 3, 'd' => 1, 's' => 6, 'c' => 999999]);
         $condition = new \availability_relativedate\condition($cond);
         $name = 'availability_relativedate\condition';
         $result = \phpunit_util::call_internal_method($condition, 'get_debug_string', [], $name);
         $this->assertEquals(' 1 days after course start date', $result);
         $result = \phpunit_util::call_internal_method($condition, 'calc', [$this->course, $USER->id], $name);
         $this->assertEquals($this->course->startdate + 24 * 3600, $result);
+        $result = \phpunit_util::call_internal_method($cond, 'get_debug_string', [], $name);
+        $this->assertStringContainsString('missing', $result);
     }
 
     /**
@@ -368,6 +366,10 @@ class condition_test extends \advanced_testcase {
         $this->assertCount(5, \availability_relativedate\condition::options_dwm());
         $this->assertEquals('minute', \availability_relativedate\condition::option_dwm(0));
         $this->assertEquals('hour', \availability_relativedate\condition::option_dwm(1));
+        $this->assertEquals('day', \availability_relativedate\condition::option_dwm(2));
+        $this->assertEquals('week', \availability_relativedate\condition::option_dwm(3));
+        $this->assertEquals('month', \availability_relativedate\condition::option_dwm(4));
+        $this->assertEquals('', \availability_relativedate\condition::option_dwm(5));
         $this->assertEquals('after course start date', \availability_relativedate\condition::options_start(1));
         $this->assertEquals('before course end date', \availability_relativedate\condition::options_start(2));
         $this->assertEquals('after user enrolment date', \availability_relativedate\condition::options_start(3));
@@ -389,11 +391,11 @@ class condition_test extends \advanced_testcase {
         $DB->set_field('course_modules', 'availability', $str, ['id' => $this->page->cmid]);
         $this->do_cron();
         $event = \core\event\course_module_updated::create([
-            'objectid' => $page1->cmid,
+            'objectid' => $this->page->cmid,
             'relateduserid' => 1,
             'context' => \context_course::instance($this->course->id),
             'courseid' => $this->course->id,
-            'other' => ['relateduserid' => 1, 'modulename' => 'page', 'instanceid' => $this->page->cmid, 'name' => $page1->name]]);
+            'other' => ['relateduserid' => 1, 'modulename' => 'page', 'instanceid' => $this->page->cmid, 'name' => $this->page->name]]);
         $event->trigger();
         \availability_relativedate\autoupdate::update_from_event($event);
     }

@@ -67,9 +67,6 @@ class condition extends \core_availability\condition {
      */
     private $relativecoursemodule;
 
-    /** @var array Array of modules used in these conditions for course */
-    protected static $modsusedincondition = [];
-
     /**
      * Constructor.
      *
@@ -238,7 +235,7 @@ class condition extends \core_availability\condition {
      * @return int relative date.
      */
     private function calc($course, $userid): int {
-        global $DB, $USER;
+        global $DB;
         $x = $this->option_dwm($this->relativedwm);
         if ($this->relativestart == 1) {
             // Course start date.
@@ -275,27 +272,16 @@ class condition extends \core_availability\condition {
             return $this->fixdate("+$this->relativenumber $x", $lowest);
         } else if ($this->relativestart == 5) {
             // Since last login.
-            $conditionuser = ($USER->id == $userid) ? $USER : \core_user::get_user($userid);
-            $lastaccess = $conditionuser->lastcourseaccess[$course->id] ?? $DB->get_field(
-                  'user_lastaccess', 'timeaccess', ['userid' => $conditionuser->id, 'courseid' => $course->id]);
+            $lastaccess = \core_user::get_user($userid)->lastcourseaccess[$course->id] ?? $DB->get_field(
+                  'user_lastaccess', 'timeaccess', ['userid' => $userid, 'courseid' => $course->id]);
             return $this->fixdate("+$this->relativenumber $x", $lastaccess);
         } else if ($this->relativestart == 6) {
             // Since completion of a module.
-            $cminfo = get_fast_modinfo($course);
-            if ($this->relativecoursemodule == -1 || !isset($cminfo->get_cms[$this->relativecoursemodule])) {
-                $sql = 'SELECT timemodified
-                        FROM {course_modules_completion}
-                        WHERE userid = :userid AND coursemoduleid = :coursemodid AND completionstate > 0';
-                $data = $DB->get_field_sql($sql,
-                    ['userid' => $userid, 'coursemodid' => $this->relativecoursemodule, 'completionstate' => 1]);
-            } else {
-                $cm = new stdClass;
-                $cm->id = $this->relativecoursemodule;
-                $cm->course = $course->id;
-                $completion = new \completion_info($course);
-                $data = $completion->get_data($cm)->timemodified;
-            }
-            return $this->fixdate("+$this->relativenumber $x", $data);
+            $cm = new stdClass;
+            $cm->id = $this->relativecoursemodule;
+            $cm->course = $course->id;
+            $completion = new \completion_info($course);
+            return $this->fixdate("+$this->relativenumber $x", $completion->get_data($cm, false, $userid)->timemodified);
         }
         return 0;
     }
@@ -344,46 +330,10 @@ class condition extends \core_availability\condition {
      * @return bool True if this is used in a condition, false otherwise
      */
     public static function completion_value_used($course, $cmid): bool {
-        // Have we already worked out a list of required completion values
-        // for this course? If so just use that.
-        $courseid = (is_object($course)) ? $course->id : $course;
-        if (!array_key_exists($courseid, self::$modsusedincondition)) {
-            // We don't have data for this course, build it.
-            $modinfo = get_fast_modinfo($courseid);
-            self::$modsusedincondition[$courseid] = [];
-
-            // Activities.
-            foreach ($modinfo->cms as $othercm) {
-                if (is_null($othercm->availability)) {
-                    continue;
-                }
-                $ci = new \core_availability\info_module($othercm);
-                $tree = $ci->get_availability_tree();
-                foreach ($tree->get_all_children('availability_relativedate\condition') as $cond) {
-                    $cond->add_cmid($courseid);
-                }
-            }
-
-            // Sections.
-            foreach ($modinfo->get_section_info_all() as $section) {
-                if (is_null($section->availability)) {
-                    continue;
-                }
-                $ci = new \core_availability\info_section($section);
-                $tree = $ci->get_availability_tree();
-                foreach ($tree->get_all_children('availability_relativedate\condition') as $cond) {
-                    $cond->add_cmid($courseid);
-                }
-            }
-        }
-        return array_key_exists($cmid, self::$modsusedincondition[$courseid]);
-    }
-
-    /**
-     * Wipes the static cache of modules used in a condition (for unit testing).
-     */
-    public static function wipe_static_cache() {
-        self::$modsusedincondition = [];
+        $courseobj = (is_object($course)) ? $course : get_course($course);
+        $completion = new \completion_info($courseobj);
+        $cm = get_coursemodule_from_id('', $cmid);
+        return $completion->is_enabled($cm);
     }
 
     /**
@@ -400,15 +350,5 @@ class condition extends \core_availability\condition {
             return true;
         }
         return false;
-    }
-
-    /**
-     * Get the cmid referenced in the access restriction.
-     * @param int $courseid
-     */
-    public function add_cmid($courseid) {
-        if ($this->relativestart == 6) {
-             self::$modsusedincondition[$courseid][$this->relativecoursemodule] = true;
-        }
     }
 }

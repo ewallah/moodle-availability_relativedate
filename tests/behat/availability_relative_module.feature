@@ -80,7 +80,9 @@ Feature: availability_relativedate relative activities
     When I log out
     And I am on the "C1" "Course" page logged in as "student1"
     Then I should see "Page A1" in the "region-main" "region"
-    And I press "Mark as done"
+    And I should see "1 hours after completion of activity Page A1"
+    When I press "Mark as done"
+    Then I should not see "1 hours after completion of activity Page A1"
     And I log out
     And I trigger cron
     And I am on the "C1" "Course" page logged in as "student1"
