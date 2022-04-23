@@ -36,7 +36,7 @@ Feature: availability_relativedate relative sessions
     And I set the field "relativestart" to "5"
     And I press "Save and return to course"
     And I should see "Not available unless" in the "region-main" "region"
-    And I should see "1 minutes after last visit" in the "region-main" "region"
+    And I should see "1 minute after last visit" in the "region-main" "region"
 
     And I am on the "page2" "page activity editing" page
     And I expand all fieldsets
@@ -47,13 +47,13 @@ Feature: availability_relativedate relative sessions
     And I set the field "relativestart" to "5"
     And I press "Save and return to course"
     And I should see "Not available unless" in the "region-main" "region"
-    And I should see "1 hours after last visit" in the "region-main" "region"
+    And I should see "1 hour after last visit" in the "region-main" "region"
     And I log out
 
     # Log in as student 1.
     When I am on the "C1" "Course" page logged in as "student1"
     Then I should see "Page A" in the "region-main" "region"
-    And I should not see "1 minutes after last visit" in the "region-main" "region"
+    And I should not see "1 minute after last visit" in the "region-main" "region"
     And I should see relativedate "## +1 minute ##"
     And I should see relativedate "## +1 hour ##"
     And I log out

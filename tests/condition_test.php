@@ -351,7 +351,7 @@ class condition_test extends \advanced_testcase {
         $condition = new \availability_relativedate\condition($cond);
         $name = 'availability_relativedate\condition';
         $result = \phpunit_util::call_internal_method($condition, 'get_debug_string', [], $name);
-        $this->assertEquals(' 1 days after course start date', $result);
+        $this->assertEquals(' 1 day after course start date', $result);
         $result = \phpunit_util::call_internal_method($condition, 'calc', [$this->course, $USER->id], $name);
         $this->assertEquals($this->course->startdate + 24 * 3600, $result);
         $result = \phpunit_util::call_internal_method($cond, 'get_debug_string', [], $name);
@@ -395,9 +395,49 @@ class condition_test extends \advanced_testcase {
             'relateduserid' => 1,
             'context' => \context_course::instance($this->course->id),
             'courseid' => $this->course->id,
-            'other' => ['relateduserid' => 1, 'modulename' => 'page', 'instanceid' => $this->page->cmid, 'name' => $this->page->name]]);
+            'other' => [
+                'relateduserid' => 1,
+                'modulename' => 'page',
+                'instanceid' => $this->page->cmid,
+                'name' => $this->page->name]]);
         $event->trigger();
         \availability_relativedate\autoupdate::update_from_event($event);
+    }
+
+    /**
+     * Backup check.
+     * @covers \availability_relativedate\condition
+     */
+    public function test_backup() {
+        global $CFG, $DB;
+        require_once($CFG->dirroot . '/backup/util/includes/backup_includes.php');
+        require_once($CFG->dirroot . '/backup/util/includes/restore_includes.php');
+
+        $dg = $this->getDataGenerator();
+        $page1 = $dg->get_plugin_generator('mod_page')->create_instance(['course' => $this->course]);
+        $str = '{"op":"|","c":[{"type":"relativedate","n":1,"d":1,"s":6,"c":' . $page1->cmid . '}], "show":true}';
+        $DB->set_field('course_modules', 'availability', $str, ['id' => $this->page->cmid]);
+        $page2 = $dg->get_plugin_generator('mod_page')->create_instance(['course' => $this->course]);
+        $str = '{"op":"|","c":[{"type":"relativedate","n":1,"d":1,"s":6,"c":999999}], "show":true}';
+        $DB->set_field('course_modules', 'availability', $str, ['id' => $page2->cmid]);
+        $bc = new \backup_controller(\backup::TYPE_1COURSE, $this->course->id, \backup::FORMAT_MOODLE, \backup::INTERACTIVE_NO,
+            \backup::MODE_GENERAL, 2);
+        $bc->execute_plan();
+        $results = $bc->get_results();
+        $file = $results['backup_destination'];
+        $fp = get_file_packer('application/vnd.moodle.backup');
+        $filepath = $CFG->dataroot . '/temp/backup/test-restore-course-event';
+        $file->extract_to_pathname($fp, $filepath);
+        $bc->destroy();
+        $rc = new \restore_controller('test-restore-course-event', $this->course->id, \backup::INTERACTIVE_NO,
+            \backup::MODE_GENERAL, 2, \backup::TARGET_NEW_COURSE);
+        $rc->execute_precheck();
+        $rc->execute_plan();
+        $newid = $rc->get_courseid();
+        $rc->destroy();
+        $course = get_course($newid);
+        $modinfo = get_fast_modinfo($course);
+        $this->assertCount(6, $modinfo->get_instances_of('page'));
     }
 
     /**

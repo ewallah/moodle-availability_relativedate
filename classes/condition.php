@@ -162,7 +162,7 @@ class condition extends \core_availability\condition {
                 $modname = ' ' . get_string('missing', 'availability_relativedate');
             }
         }
-        return ' ' . $this->relativenumber . ' ' . self::options_dwm()[$this->relativedwm] . ' ' .
+        return ' ' . $this->relativenumber . ' ' . self::options_dwm($this->relativenumber)[$this->relativedwm] . ' ' .
                self::options_start($this->relativestart) . $modname;
     }
 
@@ -193,15 +193,17 @@ class condition extends \core_availability\condition {
     /**
      * Obtains a the options for hours days weeks months.
      *
+     * @param int $number
      * @return array
      */
-    public static function options_dwm() {
+    public static function options_dwm($number = 2) {
+        $s = $number == 1 ? '' : 's';
         return [
-            0 => get_string('minutes', 'availability_relativedate'),
-            1 => get_string('hours', 'availability_relativedate'),
-            2 => get_string('days', 'availability_relativedate'),
-            3 => get_string('weeks', 'availability_relativedate'),
-            4 => get_string('months', 'availability_relativedate')
+            0 => get_string('minute' . $s, 'availability_relativedate'),
+            1 => get_string('hour' . $s, 'availability_relativedate'),
+            2 => get_string('day' . $s, 'availability_relativedate'),
+            3 => get_string('week' . $s, 'availability_relativedate'),
+            4 => get_string('month' . $s, 'availability_relativedate')
         ];
     }
 
@@ -333,7 +335,7 @@ class condition extends \core_availability\condition {
         $courseobj = (is_object($course)) ? $course : get_course($course);
         $completion = new \completion_info($courseobj);
         $cm = get_coursemodule_from_id('', $cmid);
-        return $completion->is_enabled($cm);
+        return $cm ? $completion->is_enabled($cm) : false;
     }
 
     /**
@@ -345,10 +347,38 @@ class condition extends \core_availability\condition {
      * @return bool
      */
     public function update_dependency_id($table, $oldid, $newid) {
-        if ($table == 'course_modules' && $this->relativestart == 6 && $this->relativecoursemodule == $oldid) {
+        if ($table === 'course_modules' && (int)$this->relativestart === 6 && (int)$this->relativecoursemodule === (int)$oldid) {
             $this->relativecoursemodule = $newid;
             return true;
         }
         return false;
     }
+
+    /**
+     * Updates this node after restore, returning true if anything changed.
+     *
+     * @param string $restoreid Restore ID
+     * @param int $courseid ID of target course
+     * @param \base_logger $logger Logger for any warnings
+     * @param string $name Name of this item (for use in warning messages)
+     * @return bool True if there was any change
+     */
+    public function update_after_restore($restoreid, $courseid, \base_logger $logger, $name): bool {
+        global $DB;
+        $res = false;
+        $rec = \restore_dbops::get_backup_ids_record($restoreid, 'course_module', $this->relativecoursemodule);
+        if (!$rec || !$rec->newitemid) {
+            // If we are on the same course (e.g. duplicate) then we can just use the existing one.
+            if ($DB->record_exists('course_modules', ['id' => $this->relativecoursemodule, 'course' => $courseid])) {
+                return $res;
+            }
+            $this->cmid = 0;
+            $logger->process("Restored item ($name has availability condition on module that was not restored",
+               \backup::LOG_WARNING);
+        } else {
+            $this->relativecoursemodule = (int)$rec->newitemid;
+        }
+        return true;
+    }
+
 }

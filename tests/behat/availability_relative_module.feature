@@ -9,7 +9,8 @@ Feature: availability_relativedate relative activities
       | username |
       | student1 |
     And the following config values are set as admin:
-      | enableavailability   | 1 |
+      | enableavailability       | 1 |        |
+      | backup_import_activities | 0 | backup |
     And the following "course" exists:
       | fullname          | Course 1             |
       | shortname         | C1                   |
@@ -74,17 +75,35 @@ Feature: availability_relativedate relative activities
 
   Scenario: Admin should see relative session restrictions
     When I am on "Course 1" course homepage
-    Then I should see "Not available unless: (1 hours after completion of activity"
+    Then I should see "Not available unless: (1 hour after completion of activity"
 
   Scenario: Student should see relative session restrictions
     When I log out
     And I am on the "C1" "Course" page logged in as "student1"
     Then I should see "Page A1" in the "region-main" "region"
-    And I should see "1 hours after completion of activity Page A1"
+    And I should see "1 hour after completion of activity Page A1"
     When I press "Mark as done"
-    Then I should not see "1 hours after completion of activity Page A1"
+    Then I should not see "1 hour after completion of activity Page A1"
     And I log out
     And I trigger cron
     And I am on the "C1" "Course" page logged in as "student1"
-    And I should see "1 hours after completion of activity" in the "region-main" "region"
-    Then I should see relativedate "## +1 hour ##"
+    And I should see "1 hour after completion of activity" in the "region-main" "region"
+    Then I should see relativedate "## +1 hours ##"
+
+  Scenario: Admin can duplicate a restricted activity
+    When I am on "Course 1" course homepage with editing mode on
+    And I duplicate "Page A2" activity
+    And I duplicate "Page B2" activity
+    Then I should see "Not available unless: (1 hour after completion of activity"
+    And I should see "Page A2 (copy)"
+    And I should see "Page B2 (copy)"
+
+  Scenario: Admin can backup and restore a course with restricted activities
+    When I am on "Course 1" course homepage
+    And I backup "Course 1" course using this options:
+      | Confirmation | Filename | test_backup.mbz |
+    And I restore "test_backup.mbz" backup into a new course using this options:
+      | Schema | Course name       | Course 2 |
+      | Schema | Course short name | C2       |
+    And I am on "Course 2" course homepage
+    Then I should see "Not available unless: (1 hour after completion of activity"

@@ -49,7 +49,7 @@ Feature: availability relative course enddate
     And I click on ".availability-item .availability-eye img" "css_element"
     And I press "Save and return to course"
 
-    Then I should see "1 days before course end date" in the "region-main" "region"
+    Then I should see "1 day before course end date" in the "region-main" "region"
     And I should see "2 days before course end date" in the "region-main" "region"
 
     When I am on the "pageC" "page activity editing" page
@@ -72,14 +72,14 @@ Feature: availability relative course enddate
     And I click on ".availability-item .availability-eye img" "css_element"
     And I press "Save and return to course"
 
-    Then I should see "1 days before course end date" in the "region-main" "region"
+    Then I should see "1 day before course end date" in the "region-main" "region"
     And I should see "2 days before course end date" in the "region-main" "region"
     And I log out
 
     # Log in as student 1.
     When I am on the "C1" "Course" page logged in as "student1"
     Then I should see "Page A" in the "region-main" "region"
-    And I should not see "1 days before course end date" in the "region-main" "region"
+    And I should not see "1 day before course end date" in the "region-main" "region"
     And I should see "Page B" in the "region-main" "region"
     And I should not see "2 days before course end date" in the "region-main" "region"
     And I should not see "Not available unless" in the "region-main" "region"
@@ -87,6 +87,6 @@ Feature: availability relative course enddate
     When I am on the "C2" "Course" page
     Then I should see "Page C" in the "region-main" "region"
     And I should see "Not available unless" in the "region-main" "region"
-    And I should not see "1 days before course end date" in the "region-main" "region"
+    And I should not see "1 day before course end date" in the "region-main" "region"
     And I should not see "Page D" in the "region-main" "region"
     And I should not see "2 days before course end date" in the "region-main" "region"

@@ -51,7 +51,7 @@ Feature: availability relative enrol end date
     And I set the field "relativestart" to "4"
     And I click on ".availability-item .availability-eye img" "css_element"
     And I press "Save and return to course"
-    Then I should see "1 days after enrolment method end date" in the "region-main" "region"
+    Then I should see "1 day after enrolment method end date" in the "region-main" "region"
 
     When I am on the "pageA" "page activity editing" page
     And I expand all fieldsets
@@ -73,7 +73,7 @@ Feature: availability relative enrol end date
     And I click on ".availability-item .availability-eye img" "css_element"
     And I press "Save and return to course"
 
-    Then I should see "1 days after enrolment method end date" in the "region-main" "region"
+    Then I should see "1 day after enrolment method end date" in the "region-main" "region"
     And I should see "2 days after enrolment method end date" in the "region-main" "region"
     And I log out
 
@@ -81,13 +81,13 @@ Feature: availability relative enrol end date
     When I am on the "C1" "Course" page logged in as "student1"
     Then I should see "Page A" in the "region-main" "region"
     And I should see "Not available unless" in the "region-main" "region"
-    And I should see "1 days after enrolment method end date" in the "region-main" "region"
+    And I should see "1 day after enrolment method end date" in the "region-main" "region"
     And I should not see "Page B" in the "region-main" "region"
     And I should not see "2 days after enrolment method end date" in the "region-main" "region"
 
     When I am on the "C2" "Course" page
     Then I should see "Page A" in the "region-main" "region"
     And I should see "Not available unless" in the "region-main" "region"
-    And I should see "1 days after enrolment method end date" in the "region-main" "region"
+    And I should see "1 day after enrolment method end date" in the "region-main" "region"
     And I should not see "Page B" in the "region-main" "region"
     And I should not see "2 days after enrolment method end date" in the "region-main" "region"
