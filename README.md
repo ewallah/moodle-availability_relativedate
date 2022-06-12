@@ -23,7 +23,7 @@ See https://docs.moodle.org/en/Installing_plugins for details on installing Mood
 This plugin does not need configuration after installation.
 
 # Theme support
-This plugin is developed and tested on Moodle Core's Boost theme and Boost child themes, including Moodle Core's Classic theme. It supports 
+This plugin is developed and tested on Moodle Core's Boost theme and Boost child themes, including Moodle Core's Classic theme. 
 
 # Plugin repositories
 This plugin will be published and regularly updated on Github: https://github.com/ewallah/moodle-availability_relativedate
