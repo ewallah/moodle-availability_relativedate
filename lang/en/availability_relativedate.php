@@ -26,6 +26,7 @@
 $string['after'] = ' after ';
 $string['before'] = ' before ';
 $string['dateend'] = 'before course end date';
+$string['afterdateend'] = 'after course end date';
 $string['dateenrol'] = 'after user enrolment date';
 $string['dateendenrol'] = 'after enrolment method end date';
 $string['datestart'] = 'after course start date';

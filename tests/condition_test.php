@@ -75,12 +75,15 @@ class condition_test extends \advanced_testcase {
             'c' => [(object)['type' => 'relativedate', 'n' => 5, 'd' => 4, 's' => 4]]];
         $stru6 = (object)['op' => '|', 'show' => false,
             'c' => [(object)['type' => 'relativedate', 'n' => 5, 'd' => 5, 's' => 5]]];
+        $stru7 = (object)['op' => '|', 'show' => false,
+            'c' => [(object)['type' => 'relativedate', 'n' => 6, 'd' => 6, 's' => 6]]];
         $tree1 = new tree($stru1);
         $tree2 = new tree($stru2);
         $tree3 = new tree($stru3);
         $tree4 = new tree($stru4);
         $tree5 = new tree($stru5);
         $tree6 = new tree($stru6);
+        $tree7 = new tree($stru7);
 
         $studentroleid = $DB->get_field('role', 'id', ['shortname' => 'student']);
         $now = time();
@@ -123,6 +126,7 @@ class condition_test extends \advanced_testcase {
         $this->assertFalse($tree4->is_available_for_all());
         $this->assertFalse($tree5->is_available_for_all());
         $this->assertFalse($tree6->is_available_for_all());
+        $this->assertFalse($tree7->is_available_for_all());
         $this->assertFalse($tree1->check_available(false, $info, false, 0)->is_available());
         $this->assertFalse($tree1->check_available(false, $info, false, $user->id)->is_available());
         $this->assertFalse($tree2->check_available(false, $info, false, $user->id)->is_available());
@@ -130,13 +134,15 @@ class condition_test extends \advanced_testcase {
         $this->assertFalse($tree4->check_available(false, $info, false, $user->id)->is_available());
         $this->assertFalse($tree5->check_available(false, $info, false, $user->id)->is_available());
         $this->assertFalse($tree6->check_available(false, $info, false, $user->id)->is_available());
+        $this->assertFalse($tree7->check_available(false, $info, false, $user->id)->is_available());
         $this->assertTrue($tree1->check_available(true, $info, false, 0)->is_available());
         $this->assertTrue($tree1->check_available(true, $info, false, $user->id)->is_available());
         $this->assertTrue($tree2->check_available(true, $info, false, $user->id)->is_available());
         $this->assertTrue($tree3->check_available(true, $info, false, $user->id)->is_available());
         $this->assertTrue($tree4->check_available(true, $info, false, $user->id)->is_available());
         $this->assertTrue($tree5->check_available(true, $info, false, $user->id)->is_available());
-        $this->assertFalse($tree6->check_available(true, $info, false, $user->id)->is_available());
+        $this->assertTrue($tree6->check_available(true, $info, false, $user->id)->is_available());
+        $this->assertFalse($tree7->check_available(true, $info, false, $user->id)->is_available());
     }
 
     /**
@@ -317,6 +323,7 @@ class condition_test extends \advanced_testcase {
         $this->assertEquals('before course end date', \availability_relativedate\condition::options_start(2));
         $this->assertEquals('after user enrolment date', \availability_relativedate\condition::options_start(3));
         $this->assertEquals('after enrolment method end date', \availability_relativedate\condition::options_start(4));
-        $this->assertEquals('', \availability_relativedate\condition::options_start(5));
+        $this->assertEquals('after course end date', \availability_relativedate\condition::options_start(5));
+        $this->assertEquals('', \availability_relativedate\condition::options_start(6));
     }
 }

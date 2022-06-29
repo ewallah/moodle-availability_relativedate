@@ -57,6 +57,7 @@ class condition extends \core_availability\condition {
      * 2 => Before Course end date
      * 3 => After User enrolment date
      * 4 => After Enrolment method end date
+     * 5 => After Course end date
      */
     private $relativestart;
 
@@ -164,6 +165,8 @@ class condition extends \core_availability\condition {
                 return get_string('dateenrol', 'availability_relativedate');
             case 4:
                 return get_string('dateendenrol', 'availability_relativedate');
+            case 5:
+                return get_string('afterdateend', 'availability_relativedate');
         }
         return '';
     }
@@ -248,6 +251,9 @@ class condition extends \core_availability\condition {
             if ($lowest > 0) {
                 return $this->fixdate("+$this->relativenumber $x", $lowest);
             }
+        } else if ($this->relativestart == 5 && isset($course->enddate) && $course->enddate != 0) {
+            // Course end date.
+            return $this->fixdate("+$this->relativenumber $x", $course->enddate);
         }
         return 0;
     }

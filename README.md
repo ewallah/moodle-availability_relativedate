@@ -4,9 +4,10 @@ Restrict module and section access based on relative dates.
 # Idea
 This availability condition makes it easy to show modules or sections only x days/weeks/months
   - after course start date
+  - after course end date
   - before course end date
   - after user enrolment date
-  - after end of enrloment period
+  - after end of enrolment period
 
 # Conditional availability conditions
 Check the global documentation about conditional availability conditions:

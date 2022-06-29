@@ -53,6 +53,7 @@ class frontend extends \core_availability\frontend {
         global $DB;
         $optionsdwm = self::convert_associative_array_for_js(condition::options_dwm(), 'field', 'display');
         $optionsstart = [(object)['field' => 1, 'display' => condition::options_start(1)],
+                         (object)['field' => 5, 'display' => condition::options_start(5)],
                          (object)['field' => 2, 'display' => condition::options_start(2)],
                          (object)['field' => 3, 'display' => condition::options_start(3)]];
         if ($DB->count_records_select('enrol', 'courseid = :courseid AND enrolenddate > 0', ['courseid' => $course->id]) > 0) {
