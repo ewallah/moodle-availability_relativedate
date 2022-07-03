@@ -66,7 +66,7 @@ M.availability_relativedate.form.getNode = function(json) {
         html += '<option value="' + fieldInfo.field + '">' + fieldInfo.display + '</option>';
     }
     html += '</select></label>';
-    html += '<label><select name="relativecoursemodule"' + (json.s != 6 ? ' style="display: none;"' : '') + '>';
+    html += '<label><select name="relativecoursemodule"' + (json.s != 7 ? ' style="display: none;"' : '') + '>';
 
     for (i = 0; i < this.activitySelector.length; i++) {
         html += '<option disabled>' + this.activitySelector[i].name + '</option>';
@@ -101,8 +101,8 @@ M.availability_relativedate.form.getNode = function(json) {
     node.one('select[name=relativestart]').set('value', i);
 
     i = 0;
-    if (json.c !== undefined) {
-        i = json.c;
+    if (json.m !== undefined) {
+        i = json.m;
     }
     node.one('select[name=relativecoursemodule]').set('value', i);
 
@@ -133,7 +133,7 @@ M.availability_relativedate.form.fillValue = function(value, node) {
     value.n = node.one('select[name=relativenumber]').get('value');
     value.d = node.one('select[name=relativednw]').get('value');
     value.s = node.one('select[name=relativestart]').get('value');
-    value.c = node.one('select[name=relativecoursemodule]').get('value');
+    value.m = node.one('select[name=relativecoursemodule]').get('value');
 };
 
 M.availability_relativedate.form.fillErrors = function(errors, node) {

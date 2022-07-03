@@ -3,17 +3,18 @@ Restrict module and section access based on relative dates.
 
 # Idea
 This availability condition makes it easy to show modules or sections only x days/weeks/months
-  - after course start date
-  - before course end date
+  - before / after course start date
+  - before / after course end date
   - after user enrolment date
-  - after end of enrloment period
+  - after end of enrolment period
+  - after the completion of an activity
 
 # Conditional availability conditions
 Check the global documentation about conditional availability conditions:
    https://docs.moodle.org/en/Conditional_activities_settings
 
 # Requirements
-This plugin requires Moodle 3.9+
+This plugin requires Moodle 3.11+
 
 # Installation
 Install the plugin like any other plugin to folder /availability/condition/relativedate
@@ -23,7 +24,7 @@ See http://docs.moodle.org/en/Installing_plugins for details on installing Moodl
 This plugin does not need configuration after installation.
 
 # Theme support
-This plugin is developed and tested on Moodle Core's Boost theme and Boost child themes, including Moodle Core's Classic theme. It supports 
+This plugin is developed and tested on Moodle Core's Boost theme and Boost child themes, including Moodle Core's Classic theme.
 
 # Plugin repositories
 This plugin will be published and regularly updated on Github: https://github.com/ewallah/moodle-availability_relativedate

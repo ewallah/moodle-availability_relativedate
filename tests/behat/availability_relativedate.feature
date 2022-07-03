@@ -34,7 +34,7 @@ Feature: availability_relativedate
     Then "Relative date" "button" should exist in the "Add restriction..." "dialogue"
 
   Scenario: Test condition
-    When I add a "Page" to section "1"
+    And I add a "Page" to section "1"
     And I set the following fields to these values:
       | Name         | Page 1: 2 hours after course start date |
       | Description  | Test |
@@ -88,7 +88,7 @@ Feature: availability_relativedate
     And I set the field "relativestart" to "4"
     And I press "Save and return to course"
 
-    # 5 days after course start date.
+    # 5 days before course start date.
     And I edit the section "2"
     And I expand all fieldsets
     Then I should see "None" in the "Restrict access" "fieldset"
@@ -107,7 +107,7 @@ Feature: availability_relativedate
     #And I click on ".availability-item .availability-eye img" "css_element"
     And I press "Cancel"
 
-    # 5 days before course end date.
+    # 5 days after course end date.
     And I edit the section "3"
     And I expand all fieldsets
     Then I should see "None" in the "Restrict access" "fieldset"

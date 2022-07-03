@@ -40,7 +40,6 @@ use Behat\Mink\Exception\ElementNotFoundException as ElementNotFoundException;
  */
 class behat_availability_relativedate extends behat_base {
 
-
     /**
      * See a relative date
      * @Then /^I should see relativedate "([^"]*)"$/
@@ -85,7 +84,7 @@ class behat_availability_relativedate extends behat_base {
         $cm1 = $this->get_course_module_for_identifier($activity1);
         $cm2 = $this->get_course_module_for_identifier($activity2);
         if ($cm1 && $cm2) {
-            $str = '{"op":"|","c":[{"type":"relativedate","n":1,"d":1,"s":6,"c":' . $cm1->id . '}],"show":true}';
+            $str = '{"op":"|","c":[{"type":"relativedate","n":1,"d":1,"s":7,"m":' . $cm1->id . '}],"show":true}';
             $DB->set_field('course_modules', 'availability', $str, ['id' => $cm2->id]);
         }
     }

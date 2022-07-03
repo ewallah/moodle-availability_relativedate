@@ -26,11 +26,12 @@
 $string['after'] = ' after ';
 $string['before'] = ' before ';
 $string['dateend'] = 'before course end date';
+$string['dateendafter'] = 'after course end date';
 $string['dateenrol'] = 'after user enrolment date';
 $string['dateendenrol'] = 'after enrolment method end date';
-$string['datelastvisit'] = 'after last visit';
 $string['datecompletion'] = 'after completion of activity';
 $string['datestart'] = 'after course start date';
+$string['datestartbefore'] = 'before course start date';
 $string['day'] = 'day';
 $string['days'] = 'days';
 $string['description'] = 'Prevent access until a relative time is reached before/after a course or user date.';
