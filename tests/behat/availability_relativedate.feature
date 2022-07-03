@@ -33,7 +33,7 @@ Feature: availability_relativedate
     And I click on "Add restriction..." "button"
     Then "Relative date" "button" should exist in the "Add restriction..." "dialogue"
 
-  Scenario: Test condition
+  Scenario: Test relative conditions
     And I add a "Page" to section "1"
     And I set the following fields to these values:
       | Name         | Page 1: 2 hours after course start date |

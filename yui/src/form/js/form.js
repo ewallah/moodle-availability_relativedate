@@ -113,7 +113,7 @@ M.availability_relativedate.form.getNode = function(json) {
         var updateForm = function(input) {
             var ancestorNode = input.ancestor('span.availability_relativedate');
             var op = ancestorNode.one('select[name=relativestart]');
-            if (op.get('value') == '6') {
+            if (op.get('value') == '7') {
                 ancestorNode.one('select[name=relativecoursemodule]').set('style', '');
             } else {
                 ancestorNode.one('select[name=relativecoursemodule]').set('style', 'display: none;');

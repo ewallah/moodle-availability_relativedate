@@ -79,8 +79,8 @@ class frontend_test extends \advanced_testcase {
         set_config('enableavailability', true);
         $dg = $this->getDataGenerator();
         $course = $dg->create_course(['enablecompletion' => true]);
-        $page1 = $dg->get_plugin_generator('mod_page')->create_instance(['course' => $course, 'idnumber' => 'page1']);
-        $page2 = $dg->get_plugin_generator('mod_page')->create_instance(['course' => $course, 'idnumber' => 'page2']);
+        $dg->get_plugin_generator('mod_page')->create_instance(['course' => $course, 'idnumber' => 'page1']);
+        $dg->get_plugin_generator('mod_page')->create_instance(['course' => $course, 'idnumber' => 'page2']);
         $class = new \behat_availability_relativedate();
         $class->selfenrolment_exists_in_course_starting($course->fullname, '');
         $class->selfenrolment_exists_in_course_starting($course->fullname, '##-10 days noon##');

@@ -79,7 +79,10 @@ class frontend extends \core_availability\frontend {
                     $module = $cm->get_cm($cmid);
                     // Get only course modules which are not deleted.
                     if ($module->deletioninprogress == 0) {
-                        $s['coursemodules'][] = ['id' => $cmid, 'name' => $module->name, 'completionenabled' => $module->completion > 0];
+                        $s['coursemodules'][] = [
+                            'id' => $cmid,
+                            'name' => $module->name,
+                            'completionenabled' => $module->completion > 0];
                     }
                 }
                 $activitysel[] = $s;
