@@ -102,6 +102,11 @@ jobs:
         if: ${{ always() }}
         run: moodle-plugin-ci --ansi phpunit --coverage-text
 
+      - name: privacy
+        if: ${{ always() }}
+        run: vendor/bin/phpunit --colors --no-coverage --testsuite tool_dataprivacy_testsuite,tool_policy_testsuite,core_privacy_testsuite
+        working-directory: moodle
+
       - name: firefox
         if: ${{ always() }}
         run: moodle-plugin-ci --ansi behat
@@ -117,13 +122,3 @@ jobs:
       - name: chrome classic
         if: ${{ always() }}
         run: moodle-plugin-ci --ansi behat  --suite="classic" --profile chrome
-
-      - name: admin bookmarks
-        if: ${{ always() }}
-        run: php admin/tool/behat/cli/run.php --tags=@block_admin_bookmarks
-        working-directory: moodle
-
-      - name: privacy
-        if: ${{ always() }}
-        run: vendor/bin/phpunit --colors --no-coverage --testsuite tool_dataprivacy_testsuite,tool_policy_testsuite,core_privacy_testsuite
-        working-directory: moodle
