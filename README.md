@@ -18,7 +18,7 @@ This plugin requires Moodle 3.11+
 
 # Installation
 Install the plugin like any other plugin to folder /availability/condition/relativedate
-See http://docs.moodle.org/en/Installing_plugins for details on installing Moodle plugins
+See https://docs.moodle.org/en/Installing_plugins for details on installing Moodle plugins
 
 # Initial Configuration
 This plugin does not need configuration after installation.
