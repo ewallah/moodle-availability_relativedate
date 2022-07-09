@@ -18,7 +18,7 @@
  * Version info.
  *
  * @package   availability_relativedate
- * @copyright 2019 eWallah.net
+ * @copyright 2022 eWallah.net
  * @author    Renaat Debleu <info@eWallah.net>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -29,4 +29,4 @@ $plugin->component = 'availability_relativedate';
 $plugin->requires  = 2021051700;
 $plugin->maturity  = MATURITY_STABLE;
 $plugin->release   = 'v4.0.2';
-$plugin->version   = 2022060300;
+$plugin->version   = 2022070900;
