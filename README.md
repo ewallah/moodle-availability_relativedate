@@ -18,13 +18,13 @@ This plugin requires Moodle 3.11+
 
 # Installation
 Install the plugin like any other plugin to folder /availability/condition/relativedate
-See http://docs.moodle.org/en/Installing_plugins for details on installing Moodle plugins
+See https://docs.moodle.org/en/Installing_plugins for details on installing Moodle plugins
 
 # Initial Configuration
 This plugin does not need configuration after installation.
 
 # Theme support
-This plugin is developed and tested on Moodle Core's Boost theme and Boost child themes, including Moodle Core's Classic theme.
+This plugin is developed and tested on Moodle Core's Boost theme and Boost child themes, including Moodle Core's Classic theme. 
 
 # Plugin repositories
 This plugin will be published and regularly updated on Github: https://github.com/ewallah/moodle-availability_relativedate
