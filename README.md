@@ -3,11 +3,11 @@ Restrict module and section access based on relative dates.
 
 # Idea
 This availability condition makes it easy to show modules or sections only x days/weeks/months
-  - before / after course start date
+  - before / after course start date (THX to Frederik Milling Pytlick)
   - before / after course end date
   - after user enrolment date
   - after end of enrolment period
-  - after the completion of an activity
+  - after the completion of an activity (THX to Stefan Hanauska)
 
 # Conditional availability conditions
 Check the global documentation about conditional availability conditions:
@@ -48,3 +48,4 @@ This plugin is maintained for the latest major releases of Moodle.
 
 # Copyright
 eWallah.net
+
