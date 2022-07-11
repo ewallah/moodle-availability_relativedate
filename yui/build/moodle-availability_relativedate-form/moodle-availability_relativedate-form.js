@@ -31,6 +31,7 @@ M.availability_relativedate.form.warningStrings = null;
  * @param {array} startFields Collection of start fields
  * @param {boolean} isSection Is this a section
  * @param {array} warningStrings Collection of warning strings
+ * @param {array} activitySelector Collection of activity fields
  */
 M.availability_relativedate.form.initInner = function(timeFields, startFields, isSection, warningStrings, activitySelector) {
     this.timeFields = timeFields;
@@ -142,5 +143,6 @@ M.availability_relativedate.form.fillErrors = function(errors, node) {
     var value = {};
     this.fillValue(value, node);
 };
+
 
 }, '@VERSION@', {"requires": ["base", "node", "event", "moodle-core_availability-form"]});
