@@ -102,6 +102,21 @@ jobs:
         if: ${{ always() }}
         run: moodle-plugin-ci --ansi phpunit --coverage-text
 
+      - name: additional
+        if: ${{ always() }}
+        run: vendor/bin/phpunit --debug --colors --no-coverage --filter=test_get_course_contents_completion_auto
+        working-directory: moodle
+
+      - name: additional
+        if: ${{ always() }}
+        run: vendor/bin/phpunit --debug --colors --no-coverage --filter=test_get_course_contents_completion_maunual
+        working-directory: moodle
+
+      - name: additional
+        if: ${{ always() }}
+        run: vendor/bin/phpunit --debug --colors --no-coverage --filter=test_get_activities_completion_status
+        working-directory: moodle
+
       - name: privacy
         if: ${{ always() }}
         run: vendor/bin/phpunit --colors --no-coverage --testsuite tool_dataprivacy_testsuite,tool_policy_testsuite,core_privacy_testsuite
