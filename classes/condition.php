@@ -337,9 +337,32 @@ class condition extends \core_availability\condition {
      */
     public static function completion_value_used($course, $cmid): bool {
         $courseobj = (is_object($course)) ? $course : get_course($course);
-        $completion = new \completion_info($courseobj);
-        $cm = get_coursemodule_from_id('', $cmid);
-        return $cm ? $completion->is_enabled($cm) : false;
+        $modinfo = get_fast_modinfo($courseobj);
+        foreach ($modinfo->cms as $othercm) {
+            if (is_null($othercm->availability)) {
+                continue;
+            }
+            $ci = new \core_availability\info_module($othercm);
+            $tree = $ci->get_availability_tree();
+            foreach ($tree->get_all_children('availability_relativedate\condition') as $cond) {
+                if ($cond->relativestart == 7 && $cond->relativecoursemodule == $cmid) {
+                    return true;
+                }
+            }
+        }
+        foreach ($modinfo->get_section_info_all() as $section) {
+            if (is_null($section->availability)) {
+                continue;
+            }
+            $ci = new \core_availability\info_section($section);
+            $tree = $ci->get_availability_tree();
+            foreach ($tree->get_all_children('availability_relativedate\condition') as $cond) {
+                if ($cond->relativestart == 7 && $cond->relativecoursemodule == $cmid) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     /**

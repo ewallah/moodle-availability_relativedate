@@ -57,10 +57,11 @@ class backup_test extends \advanced_testcase {
         $page0 = $pg->create_instance(['course' => $course, 'completion' => COMPLETION_TRACKING_MANUAL]);
         $page1 = $pg->create_instance(['course' => $course, 'completion' => COMPLETION_TRACKING_MANUAL]);
         $page2 = $pg->create_instance(['course' => $course, 'completion' => COMPLETION_TRACKING_MANUAL]);
-        $str = '{"op":"|","c":[{"type":"relativedate","n":1,"d":1,"s":6,"m":' . $page1->cmid . '}], "show":true}';
+        $str = '{"op":"|","show":true,"c":[{"type":"relativedate","n":4,"d":4,"s":7,"m":' . $page1->cmid . '}]}';
         $DB->set_field('course_modules', 'availability', $str, ['id' => $page0->cmid]);
         $str = '{"op":"|","c":[{"type":"relativedate","n":1,"d":1,"s":6,"m":999999}], "show":true}';
         $DB->set_field('course_modules', 'availability', $str, ['id' => $page2->cmid]);
+        rebuild_course_cache($course->id, true);
         $bc = new \backup_controller(\backup::TYPE_1COURSE, $course->id, \backup::FORMAT_MOODLE, \backup::INTERACTIVE_NO,
             \backup::MODE_GENERAL, 2);
         $bc->execute_plan();

@@ -34,14 +34,11 @@ class autoupdate {
      */
     public static function update_from_event(\core\event\base $event) : void {
         $data = $event->get_data();
-        if (isset($data['courseid']) && $data['courseid'] > 0) {
-            if (condition::completion_value_used($data['courseid'], $data['objectid'])) {
-                \core_availability\info::update_dependency_id_across_course(
-                    $data['courseid'],
-                    'course_modules',
-                    $data['objectid'],
-                    -1
-                );
+        $courseid = $data['courseid'];
+        if (isset($courseid) && $courseid > 0) {
+            $modid = $data['objectid'];
+            if (condition::completion_value_used($courseid, $modid)) {
+                \core_availability\info::update_dependency_id_across_course($courseid, 'course_modules', $modid, -1);
             }
         }
     }

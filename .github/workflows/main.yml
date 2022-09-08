@@ -109,7 +109,7 @@ jobs:
 
       - name: additional
         if: ${{ always() }}
-        run: vendor/bin/phpunit --debug --colors --no-coverage --filter=test_get_course_contents_completion_maunual
+        run: vendor/bin/phpunit --debug --colors --no-coverage --filter=test_get_course_contents_completion_manual
         working-directory: moodle
 
       - name: additional

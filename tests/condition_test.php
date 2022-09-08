@@ -188,7 +188,7 @@ class condition_test extends \advanced_testcase {
         $page0 = $pg->create_instance(['course' => $this->course, 'completion' => COMPLETION_TRACKING_MANUAL]);
         $page1 = $pg->create_instance(['course' => $this->course, 'completion' => COMPLETION_TRACKING_MANUAL]);
 
-        $str = '{"op":"|","show":true},"c":[{"type":"relativedate","n":4,"d":4,"s":7,"m":' . $page1->cmid . '}]';
+        $str = '{"op":"|","show":true,"c":[{"type":"relativedate","n":4,"d":4,"s":7,"m":' . $page1->cmid . '}]}';
         $DB->set_field('course_modules', 'availability', $str, ['id' => $page0->cmid]);
         rebuild_course_cache($this->course->id, true);
         $cond = new condition((object)['type' => 'relativedate', 'n' => 4, 'd' => 4, 's' => 7, 'm' => $page1->cmid]);
@@ -196,20 +196,22 @@ class condition_test extends \advanced_testcase {
         $this->assertStringContainsString("4 months after completion of activity", $cond->get_description(true, true, $info));
         $this->assertStringContainsString("4 months after completion of activity", $cond->get_description(false, false, $info));
         $this->assertStringContainsString("4 months after completion of activity", $cond->get_description(false, true, $info));
-        $this->assertTrue($cond->completion_value_used($this->course, $page0->cmid));
+        $this->assertFalse($cond->completion_value_used($this->course, $page0->cmid));
         $this->assertTrue($cond->completion_value_used($this->course, $page1->cmid));
 
         $modinfo = get_fast_modinfo($this->course);
+        $str = '{"op":"|","show":true,"c":[{"type":"relativedate","n":4,"d":4,"s":7,"m":' . $page0->cmid . '}]}';
         foreach ($modinfo->get_section_info_all() as $section) {
             $DB->set_field('course_sections', 'availability', $str, ['id' => $section->id]);
         }
+        $this->assertTrue($cond->completion_value_used($this->course, $page0->cmid));
+        $this->assertTrue($cond->completion_value_used($this->course, $page1->cmid));
         $this->do_cron();
         $completion = new \completion_info($this->course);
         $completion->reset_all_state($modinfo->get_cm($page1->cmid));
 
         $cond = new condition((object)['type' => 'relativedate', 'n' => 4, 'd' => 4, 's' => 7, 'm' => $page0->cmid]);
         $this->assertFalse($cond->update_dependency_id('courses', $page0->cmid, 3));
-        $this->assertFalse($cond->update_dependency_id('courses', $page1->cmid, 3));
         $this->assertTrue($cond->update_dependency_id('course_modules', $page0->cmid, 3));
     }
 
@@ -295,11 +297,11 @@ class condition_test extends \advanced_testcase {
         $pg = $this->getDataGenerator()->get_plugin_generator('mod_page');
         $page0 = $pg->create_instance(['course' => $this->course, 'completion' => COMPLETION_TRACKING_MANUAL]);
         $page1 = $pg->create_instance(['course' => $this->course, 'completion' => COMPLETION_TRACKING_MANUAL]);
-        $str = '{"op":"|","c":[{"type":"relativedate","n":1,"d":1,"s":6,"m":' . $page0->cmid . '}], "show":true}';
+        $str = '{"op":"|","show":true,"c":[{"type":"relativedate","n":4,"d":4,"s":7,"m":' . $page0->cmid . '}]}';
         $DB->set_field('course_modules', 'availability', $str, ['id' => $page1->cmid]);
         $this->do_cron();
         $event = \core\event\course_module_updated::create([
-            'objectid' => $page1->cmid,
+            'objectid' => $page0->cmid,
             'relateduserid' => 1,
             'context' => \context_course::instance($this->course->id),
             'courseid' => $this->course->id,
