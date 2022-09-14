@@ -132,8 +132,8 @@ class condition extends \core_availability\condition {
         $course = $info->get_course();
         $context = context_course::instance($course->id);
         $capability = has_capability('moodle/course:manageactivities', $context);
-        if ($this->relativestart == 2 || $this->relativestart == 6) {
-            if ((!isset($course->enddate) || $course->enddate == 0) && $capability) {
+        if ((int)$this->relativestart === 2 || (int)$this->relativestart === 6) {
+            if ((!isset($course->enddate) || (int)$course->enddate === 0) && $capability) {
                 return get_string('noenddate', 'availability_relativedate');
             }
             $frut = $not ? 'from' : 'until';
@@ -141,7 +141,7 @@ class condition extends \core_availability\condition {
             $frut = $not ? 'until' : 'from';
         }
         $calc = $this->calc($course, $USER->id);
-        if ($calc == 0) {
+        if ($calc === 0) {
             return '('. trim($this->get_debug_string()) . ')';
         }
         $a = new stdClass();
@@ -158,7 +158,7 @@ class condition extends \core_availability\condition {
      */
     protected function get_debug_string() {
         $modname = '';
-        if ($this->relativestart == 7) {
+        if ((int)$this->relativestart === 7) {
             if ($this->relativecoursemodule != -1 && get_coursemodule_from_id('', $this->relativecoursemodule)) {
                 $modname = ' ' . \core_availability\condition::description_cm_name($this->relativecoursemodule);
             } else {
@@ -202,7 +202,7 @@ class condition extends \core_availability\condition {
      * @return array
      */
     public static function options_dwm($number = 2) {
-        $s = $number == 1 ? '' : 's';
+        $s = $number === 1 ? '' : 's';
         return [
             0 => get_string('minute' . $s, 'availability_relativedate'),
             1 => get_string('hour' . $s, 'availability_relativedate'),
@@ -261,7 +261,7 @@ class condition extends \core_availability\condition {
                         WHERE e.courseid = :courseid AND ue.userid = :userid AND ue.timestart > 0
                         ORDER by ue.timestart DESC';
                 $lowest = $this->getlowest($sql, ['courseid' => $course->id, 'userid' => $userid]);
-                if ($lowest == 0) {
+                if ($lowest === 0) {
                     // A teacher or admin without restriction - or a student with no limit set?
                     $sql = 'SELECT ue.timecreated
                             FROM {user_enrolments} ue
@@ -345,7 +345,7 @@ class condition extends \core_availability\condition {
             $ci = new \core_availability\info_module($othercm);
             $tree = $ci->get_availability_tree();
             foreach ($tree->get_all_children('availability_relativedate\condition') as $cond) {
-                if ($cond->relativestart == 7 && $cond->relativecoursemodule == $cmid) {
+                if ((int)$cond->relativestart === 7 && (int)$cond->relativecoursemodule === (int)$cmid) {
                     return true;
                 }
             }
@@ -357,7 +357,7 @@ class condition extends \core_availability\condition {
             $ci = new \core_availability\info_section($section);
             $tree = $ci->get_availability_tree();
             foreach ($tree->get_all_children('availability_relativedate\condition') as $cond) {
-                if ($cond->relativestart == 7 && $cond->relativecoursemodule == $cmid) {
+                if ((int)$cond->relativestart === 7 && (int)$cond->relativecoursemodule === (int)$cmid) {
                     return true;
                 }
             }
@@ -366,7 +366,7 @@ class condition extends \core_availability\condition {
     }
 
     /**
-     * Helper for updating ids (only implemented for course modules)
+     * Helper for updating ids (only implemented for course modules,not for sections)
      *
      * @param string $table
      * @param int $oldid

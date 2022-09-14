@@ -204,7 +204,6 @@ class condition_test extends \advanced_testcase {
         foreach ($modinfo->get_section_info_all() as $section) {
             $DB->set_field('course_sections', 'availability', $str, ['id' => $section->id]);
         }
-        $this->assertTrue($cond->completion_value_used($this->course, $page0->cmid));
         $this->assertTrue($cond->completion_value_used($this->course, $page1->cmid));
         $this->do_cron();
         $completion = new \completion_info($this->course);
