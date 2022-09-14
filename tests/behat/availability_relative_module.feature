@@ -1,4 +1,4 @@
-@eWallah @availability @availability_relativedate @javascript
+@eWallah @availability @availability_relativedate
 Feature: availability_relativedate relative activities
   In order to control student access to activities
   As a teacher
@@ -69,16 +69,19 @@ Feature: availability_relativedate relative activities
     And I make "pageE4" relative date depending on "pageE3"
     And I make "pageE5" relative date depending on "pageE4"
     And I log in as "admin"
-    And I am on site homepage
-    And I follow "Purge all caches"
-    Then I should see "All caches were purged"
 
+  @javascript
   Scenario: Admin should see relative session restrictions
-    When I am on "Course 1" course homepage
+    When I navigate to "Development > Purge caches" in site administration
+    And I press "Purge all caches"
+    And I am on "Course 1" course homepage
     Then I should see "Not available unless: (1 hour after completion of activity"
 
+  @javascript
   Scenario: Student should see relative session restrictions
-    When I log out
+    When I navigate to "Development > Purge caches" in site administration
+    And I press "Purge all caches"
+    And I log out
     And I am on the "C1" "Course" page logged in as "student1"
     Then I should see "Page A1" in the "region-main" "region"
     And I should see "1 hour after completion of activity Page A1"
@@ -98,6 +101,7 @@ Feature: availability_relativedate relative activities
     And I should see "Page A2 (copy)"
     And I should see "Page B2 (copy)"
 
+  @javascript
   Scenario: Admin can backup and restore a course with restricted activities
     When I am on "Course 1" course homepage
     And I backup "Course 1" course using this options:
