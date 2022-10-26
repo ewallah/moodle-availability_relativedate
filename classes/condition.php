@@ -351,11 +351,12 @@ class condition extends \core_availability\condition {
             }
         }
         foreach ($modinfo->get_section_info_all() as $section) {
-            if (is_null($section->availability)) {
+            $ci = new \core_availability\info_section($section);
+            try {
+                $tree = $ci->get_availability_tree();
+            } catch (\coding_exception $e) {
                 continue;
             }
-            $ci = new \core_availability\info_section($section);
-            $tree = $ci->get_availability_tree();
             foreach ($tree->get_all_children('availability_relativedate\condition') as $cond) {
                 if ((int)$cond->relativestart === 7 && (int)$cond->relativecoursemodule === (int)$cmid) {
                     return true;

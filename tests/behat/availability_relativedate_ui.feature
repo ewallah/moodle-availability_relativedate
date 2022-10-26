@@ -18,7 +18,7 @@ Feature: availability_relativedate ui
     And I am on "Course 1" course homepage with editing mode on
 
   Scenario Outline: Add relative condition ui
-    And I add a "Page" to section "1"
+    When I add a "Page" to section "1"
     And I set the following fields to these values:
       | Name         | Page |
       | Description  | Test |
@@ -42,8 +42,33 @@ Feature: availability_relativedate ui
       | "6"    | "4" | "5"      | 6 months after course end date     |
       | "7"    | "4" | "6"      | 7 months before course start date  |
 
+  Scenario: Add relative condition ui to a section
+    When I add a "Page" to section "1"
+    And I set the following fields to these values:
+      | Name         | Page1 |
+      | Description  | Test  |
+      | Page content | Test  |
+    And I press "Save and return to course"
+    And I edit the section "1"
+    And I expand all fieldsets
+    And I press "Add restriction..."
+    And I click on "Relative date" "button" in the "Add restriction..." "dialogue"
+    And I set the field "relativenumber" to "1"
+    And I set the field "relativednw" to "1"
+    And I set the field "relativestart" to "7"
+    And I set the field "relativecoursemodule" to "Page1"
+    And I press "Save changes"
+    Then I should see "1 hour after completion of"
+    And I delete "Page1" activity
+    Then I should see "1 hour after completion of"
+    And I navigate to "Development > Purge caches" in site administration
+    And I press "Purge all caches"
+    Then I should see "All caches were purged"
+    And I am on "Course 1" course homepage with editing mode on
+    # TODO; Then I should not see "1 hour after completion of"
+
   Scenario: Add relative condition ui with a module
-    And I add a "Page" to section "1"
+    When I add a "Page" to section "1"
     And I set the following fields to these values:
       | Name         | Page1 |
       | Description  | Test  |
