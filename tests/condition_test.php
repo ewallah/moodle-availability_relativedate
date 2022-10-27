@@ -206,6 +206,7 @@ class condition_test extends \advanced_testcase {
         }
         $this->do_cron();
         $cond = new condition((object)['type' => 'relativedate', 'n' => 4, 'd' => 4, 's' => 7, 'm' => $page1->cmid]);
+        $this->assertTrue($cond->completion_value_used($this->course, $page0->cmid));
         $this->assertTrue($cond->completion_value_used($this->course, $page1->cmid));
         $completion = new \completion_info($this->course);
         $completion->reset_all_state($modinfo->get_cm($page1->cmid));
@@ -327,7 +328,7 @@ class condition_test extends \advanced_testcase {
         \phpunit_util::run_all_adhoc_tasks();
         ob_end_clean();
         get_fast_modinfo(0, 0, true);
-        rebuild_course_cache($this->course->id, true);
+        rebuild_course_cache($this->course->id, true, true);
     }
 
     /**

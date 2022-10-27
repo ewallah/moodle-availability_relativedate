@@ -336,6 +336,7 @@ class condition extends \core_availability\condition {
      * @return bool True if this is used in a condition, false otherwise
      */
     public static function completion_value_used($course, $cmid): bool {
+        global $DB;
         $courseobj = (is_object($course)) ? $course : get_course($course);
         $modinfo = get_fast_modinfo($courseobj);
         foreach ($modinfo->cms as $othercm) {
@@ -350,20 +351,10 @@ class condition extends \core_availability\condition {
                 }
             }
         }
-        foreach ($modinfo->get_section_info_all() as $section) {
-            $ci = new \core_availability\info_section($section);
-            try {
-                $tree = $ci->get_availability_tree();
-            } catch (\coding_exception $e) {
-                continue;
-            }
-            foreach ($tree->get_all_children('availability_relativedate\condition') as $cond) {
-                if ((int)$cond->relativestart === 7 && (int)$cond->relativecoursemodule === (int)$cmid) {
-                    return true;
-                }
-            }
-        }
-        return false;
+        // Availability of sections (get_section_info_all) is always null.
+        $sqllike = $DB->sql_like('availability', ':availability');
+        $params = ['course' => $courseobj->id, 'availability' => '%"s":7,"m":' . $cmid . '%'];
+        return count($DB->get_records_sql("SELECT id FROM {course_sections} WHERE course = :course AND $sqllike", $params)) > 0;
     }
 
     /**
