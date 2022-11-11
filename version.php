@@ -29,5 +29,5 @@ $plugin->component = 'availability_relativedate';
 $plugin->requires  = 2021051700;
 $plugin->maturity  = MATURITY_STABLE;
 $plugin->release   = 'v4.0.5';
-$plugin->supported = [311, 41];
+$plugin->supported = [311, 401];
 $plugin->version   = 2022111100;
