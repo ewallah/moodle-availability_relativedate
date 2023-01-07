@@ -12,8 +12,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        moodle-branch: ['MOODLE_311_STABLE']
-        php: ['7.4']
+        moodle-branch: ['master']
+        php: ['8.0']
         database: ['mysqli']
 
     steps:
