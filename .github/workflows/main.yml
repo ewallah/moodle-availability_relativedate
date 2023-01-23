@@ -102,12 +102,12 @@ jobs:
         run: moodle-plugin-ci --ansi phpunit --coverage-text
 
       - name: additional
-        if: ${{ always() }}
+        if: ${{ matrix.moodle-branch != 'master'}}
         run: vendor/bin/phpunit --debug --colors --no-coverage --filter=test_get_course_contents_completion_auto
         working-directory: moodle
 
       - name: additional
-        if: ${{ always() }}
+        if: ${{ matrix.moodle-branch != 'master'}}
         run: vendor/bin/phpunit --debug --colors --no-coverage --filter=test_get_course_contents_completion_manual
         working-directory: moodle
 
