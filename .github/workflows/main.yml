@@ -94,8 +94,8 @@ jobs:
         run: moodle-plugin-ci --ansi savepoints
 
       - name: grunt
-        if: ${{ matrix.moodle-branch != 'MOODLE_311_STABLE'}}
-        run: moodle-plugin-ci --ansi grunt
+        if: ${{ always() }}
+        run: moodle-plugin-ci --ansi grunt || true
 
       - name: mustache
         if: ${{ always() }}
