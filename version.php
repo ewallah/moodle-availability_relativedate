@@ -28,6 +28,6 @@ defined('MOODLE_INTERNAL') || die();
 $plugin->component = 'availability_relativedate';
 $plugin->requires = 2021051700;
 $plugin->maturity = MATURITY_STABLE;
-$plugin->supported = [311, 401];
+$plugin->supported = [311, 402];
 $plugin->release = 'v4.0.6';
 $plugin->version = 2023042300;
