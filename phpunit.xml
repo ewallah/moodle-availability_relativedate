@@ -35,6 +35,7 @@
     <exclude>
       <directory suffix="_test.php">.</directory>
       <directory suffix=".php">lang</directory>
+      <file>db/events.php</file>
       <file>tests/coverage.php</file>
       <file>version.php</file>
     </exclude>
