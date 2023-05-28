@@ -130,19 +130,22 @@ class condition extends \core_availability\condition {
     public function get_description($full, $not, info $info): string {
         global $USER;
         $course = $info->get_course();
-        $context = context_course::instance($course->id);
-        $capability = has_capability('moodle/course:manageactivities', $context);
-        if ((int)$this->relativestart === 2 || (int)$this->relativestart === 6) {
-            if ((!isset($course->enddate) || (int)$course->enddate === 0) && $capability) {
-                return get_string('noenddate', 'availability_relativedate');
-            }
-            $frut = $not ? 'from' : 'until';
-        } else {
-            $frut = $not ? 'until' : 'from';
-        }
         $calc = $this->calc($course, $USER->id);
         if ($calc === 0) {
             return '('. trim($this->get_debug_string()) . ')';
+        }
+        $context = context_course::instance($course->id);
+        $capability = has_capability('moodle/course:manageactivities', $context);
+        $relative = (int)$this->relativestart;
+        if ($relative === 2 || $relative === 5) {
+            if ((!isset($course->enddate) || (int)$course->enddate === 0) && $capability) {
+                return get_string('noenddate', 'availability_relativedate');
+            }
+        }
+        if ($relative === 2 || $relative === 6) {
+            $frut = $not ? 'from' : 'until';
+        } else {
+            $frut = $not ? 'until' : 'from';
         }
         $a = new stdClass();
         $a->rnumber = userdate($calc, get_string('strftimedatetime', 'langconfig'));
