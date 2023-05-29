@@ -132,10 +132,13 @@ class condition extends \core_availability\condition {
         $course = $info->get_course();
         $context = context_course::instance($course->id);
         $capability = has_capability('moodle/course:manageactivities', $context);
-        if ((int)$this->relativestart === 2 || (int)$this->relativestart === 6) {
+        $relative = (int)$this->relativestart;
+        if ($relative === 2 || $relative === 5) {
             if ((!isset($course->enddate) || (int)$course->enddate === 0) && $capability) {
                 return get_string('noenddate', 'availability_relativedate');
             }
+        }
+        if ($relative === 2 || $relative === 6) {
             $frut = $not ? 'from' : 'until';
         } else {
             $frut = $not ? 'until' : 'from';

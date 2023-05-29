@@ -71,12 +71,12 @@ class condition_test extends \advanced_testcase {
      */
     public function tree_provider(): array {
         return [
-            'Before start course' => [2, 1, 6, "-2 hour", "Until"],
             'After start course' => [2, 1, 1, "+2 hour", "From"],
             'Before end course' => [3, 2, 2, '-3 day', 'Until'],
-            'After end course' => [3, 2, 5, '+3 day', 'From'],
             'After end enrol' => [4, 3, 3, '+4 week', 'From'],
             'After end method' => [4, 3, 4, '+4 week', 'From'],
+            'After end course' => [3, 2, 5, '+3 day', 'From'],
+            'Before start course' => [2, 1, 6, "-2 hour", "Until"],
         ];
     }
 
@@ -92,7 +92,7 @@ class condition_test extends \advanced_testcase {
      * @covers \availability_relativedate\condition
      */
     public function test_tree($n, $d, $s, $str, $result) {
-        $arr = (object)['type' => 'relativedate', 'n' => $n, 'd' => $d, 's' => $s, 'm' => 99999];
+        $arr = (object)['type' => 'relativedate', 'n' => $n, 'd' => $d, 's' => $s, 'm' => 9999999];
         $stru = (object)['op' => '|', 'show' => true, 'c' => [$arr]];
         $tree = new tree($stru);
         $this->assertFalse($tree->is_available_for_all());
@@ -133,12 +133,12 @@ class condition_test extends \advanced_testcase {
      */
     public function description_provider(): array {
         return [
-            'Before start course' => [2, 1, 6, '-2 hour', 'Until', 'From', '2 hours before course start date'],
             'After start course' => [2, 1, 1, '+2 hour', 'From', 'Until', '2 hours after course start date'],
             'Before end course' => [3, 2, 2, '-3 day', 'Until', 'From', '3 days before course end date'],
-            'After end course' => [3, 2, 5, '+3 day', 'From', 'Until', '3 days after course end date'],
             'After end enrol' => [4, 3, 3, '+4 week', 'From', 'Until', '4 weeks after user enrolment date'],
             'After end method' => [4, 3, 4, '+4 week', 'From', 'Until', '4 weeks after enrolment method end date'],
+            'After end course' => [3, 2, 5, '+3 day', 'From', 'Until', '3 days after course end date'],
+            'Before start course' => [2, 1, 6, '-2 hour', 'Until', 'From', '2 hours before course start date'],
         ];
     }
 
@@ -266,6 +266,17 @@ class condition_test extends \advanced_testcase {
         $cond = new condition((object)['type' => 'relativedate', 'n' => 7, 'd' => 2, 's' => 4, 'm' => 1]);
         $information = $cond->get_description(false, false, $info);
         $this->assertEquals('(7 days after enrolment method end date)', $information);
+
+        $info = new info_module($cm1);
+        $cond = new condition((object)['type' => 'relativedate', 'n' => 7, 'd' => 2, 's' => 5, 'm' => 1]);
+        $information = $cond->get_description(false, false, $info);
+        $this->assertEquals('This course has no end date', $information);
+
+        $cond = new condition((object)['type' => 'relativedate', 'n' => 7, 'd' => 2, 's' => 6, 'm' => 1]);
+        $information = $cond->get_description(false, false, $info);
+        $str = userdate($course2->startdate - (7 * 24 * 3600), $strf);
+        $this->assertEquals("Until $str", $information);
+        $this->assertEquals('{relativedate: 7 days before course start date}', "$cond");
     }
 
     /**
