@@ -25,9 +25,7 @@
 namespace availability_relativedate;
 
 use availability_relativedate\condition;
-use \core_availability\tree;
-use \core_availability\mock_info;
-use \core_availability\info_module;
+use \core_availability\{tree, mock_info, info_module};
 
 /**
  * Unit tests for the relativedate condition.
