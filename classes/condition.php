@@ -394,7 +394,7 @@ class condition extends \core_availability\condition {
         if (!$rec || !$rec->newitemid) {
             // If we are on the same course (e.g. duplicate) then we can just use the existing one.
             if (!$DB->record_exists('course_modules', ['id' => $this->relativecoursemodule, 'course' => $courseid])) {
-                $this->cmid = 0;
+                $this->relativecoursemodule = 0;
                 $logger->process("Restored item ($name has availability condition on module that was not restored",
                 \backup::LOG_WARNING);
             }
