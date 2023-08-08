@@ -50,31 +50,6 @@ jobs:
         with:
           path: this-plugin
 
-      - name: add plugin
-        uses: actions/checkout@v3
-        with:
-          repository: moodleworkplace/moodle-tool_certificate
-          path: extras/tool_certificate
-
-      - name: add plugin
-        uses: actions/checkout@v3
-        with:
-          repository: moodleworkplace/moodle-mod_coursecertificate
-          path: extras/mod_coursecertificate
-
-      - name: add plugin
-        uses: actions/checkout@v3
-        with:
-          repository: mdjnelson/moodle-mod_certificate
-          path: extras/mod_certificate
-
-      - name: add plugin
-        uses: actions/checkout@v3
-        with:
-          repository: ewallah/moodle-mod_customcert
-          ref: main
-          path: extras/mod_customcert
-
       - name: setup PHP
         uses: shivammathur/setup-php@v2
         with:
@@ -143,6 +118,12 @@ jobs:
         run: vendor/bin/phpunit --colors --no-coverage --testsuite tool_dataprivacy_testsuite,tool_policy_testsuite,core_privacy_testsuite
         working-directory: moodle
 
+      - name: coveralls
+        if: ${{ always() }}
+        run: moodle-plugin-ci coveralls-upload
+        env:
+          COVERALLS_REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
       - name: firefox
         if: ${{ always() }}
         run: moodle-plugin-ci --ansi behat
@@ -165,13 +146,6 @@ jobs:
         working-directory: moodle
 
       - name: admin xmldb
-        continue-on-error: true # subplugins generate xmldb errors
         if: ${{ always() }}
         run: moodle-plugin-ci --ansi behat --auto-rerun=0 --profile chrome admin/tool/xmldb
         working-directory: moodle
-
-      - name: coveralls
-        if: ${{ always() }}
-        run: moodle-plugin-ci coveralls-upload
-        env:
-          COVERALLS_REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
