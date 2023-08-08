@@ -30,16 +30,19 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        moodle-branch: ['MOODLE_311_STABLE', 'MOODLE_400_STABLE', 'MOODLE_401_STABLE', 'MOODLE_402_STABLE', 'master']
-        php: ['8.0']
+        php: ['8.1']
+        moodle-branch: ['MOODLE_401_STABLE', 'MOODLE_402_STABLE', 'master']
         database: ['mariadb', 'pgsql']
         include:
-          - php: '8.1'
-            moodle-branch: 'MOODLE_402_STABLE'
+          - php: '8.0'
+            moodle-branch: 'MOODLE_400_STABLE'
             database: 'pgsql'
           - php: '7.4'
             moodle-branch: 'MOODLE_311_STABLE'
             database: pgsql
+          - php: '8.2'
+            moodle-branch: 'MOODLE_402_STABLE'
+            database: 'pgsql'
 
     steps:
       - name: checkout plugin
@@ -47,33 +50,53 @@ jobs:
         with:
           path: this-plugin
 
+      - name: add plugin
+        uses: actions/checkout@v3
+        with:
+          repository: moodleworkplace/moodle-tool_certificate
+          path: extras/tool_certificate
+
+      - name: add plugin
+        uses: actions/checkout@v3
+        with:
+          repository: moodleworkplace/moodle-mod_coursecertificate
+          path: extras/mod_coursecertificate
+
+      - name: add plugin
+        uses: actions/checkout@v3
+        with:
+          repository: mdjnelson/moodle-mod_certificate
+          path: extras/mod_certificate
+
+      - name: add plugin
+        uses: actions/checkout@v3
+        with:
+          repository: ewallah/moodle-mod_customcert
+          ref: main
+          path: extras/mod_customcert
+
       - name: setup PHP
         uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php }}
           ini-values: max_input_vars=5000
           coverage: pcov
- 
-      - name: npm cache
-        uses: actions/cache@v3
-        with:
-          path: ~/.npm
-          key: node-${{ matrix.php }}-${{ matrix.moodle-branch }}-${{ matrix.database }}-cache
-          restore-keys: |
-            node-${{ matrix.php }}-${{ matrix.moodle-branch }}-${{ matrix.database }}-cache
 
       - name: composer
         run: |
-           composer create-project -n --no-dev --prefer-dist moodlehq/moodle-plugin-ci ci ^4
-           echo $(cd ci/bin; pwd) >> $GITHUB_PATH
-           echo $(cd ci/vendor/bin; pwd) >> $GITHUB_PATH
-           sudo locale-gen en_AU.UTF-8
+          composer create-project -n --no-dev --prefer-dist moodlehq/moodle-plugin-ci ci ^4
+          echo $(cd ci/bin; pwd) >> $GITHUB_PATH
+          echo $(cd ci/vendor/bin; pwd) >> $GITHUB_PATH
+          sudo locale-gen en_AU.UTF-8
 
       - name: install Moodle
-        run: moodle-plugin-ci --ansi install --db-host=127.0.0.1 --plugin this-plugin
+        run: moodle-plugin-ci install --db-host=127.0.0.1 --plugin this-plugin --extra-plugins=extras
         env:
           DB: ${{ matrix.database }}
           MOODLE_BRANCH: ${{ matrix.moodle-branch }}
+
+      - name: add guestlogin
+        run: moodle-plugin-ci add-config -q -n '$CFG->logguests = true;'
 
       - name: phplint
         if: ${{ always() }}
@@ -105,7 +128,7 @@ jobs:
 
       - name: grunt
         if: ${{ always() }}
-        run: moodle-plugin-ci --ansi grunt || true
+        run: moodle-plugin-ci --ansi grunt
 
       - name: mustache
         if: ${{ always() }}
@@ -114,21 +137,6 @@ jobs:
       - name: phpunit
         if: ${{ always() }}
         run: moodle-plugin-ci --ansi phpunit --coverage-text --coverage-clover
-
-      - name: additional
-        if: ${{ matrix.moodle-branch != 'master'}}
-        run: vendor/bin/phpunit --debug --colors --no-coverage --filter=test_get_course_contents_completion_auto
-        working-directory: moodle
-
-      - name: additional
-        if: ${{ matrix.moodle-branch != 'master'}}
-        run: vendor/bin/phpunit --debug --colors --no-coverage --filter=test_get_course_contents_completion_manual
-        working-directory: moodle
-
-      - name: additional
-        if: ${{ always() }}
-        run: vendor/bin/phpunit --debug --colors --no-coverage --filter=test_get_activities_completion_status
-        working-directory: moodle
 
       - name: privacy
         if: ${{ always() }}
@@ -149,7 +157,18 @@ jobs:
       
       - name: chrome classic
         if: ${{ always() }}
-        run: moodle-plugin-ci --ansi behat  --suite="classic" --profile chrome
+        run: moodle-plugin-ci --ansi behat --suite="classic" --profile chrome
+
+      - name: admin bookmarks
+        if: ${{ always() }}
+        run: moodle-plugin-ci --ansi behat --auto-rerun=0 --profile chrome blocks/admin_bookmarks
+        working-directory: moodle
+
+      - name: admin xmldb
+        continue-on-error: true # subplugins generate xmldb errors
+        if: ${{ always() }}
+        run: moodle-plugin-ci --ansi behat --auto-rerun=0 --profile chrome admin/tool/xmldb
+        working-directory: moodle
 
       - name: coveralls
         if: ${{ always() }}
