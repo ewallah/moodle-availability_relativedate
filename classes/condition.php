@@ -275,7 +275,7 @@ class condition extends \core_availability\condition {
                 }
                 return $this->fixdate("+$x", $lowest);
             case 4:
-                // Aftr latest enrolment end date.
+                // After latest enrolment end date.
                 $sql = 'SELECT e.enrolenddate
                         FROM {user_enrolments} ue
                         JOIN {enrol} e on ue.enrolid = e.id
@@ -285,6 +285,11 @@ class condition extends \core_availability\condition {
                 return $this->fixdate("+$x", $lowest);
             case 7:
                 // Since completion of a module.
+
+                if ($this->relativecoursemodule < 1) {
+                    return 0;
+                }
+
                 $cm = new stdClass;
                 $cm->id = $this->relativecoursemodule;
                 $cm->course = $course->id;
