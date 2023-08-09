@@ -275,7 +275,7 @@ class condition extends \core_availability\condition {
                 }
                 return $this->fixdate("+$x", $lowest);
             case 4:
-                // Aftr latest enrolment end date.
+                // After latest enrolment end date.
                 $sql = 'SELECT e.enrolenddate
                         FROM {user_enrolments} ue
                         JOIN {enrol} e on ue.enrolid = e.id
@@ -285,6 +285,11 @@ class condition extends \core_availability\condition {
                 return $this->fixdate("+$x", $lowest);
             case 7:
                 // Since completion of a module.
+
+                if ($this->relativecoursemodule < 1) {
+                    return 0;
+                }
+
                 $cm = new stdClass;
                 $cm->id = $this->relativecoursemodule;
                 $cm->course = $course->id;
@@ -394,7 +399,7 @@ class condition extends \core_availability\condition {
         if (!$rec || !$rec->newitemid) {
             // If we are on the same course (e.g. duplicate) then we can just use the existing one.
             if (!$DB->record_exists('course_modules', ['id' => $this->relativecoursemodule, 'course' => $courseid])) {
-                $this->cmid = 0;
+                $this->relativecoursemodule = 0;
                 $logger->process("Restored item ($name has availability condition on module that was not restored",
                 \backup::LOG_WARNING);
             }
