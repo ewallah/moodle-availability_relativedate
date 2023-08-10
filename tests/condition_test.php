@@ -144,7 +144,7 @@ class condition_test extends \advanced_testcase {
     }
 
     /**
-     * Test descrtiption.
+     * Test description.
      *
      * @dataProvider description_provider
      * @param int $n number to skip
@@ -281,6 +281,51 @@ class condition_test extends \advanced_testcase {
     }
 
     /**
+     * Test debug string.
+     *
+     * @dataProvider debug_provider
+     * @param array $cond
+     * @param string $result
+     * @covers \availability_relativedate\condition
+     */
+    public function test_debug($cond, $result): void {
+        $name = 'availability_relativedate\condition';
+        $condition = new condition((object)$cond);
+        $callresult = \phpunit_util::call_internal_method($condition, 'get_debug_string', [], $name);
+        $this->assertEquals($result, $callresult);
+    }
+
+    /**
+     * Relative dates debug provider.
+     */
+    public function debug_provider(): array {
+        $daybefore = ' 1 ' . get_string('day', 'availability_relativedate') . ' ';
+        return [
+            'After start course' => [
+                ['type' => 'relativedate', 'n' => 1, 'd' => 2, 's' => 1, 'm' => 999999],
+                $daybefore . get_string('datestart', 'availability_relativedate')],
+            'Before end course' => [
+                ['type' => 'relativedate', 'n' => 1, 'd' => 2, 's' => 2, 'm' => 999999],
+                $daybefore . get_string('dateend', 'availability_relativedate')],
+            'After end enrol' => [
+                ['type' => 'relativedate', 'n' => 1, 'd' => 2, 's' => 3, 'm' => 999999],
+                $daybefore . get_string('dateenrol', 'availability_relativedate')],
+            'After end method' => [
+                ['type' => 'relativedate', 'n' => 1, 'd' => 2, 's' => 4, 'm' => 999999],
+                $daybefore . get_string('dateendenrol', 'availability_relativedate')],
+            'After end course' => [
+                ['type' => 'relativedate', 'n' => 1, 'd' => 2, 's' => 5, 'm' => 999999],
+                $daybefore . get_string('dateendafter', 'availability_relativedate')],
+            'Before start course' => [
+                ['type' => 'relativedate', 'n' => 1, 'd' => 2, 's' => 6, 'm' => 999999],
+                $daybefore . get_string('datestartbefore', 'availability_relativedate')],
+            'After invalid module' => [
+                ['type' => 'relativedate', 'n' => 1, 'd' => 2, 's' => 999, 'm' => 999999],
+                $daybefore],
+        ];
+    }
+
+    /**
      * Tests debug strings (reflection).
      * @covers \availability_relativedate\condition
      */
@@ -290,50 +335,21 @@ class condition_test extends \advanced_testcase {
         $pg = self::getDataGenerator()->get_plugin_generator('mod_page');
         $page0 = $pg->create_instance(['course' => $this->course, 'completion' => COMPLETION_TRACKING_MANUAL]);
 
-        $condition1 = new condition((object)['type' => 'relativedate', 'n' => 1, 'd' => 2, 's' => 1, 'm' => 999999]);
-        $result1 = \phpunit_util::call_internal_method($condition1, 'get_debug_string', [], $name);
-        $this->assertEquals($daybefore . ' ' . get_string('datestart', 'availability_relativedate'), $result1);
-
-        $condition2 = new condition((object)['type' => 'relativedate', 'n' => 1, 'd' => 2, 's' => 2, 'm' => 999999]);
-        $result2 = \phpunit_util::call_internal_method($condition2, 'get_debug_string', [], $name);
-        $this->assertEquals($daybefore . ' ' . get_string('dateend', 'availability_relativedate'), $result2);
-
-        $condition3 = new condition((object)['type' => 'relativedate', 'n' => 1, 'd' => 2, 's' => 3, 'm' => 999999]);
-        $result3 = \phpunit_util::call_internal_method($condition3, 'get_debug_string', [], $name);
-        $this->assertEquals($daybefore . ' ' . get_string('dateenrol', 'availability_relativedate'), $result3);
-
-        $condition4 = new condition((object)['type' => 'relativedate', 'n' => 1, 'd' => 2, 's' => 4, 'm' => 999999]);
-        $result4 = \phpunit_util::call_internal_method($condition4, 'get_debug_string', [], $name);
-        $this->assertEquals($daybefore . ' ' . get_string('dateendenrol', 'availability_relativedate'), $result4);
-
-        $condition5 = new condition((object)['type' => 'relativedate', 'n' => 1, 'd' => 2, 's' => 5, 'm' => 999999]);
-        $result5 = \phpunit_util::call_internal_method($condition5, 'get_debug_string', [], $name);
-        $this->assertEquals($daybefore . ' ' . get_string('dateendafter', 'availability_relativedate'), $result5);
-
-        $condition6 = new condition((object)['type' => 'relativedate', 'n' => 1, 'd' => 2, 's' => 6, 'm' => 999999]);
-        $result6 = \phpunit_util::call_internal_method($condition6, 'get_debug_string', [], $name);
-        $this->assertEquals($daybefore . ' ' . get_string('datestartbefore', 'availability_relativedate'), $result6);
-
-        $condition7 = new condition((object)['type' => 'relativedate', 'n' => 1, 'd' => 2, 's' => 7, 'm' => $page0->cmid]);
-        $result7 = \phpunit_util::call_internal_method($condition7, 'get_debug_string', [], $name);
+        $condition = new condition((object)['type' => 'relativedate', 'n' => 1, 'd' => 2, 's' => 7, 'm' => $page0->cmid]);
+        $result = \phpunit_util::call_internal_method($condition, 'get_debug_string', [], $name);
         $this->assertEquals(
             $daybefore . ' ' .
             get_string('datecompletion', 'availability_relativedate')
-            . ' ' . condition::description_cm_name($page0->cmid), $result7);
+            . ' ' . condition::description_cm_name($page0->cmid), $result);
 
-        $condition7 = new condition((object)['type' => 'relativedate', 'n' => 1, 'd' => 2, 's' => 7, 'm' => 999999]);
-        $result7 = \phpunit_util::call_internal_method($condition7, 'get_debug_string', [], $name);
+        $condition = new condition((object)['type' => 'relativedate', 'n' => 1, 'd' => 2, 's' => 7, 'm' => 999999]);
+        $result = \phpunit_util::call_internal_method($condition, 'get_debug_string', [], $name);
         $this->assertEquals(
             $daybefore . ' ' .
             get_string('datecompletion', 'availability_relativedate') . ' ' .
             get_string('missing', 'availability_relativedate'),
-            $result7);
+            $result);
 
-        $conditioninvalid = new condition((object)['type' => 'relativedate', 'n' => 1, 'd' => 2, 's' => 999, 'm' => 999999]);
-        $resultinvalid = \phpunit_util::call_internal_method($conditioninvalid, 'get_debug_string', [], $name);
-        $this->assertEquals(
-            $daybefore . ' ',
-            $resultinvalid);
     }
 
     /**
