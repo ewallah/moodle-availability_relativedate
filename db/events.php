@@ -27,5 +27,6 @@ defined('MOODLE_INTERNAL') || die();
 $observers = [
     [
         'eventname' => '\core\event\course_module_deleted',
-        'callback' => '\availability_relativedate\autoupdate::update_from_event'
-    ]];
+        'callback' => '\availability_relativedate\autoupdate::update_from_event',
+    ],
+];

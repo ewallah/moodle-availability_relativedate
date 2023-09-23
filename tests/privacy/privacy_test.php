@@ -25,8 +25,8 @@
 
 namespace availability_relativedate\privacy;
 
-use \core_privacy\tests\provider_testcase;
-use \core_privacy\local\metadata\collection;
+use core_privacy\tests\provider_testcase;
+use core_privacy\local\metadata\collection;
 
 /**
  * Privacy tests for relative date availability.

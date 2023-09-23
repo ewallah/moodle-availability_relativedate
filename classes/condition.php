@@ -93,7 +93,7 @@ class condition extends \core_availability\condition {
             'n' => intval($this->relativenumber),
             'd' => intval($this->relativedwm),
             's' => intval($this->relativestart),
-            'm' => intval($this->relativecoursemodule)
+            'm' => intval($this->relativecoursemodule),
         ];
     }
 
@@ -212,7 +212,7 @@ class condition extends \core_availability\condition {
             1 => get_string('hour' . $s, 'availability_relativedate'),
             2 => get_string('day' . $s, 'availability_relativedate'),
             3 => get_string('week' . $s, 'availability_relativedate'),
-            4 => get_string('month' . $s, 'availability_relativedate')
+            4 => get_string('month' . $s, 'availability_relativedate'),
         ];
     }
 

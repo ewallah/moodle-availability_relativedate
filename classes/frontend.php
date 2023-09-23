@@ -52,8 +52,10 @@ class frontend extends \core_availability\frontend {
     protected function get_javascript_init_params($course, cm_info $cm = null, section_info $section = null) {
         global $DB;
         $optionsdwm = self::convert_associative_array_for_js(condition::options_dwm(), 'field', 'display');
-        $optionsstart = [(object)['field' => 1, 'display' => condition::options_start(1)],
-                         (object)['field' => 6, 'display' => condition::options_start(6)]];
+        $optionsstart = [
+            (object)['field' => 1, 'display' => condition::options_start(1)],
+            (object)['field' => 6, 'display' => condition::options_start(6)],
+        ];
         if ($course->enddate != 0) {
             $optionsstart[] = (object)['field' => 5, 'display' => condition::options_start(5)];
             $optionsstart[] = (object)['field' => 2, 'display' => condition::options_start(2)];
@@ -82,7 +84,8 @@ class frontend extends \core_availability\frontend {
                         $s['coursemodules'][] = [
                             'id' => $cmid,
                             'name' => $module->name,
-                            'completionenabled' => $module->completion > 0];
+                            'completionenabled' => $module->completion > 0,
+                        ];
                     }
                 }
                 $activitysel[] = $s;
