@@ -108,7 +108,7 @@ jobs:
 
       - name: phpunit
         if: ${{ always() }}
-        run: moodle-plugin-ci --ansi phpunit --coverage-text --coverage-clover
+        run: moodle-plugin-ci --ansi phpunit --testdox --coverage-text --coverage-clover
 
       - name: privacy
         if: ${{ always() }}

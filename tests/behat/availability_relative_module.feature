@@ -85,13 +85,13 @@ Feature: availability_relativedate relative activities
     And I am on the "C1" "Course" page logged in as "student1"
     Then I should see "Page A1" in the "region-main" "region"
     And I should see "1 hour after completion of activity Page A1"
-    When I press "Mark as done"
-    Then I should not see "1 hour after completion of activity Page A1"
+    And I press "Mark as done"
+    But I should not see "1 hour after completion of activity Page A1"
     And I log out
     And I trigger cron
     And I am on the "C1" "Course" page logged in as "student1"
     And I should see "1 hour after completion of activity" in the "region-main" "region"
-    Then I should see relativedate "## +1 hours ##"
+    And I should see relativedate "## +1 hours ##"
 
   Scenario: Admin can duplicate a restricted activity
     When I am on "Course 1" course homepage with editing mode on
@@ -111,3 +111,38 @@ Feature: availability_relativedate relative activities
       | Schema | Course short name | C2       |
     And I am on "Course 2" course homepage
     Then I should see "Not available unless: (1 hour after completion of activity"
+
+  Scenario: Admin can delete relatativedate restricted activities
+    When I am on "Course 1" course homepage with editing mode on
+    And I delete "Page A1" activity
+    And I delete "Page B2" activity
+    And I delete "Page C3" activity
+    And I delete "Page D4" activity
+    And I delete "Page E5" activity
+    And I delete section "5"
+    And I run all adhoc tasks
+    And I log out
+    And I am on the "C1" "Course" page logged in as "student1"
+    Then I should see "Page A2" in the "region-main" "region"
+    And I should see "1 hour after completion of activity (missing)"
+    And I should not see "1 hour after completion of activity Page A1"
+
+  @javascript
+  Scenario: Admin can delete relatativedate restricted sections
+    When I am on "Course 1" course homepage with editing mode on
+    And I edit the section "2"
+    And I expand all fieldsets
+    And I press "Add restriction..."
+    And I click on "Relative date" "button" in the "Add restriction..." "dialogue"
+    And I set the field "relativenumber" to "1"
+    And I set the field "relativednw" to "1"
+    And I set the field "relativestart" to "7"
+    And I set the field "relativecoursemodule" to "Page A1"
+    And I press "Save changes"
+    And I delete "Page A1" activity
+    And I run all adhoc tasks
+    And I log out
+    And I am on the "C1" "Course" page logged in as "student1"
+    Then I should see "Page A2" in the "region-main" "region"
+    And I should see "1 hour after completion of activity (missing)"
+    And I should see "1 hour after completion of activity Page E1"

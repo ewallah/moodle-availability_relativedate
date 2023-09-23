@@ -162,10 +162,11 @@ class condition extends \core_availability\condition {
     protected function get_debug_string() {
         $modname = '';
         if ((int)$this->relativestart === 7) {
+            $modname = ' ';
             if ($this->relativecoursemodule != -1 && get_coursemodule_from_id('', $this->relativecoursemodule)) {
-                $modname = ' ' . \core_availability\condition::description_cm_name($this->relativecoursemodule);
+                $modname .= \core_availability\condition::description_cm_name($this->relativecoursemodule);
             } else {
-                $modname = ' ' . get_string('missing', 'availability_relativedate');
+                $modname .= \html_writer::span(get_string('missing', 'availability_relativedate'), 'alert alert-danger');
             }
         }
         return ' ' . $this->relativenumber . ' ' . self::options_dwm($this->relativenumber)[$this->relativedwm] . ' ' .
@@ -369,7 +370,7 @@ class condition extends \core_availability\condition {
     }
 
     /**
-     * Helper for updating ids (only implemented for course modules,not for sections)
+     * Helper for updating ids, implemented for course modules and sections
      *
      * @param string $table
      * @param int $oldid
@@ -377,7 +378,9 @@ class condition extends \core_availability\condition {
      * @return bool
      */
     public function update_dependency_id($table, $oldid, $newid) {
-        if ($table === 'course_modules' && (int)$this->relativestart === 7 && (int)$this->relativecoursemodule === (int)$oldid) {
+        if (($table === 'course_modules' || $table === 'course_sections') &&
+            (int)$this->relativestart === 7 &&
+            (int)$this->relativecoursemodule === (int)$oldid) {
             $this->relativecoursemodule = $newid;
             return true;
         }

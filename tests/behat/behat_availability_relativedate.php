@@ -88,7 +88,6 @@ class behat_availability_relativedate extends behat_base {
         }
     }
 
-
     /**
      * Configure self enrolment
      * @param string $course

@@ -213,15 +213,18 @@ class condition_test extends \advanced_testcase {
         $completion->reset_all_state($modinfo->get_cm($page1->cmid));
 
         $cond = new condition((object)['type' => 'relativedate', 'n' => 4, 'd' => 4, 's' => 7, 'm' => $page0->cmid]);
-        $this->assertFalse($cond->update_dependency_id('courses', $page0->cmid, 3));
-        $this->assertTrue($cond->update_dependency_id('course_modules', $page0->cmid, 3));
+        $this->assertTrue($cond->update_dependency_id('course_sections', $page0->cmid, 3));
+        $this->assertFalse($cond->update_dependency_id('course_modules', $page1->cmid, 3));
+        $cond = new condition((object)['type' => 'relativedate', 'n' => 4, 'd' => 4, 's' => 7, 'm' => $page1->cmid]);
+        $this->assertTrue($cond->update_dependency_id('course_modules', $page1->cmid, 4));
+        $this->assertFalse($cond->update_dependency_id('course_modules', $page1->cmid, -1));
     }
 
     /**
      * Tests a course with no enddate.
      * @covers \availability_relativedate\condition
      */
-    public function test_noenddate() {
+    public function test_no_enddate() {
         global $DB, $USER;
         $dg = $this->getDataGenerator();
         $now = time();
@@ -344,12 +347,7 @@ class condition_test extends \advanced_testcase {
 
         $condition = new condition((object)['type' => 'relativedate', 'n' => 1, 'd' => 2, 's' => 7, 'm' => 999999]);
         $result = \phpunit_util::call_internal_method($condition, 'get_debug_string', [], $name);
-        $this->assertEquals(
-            $daybefore . ' ' .
-            get_string('datecompletion', 'availability_relativedate') . ' ' .
-            get_string('missing', 'availability_relativedate'),
-            $result);
-
+        $this->assertStringContainsString(get_string('missing', 'availability_relativedate'), $result);
     }
 
     /**
