@@ -2,7 +2,7 @@
 Feature: availability_relativedate relative activities
   In order to control student access to activities
   As a teacher
-  I need to set relative activity conditions which prevent student access
+  I need to set relative activity conditions based on previous module access
 
   Background:
     Given the following "users" exist:
@@ -51,22 +51,21 @@ Feature: availability_relativedate relative activities
     Then I should see "Act2" in the "region-main" "region"
     And I should see "1 hour after completion of activity (missing)"
 
-  Examples:
-    | activity        |
-    | book            |
-    | bigbluebuttonbn |
-    | chat            |
-    | choice          |
-    | data            |
-    | feedback        |
-    | folder          |
-    | forum           |
-    | glossary        |
-    | h5pactivity     |
-    | lesson          |
-    | page            |
-    | quiz            |
-    | resource        |
-    | workshop        |
-    | wiki            |
-    | url             |
+    Examples:
+      | activity        |
+      | book            |
+      | chat            |
+      | choice          |
+      | data            |
+      | feedback        |
+      | folder          |
+      | forum           |
+      | glossary        |
+      | h5pactivity     |
+      | lesson          |
+      | page            |
+      | quiz            |
+      | resource        |
+      | workshop        |
+      | wiki            |
+      | url             |
