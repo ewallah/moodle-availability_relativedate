@@ -294,8 +294,13 @@ class condition extends \core_availability\condition {
                 $cm = new stdClass;
                 $cm->id = $this->relativecoursemodule;
                 $cm->course = $course->id;
-                $completion = new \completion_info($course);
-                return $this->fixdate("+$x", $completion->get_data($cm, false, $userid)->timemodified);
+                try {
+                    $completion = new \completion_info($course);
+                    $data = $completion->get_data($cm, false, $userid);
+                    return $this->fixdate("+$x", $data->timemodified);
+                } catch (Exception $e) {
+                    return 0;
+                }
         }
         // After course start date.
         return $this->fixdate("+$x", $course->startdate);

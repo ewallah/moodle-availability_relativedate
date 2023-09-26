@@ -85,6 +85,8 @@ class behat_availability_relativedate extends behat_base {
         if ($cm1 && $cm2) {
             $str = '{"op":"|","c":[{"type":"relativedate","n":1,"d":1,"s":7,"m":' . $cm1->id . '}],"show":true}';
             $DB->set_field('course_modules', 'availability', $str, ['id' => $cm2->id]);
+            get_fast_modinfo(0, 0, true);
+            rebuild_course_cache();
         }
     }
 

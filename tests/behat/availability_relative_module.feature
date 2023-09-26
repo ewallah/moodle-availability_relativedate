@@ -2,7 +2,7 @@
 Feature: availability_relativedate relative activities
   In order to control student access to activities
   As a teacher
-  I need to set activitie date conditions which prevent student access
+  I need to set relative activity conditions which prevent student access
 
   Background:
     Given the following "users" exist:
@@ -120,6 +120,7 @@ Feature: availability_relativedate relative activities
     And I delete "Page D4" activity
     And I delete "Page E5" activity
     And I delete section "5"
+    And I reload the page
     And I run all adhoc tasks
     And I log out
     And I am on the "C1" "Course" page logged in as "student1"
@@ -140,6 +141,7 @@ Feature: availability_relativedate relative activities
     And I set the field "relativecoursemodule" to "Page A1"
     And I press "Save changes"
     And I delete "Page A1" activity
+    And I reload the page
     And I run all adhoc tasks
     And I log out
     And I am on the "C1" "Course" page logged in as "student1"

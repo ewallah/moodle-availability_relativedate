@@ -22,6 +22,7 @@ namespace availability_relativedate;
  * @package   availability_relativedate
  * @copyright 2022 eWallah.net
  * @author    Stefan Hanauska <stefan.hanauska@altmuehlnet.de>
+ * @author    Renaat Debleu <info@eWallah.net>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class autoupdate {
@@ -39,6 +40,8 @@ class autoupdate {
             $modid = $data['objectid'];
             if (condition::completion_value_used($courseid, $modid)) {
                 \core_availability\info::update_dependency_id_across_course($courseid, 'course_modules', $modid, -1);
+                // Added to be sure no errors are thrown (issue #22).
+                rebuild_course_cache($courseid);
             }
         }
     }
