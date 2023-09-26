@@ -1,8 +1,8 @@
 @eWallah @availability @availability_relativedate
-Feature: availability_relativedate relative activities
-  In order to control student access to activities
+Feature: availability_relativedate delete relative activities
+  In order to use conditions that are based on other activities
   As a teacher
-  I need to set relative activity conditions based on previous module access
+  I need to be able to delete activities that are part of the condition without errors
 
   Background:
     Given the following "users" exist:
