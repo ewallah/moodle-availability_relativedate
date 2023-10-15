@@ -41,7 +41,7 @@ jobs:
             moodle-branch: 'MOODLE_311_STABLE'
             database: pgsql
           - php: '8.2'
-            moodle-branch: 'MOODLE_402_STABLE'
+            moodle-branch: 'MOODLE_40333_STABLE'
             database: 'pgsql'
 
     steps:
