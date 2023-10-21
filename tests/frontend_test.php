@@ -40,7 +40,7 @@ class frontend_test extends \advanced_testcase {
      * Tests using relativedate condition in front end.
      * @covers \availability_relativedate\frontend
      */
-    public function test_frontend() {
+    public function test_frontend(): void {
         global $DB;
         $this->resetAfterTest();
         $this->setAdminUser();
@@ -71,7 +71,7 @@ class frontend_test extends \advanced_testcase {
      * Test behat funcs
      * @covers \behat_availability_relativedate
      */
-    public function test_behat() {
+    public function test_behat(): void {
         global $CFG;
         require_once($CFG->dirroot . '/availability/condition/relativedate/tests/behat/behat_availability_relativedate.php');
         $this->resetAfterTest();

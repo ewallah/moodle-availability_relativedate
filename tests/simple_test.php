@@ -41,7 +41,7 @@ class simple_test extends \advanced_testcase {
      * Tests the constructor including error conditions.
      * @covers \availability_relativedate\condition
      */
-    public function test_constructor() {
+    public function test_constructor(): void {
         $structure = (object)['type' => 'relativedate'];
         $cond = new condition($structure);
         $this->assertNotEqualsCanonicalizing($structure, $cond->save());
@@ -73,7 +73,7 @@ class simple_test extends \advanced_testcase {
      * Tests the save() function.
      * @covers \availability_relativedate\condition
      */
-    public function test_save() {
+    public function test_save(): void {
         $structure = (object)['n' => 1, 'd' => 2, 's' => 1, 'm' => 1];
         $cond = new condition($structure);
         $structure->type = 'relativedate';
@@ -84,7 +84,7 @@ class simple_test extends \advanced_testcase {
      * Tests static methods.
      * @covers \availability_relativedate\condition
      */
-    public function test_static() {
+    public function test_static(): void {
         $this->assertCount(5, condition::options_dwm());
         $this->assertEquals('minute', condition::option_dwm(0));
         $this->assertEquals('hour', condition::option_dwm(1));

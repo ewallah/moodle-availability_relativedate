@@ -41,7 +41,7 @@ class backup_test extends \advanced_testcase {
      * Backup check.
      * @covers \availability_relativedate\condition
      */
-    public function test_backup() {
+    public function test_backup(): void {
         global $CFG, $DB;
         $this->resetAfterTest();
         $this->setAdminUser();

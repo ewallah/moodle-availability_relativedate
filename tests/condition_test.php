@@ -110,7 +110,7 @@ class condition_test extends \advanced_testcase {
      * Tests relative module.
      * @covers \availability_relativedate\condition
      */
-    public function test_relative_module() {
+    public function test_relative_module(): void {
         $this->setTimezone('UTC');
         $dg = $this->getDataGenerator();
         $page = $dg->get_plugin_generator('mod_page')->create_instance(['course' => $this->course]);
@@ -180,7 +180,7 @@ class condition_test extends \advanced_testcase {
      * Tests the get_description and get_standalone_description functions.
      * @covers \availability_relativedate\condition
      */
-    public function test_get_description() {
+    public function test_get_description(): void {
         global $DB;
         $this->get_reldate(4);
         $info = new mock_info($this->course, $this->user->id);
@@ -225,7 +225,7 @@ class condition_test extends \advanced_testcase {
      * Tests a course with no enddate.
      * @covers \availability_relativedate\condition
      */
-    public function test_no_enddate() {
+    public function test_no_enddate(): void {
         global $DB, $USER;
         $dg = $this->getDataGenerator();
         $now = time();
@@ -343,7 +343,7 @@ class condition_test extends \advanced_testcase {
      * Tests debug strings (reflection).
      * @covers \availability_relativedate\condition
      */
-    public function test_reflection_debug_strings() {
+    public function test_reflection_debug_strings(): void {
         $name = 'availability_relativedate\condition';
         $daybefore = ' 1 ' . get_string('day', 'availability_relativedate');
         $pg = self::getDataGenerator()->get_plugin_generator('mod_page');
@@ -365,7 +365,7 @@ class condition_test extends \advanced_testcase {
      * Tests a reflection.
      * @covers \availability_relativedate\condition
      */
-    public function test_reflection_calc() {
+    public function test_reflection_calc(): void {
         global $CFG, $DB;
         $name = 'availability_relativedate\condition';
         $pg = self::getDataGenerator()->get_plugin_generator('mod_page');
@@ -460,7 +460,7 @@ class condition_test extends \advanced_testcase {
      * Tests the autoupdate event.
      * @covers \availability_relativedate\autoupdate
      */
-    public function test_autoupdate() {
+    public function test_autoupdate(): void {
         global $DB;
         $pg = $this->getDataGenerator()->get_plugin_generator('mod_page');
         $page0 = $pg->create_instance(['course' => $this->course, 'completion' => COMPLETION_TRACKING_MANUAL]);
@@ -491,7 +491,7 @@ class condition_test extends \advanced_testcase {
      * Cron function.
      * @coversNothing
      */
-    private function do_cron() {
+    private function do_cron(): void {
         $task = new \core\task\completion_regular_task();
         ob_start();
         $task->execute();
