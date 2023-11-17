@@ -50,6 +50,18 @@ jobs:
         with:
           path: this-plugin
 
+      - name: add plugin
+        uses: actions/checkout@v3
+        with:
+          repository: bdecentgmbh/moodle-mod_pulse
+          path: extras/mod_pulse
+
+      - name: add plugin
+        uses: actions/checkout@v3
+        with:
+          repository: edu-sharing/plugin-moodle-edu-sharing
+          path: extras/mod_edu-sharing
+
       - name: setup PHP
         uses: shivammathur/setup-php@v2
         with:
@@ -65,7 +77,7 @@ jobs:
           sudo locale-gen en_AU.UTF-8
 
       - name: install Moodle
-        run: moodle-plugin-ci install --db-host=127.0.0.1 --plugin this-plugin
+        run: moodle-plugin-ci install --db-host=127.0.0.1 --plugin this-plugin  --extra-plugins=extras
         env:
           DB: ${{ matrix.database }}
           MOODLE_BRANCH: ${{ matrix.moodle-branch }}
