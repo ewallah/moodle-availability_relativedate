@@ -12,7 +12,7 @@ jobs:
       matrix:
         php: ['8.1']
         moodle-branch: ['MOODLE_401_STABLE']
-        database: ['mysql']
+        database: ['mysqli']
 
     steps:
       - name: checkout plugin
