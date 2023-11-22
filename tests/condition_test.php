@@ -92,7 +92,7 @@ class condition_test extends \advanced_testcase {
      * @param string $result
      * @covers \availability_relativedate\condition
      */
-    public function test_tree($n, $d, $s, $str, $result) {
+    public function test_tree($n, $d, $s, $str, $result): void {
         $arr = (object)['type' => 'relativedate', 'n' => $n, 'd' => $d, 's' => $s, 'm' => 9999999];
         $stru = (object)['op' => '|', 'show' => true, 'c' => [$arr]];
         $tree = new tree($stru);
