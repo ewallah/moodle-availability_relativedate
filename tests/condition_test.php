@@ -431,10 +431,8 @@ class condition_test extends \advanced_testcase {
         $this->assertEquals($activitycompletion->timemodified + DAYSECS, $result72);
 
         $condition73 = new condition((object)['type' => 'relativedate', 'n' => 1, 'd' => 2, 's' => 7, 'm' => 999999]);
-        $message = 'Invalid course module ID';
-        $message .= $CFG->version < 2022112800 ? '' : ': 999999';
-        $this->expectExceptionMessage($message);
-        \phpunit_util::call_internal_method($condition73, 'calc', [$this->course, $this->user->id], $name);
+        $result73 = \phpunit_util::call_internal_method($condition73, 'calc', [$this->course, $this->user->id], $name);
+        $this->assertEquals(0, $result73);
     }
 
     /**
