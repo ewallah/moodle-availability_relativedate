@@ -298,7 +298,7 @@ class condition extends \core_availability\condition {
                     $completion = new \completion_info($course);
                     $data = $completion->get_data($cm, false, $userid);
                     return $this->fixdate("+$x", $data->timemodified);
-                } catch (Exception $e) {
+                } catch (\Exception $e) {
                     return 0;
                 }
         }
