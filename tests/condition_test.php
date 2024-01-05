@@ -295,51 +295,6 @@ class condition_test extends \advanced_testcase {
     }
 
     /**
-     * Test debug string.
-     *
-     * @dataProvider debug_provider
-     * @param array $cond
-     * @param string $result
-     * @covers \availability_relativedate\condition
-     */
-    public function test_debug($cond, $result): void {
-        $name = 'availability_relativedate\condition';
-        $condition = new condition((object)$cond);
-        $callresult = \phpunit_util::call_internal_method($condition, 'get_debug_string', [], $name);
-        $this->assertEquals($result, $callresult);
-    }
-
-    /**
-     * Relative dates debug provider.
-     */
-    public static function debug_provider(): array {
-        $daybefore = ' 1 ' . get_string('day', 'availability_relativedate') . ' ';
-        return [
-            'After start course' => [
-                ['type' => 'relativedate', 'n' => 1, 'd' => 2, 's' => 1, 'm' => 999999],
-                $daybefore . get_string('datestart', 'availability_relativedate'), ],
-            'Before end course' => [
-                ['type' => 'relativedate', 'n' => 1, 'd' => 2, 's' => 2, 'm' => 999999],
-                $daybefore . get_string('dateend', 'availability_relativedate'), ],
-            'After end enrol' => [
-                ['type' => 'relativedate', 'n' => 1, 'd' => 2, 's' => 3, 'm' => 999999],
-                $daybefore . get_string('dateenrol', 'availability_relativedate'), ],
-            'After end method' => [
-                ['type' => 'relativedate', 'n' => 1, 'd' => 2, 's' => 4, 'm' => 999999],
-                $daybefore . get_string('dateendenrol', 'availability_relativedate'), ],
-            'After end course' => [
-                ['type' => 'relativedate', 'n' => 1, 'd' => 2, 's' => 5, 'm' => 999999],
-                $daybefore . get_string('dateendafter', 'availability_relativedate'), ],
-            'Before start course' => [
-                ['type' => 'relativedate', 'n' => 1, 'd' => 2, 's' => 6, 'm' => 999999],
-                $daybefore . get_string('datestartbefore', 'availability_relativedate'), ],
-            'After invalid module' => [
-                ['type' => 'relativedate', 'n' => 1, 'd' => 2, 's' => 999, 'm' => 999999],
-                $daybefore, ],
-        ];
-    }
-
-    /**
      * Tests debug strings (reflection).
      * @covers \availability_relativedate\condition
      */
@@ -366,7 +321,7 @@ class condition_test extends \advanced_testcase {
      * @covers \availability_relativedate\condition
      */
     public function test_reflection_calc(): void {
-        global $CFG, $DB;
+        global $DB;
         $name = 'availability_relativedate\condition';
         $pg = self::getDataGenerator()->get_plugin_generator('mod_page');
         $page0 = $pg->create_instance(['course' => $this->course, 'completion' => COMPLETION_TRACKING_MANUAL]);

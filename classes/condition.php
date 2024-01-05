@@ -316,8 +316,8 @@ class condition extends \core_availability\condition {
     private function getlowest($sql, $parameters): int {
         global $DB;
         if ($lowestrec = $DB->get_record_sql($sql, $parameters, IGNORE_MULTIPLE)) {
-            $recs = get_object_vars($lowestrec);
-            foreach ($recs as $unused => $value) {
+            $recs = array_values(get_object_vars($lowestrec));
+            foreach ($recs as $value) {
                 return $value;
             }
         }

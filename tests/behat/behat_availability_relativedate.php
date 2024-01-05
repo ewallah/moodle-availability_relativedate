@@ -117,7 +117,10 @@ class behat_availability_relativedate extends behat_base {
      */
     protected function get_transformed_timestamp($time) {
         if ($time === '') {
-             return 0;
+            return 0;
+        }
+        if (intval($time) > 0) {
+            return $time;
         }
         $timepassed = array_filter(explode('##', $time));
         $first = reset($timepassed);

@@ -7,10 +7,10 @@ Feature: availability relative enrol start date
 
   Background:
     Given the following "courses" exist:
-      | fullname  | shortname | category | format | startdate          | enddate           | enablecompletion |
-      | Course 1  | C1        | 0        | topics | ##-10 days noon ## | ##+10 days noon## | 1                |
-    And selfenrolment exists in course "C1" starting "##-2 days 17:00##"
-    And selfenrolment exists in course "C1" ending "##+3 days noon ##"
+      | fullname  | shortname | category | format | startdate         | enddate           | enablecompletion |
+      | Course 1  | C1        | 0        | topics | ##-10 days noon## | ##+10 days noon## | 1                |
+    And selfenrolment exists in course "C1" starting " ##-2 days 17:00## "
+    And selfenrolment exists in course "C1" ending " ##+10 days noon## "
     And the following "activities" exist:
       | activity   | name   | intro | course | idnumber    | section | visible |
       | page       | Page A | intro | C1     | pageA       | 1       | 1       |
