@@ -36,8 +36,8 @@ Feature: availability_relativedate
 
   Scenario: Test relative conditions
     Given I add a page activity to course "Course 1" section "1"
-    And I set the field "Name" to "Page 1: 2 hours after course start date"
     And I expand all fieldsets
+    And I set the field "Name" to "Page 1: 2 hours after course start date"
     And I click on "Add restriction..." "button"
     And I click on "Relative date" "button" in the "Add restriction..." "dialogue"
     And I set the field "relativenumber" to "2"
@@ -46,8 +46,8 @@ Feature: availability_relativedate
     And I press "Save and return to course"
 
     And I add a page activity to course "Course 1" section "1"
-    And I set the field "Name" to "Page 2: 4 days before course end date"
     And I expand all fieldsets
+    And I set the field "Name" to "Page 2: 4 days before course end date"
     And I click on "Add restriction..." "button"
     And I click on "Relative date" "button" in the "Add restriction..." "dialogue"
     And I set the field "relativenumber" to "4"
@@ -56,8 +56,8 @@ Feature: availability_relativedate
     And I press "Save and return to course"
 
     And I add a page activity to course "Course 1" section "1"
-    And I set the field "Name" to "Page 3: 6 weeks after user enrolment date"
     And I expand all fieldsets
+    And I set the field "Name" to "Page 3: 6 weeks after user enrolment date"
     And I click on "Add restriction..." "button"
     And I click on "Relative date" "button" in the "Add restriction..." "dialogue"
     And I set the field "relativenumber" to "6"
@@ -66,16 +66,15 @@ Feature: availability_relativedate
     And I press "Save and return to course"
 
     And I add a page activity to course "Course 1" section "1"
-    And I set the field "Name" to "Page 4: 7 months after enrolment method end date"
     And I expand all fieldsets
+    And I set the field "Name" to "Page 4: 7 months after enrolment method end date"
     And I click on "Add restriction..." "button"
     And I click on "Relative date" "button" in the "Add restriction..." "dialogue"
     And I set the field "relativenumber" to "7"
     And I set the field "relativednw" to "4"
     And I set the field "relativestart" to "4"
     And I press "Save and return to course"
-Then I should see "boe"
-    
+
     # 5 days before course start date.
     And I edit the section "2"
     When I expand all fieldsets
