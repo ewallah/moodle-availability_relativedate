@@ -130,8 +130,7 @@ class condition extends \core_availability\condition {
     public function get_description($full, $not, info $info): string {
         global $USER;
         $course = $info->get_course();
-        $context = context_course::instance($course->id);
-        $capability = has_capability('moodle/course:manageactivities', $context);
+        $capability = has_capability('moodle/course:manageactivities', context_course::instance($course->id));
         $relative = (int)$this->relativestart;
         if ($relative === 2 || $relative === 5) {
             if ((!isset($course->enddate) || (int)$course->enddate === 0) && $capability) {

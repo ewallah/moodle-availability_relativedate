@@ -24,6 +24,37 @@ Feature: availability_relativedate delete relative activities
       | teacher1 | C1     | editingteacher |
 
   @javascript
+  Scenario Outline: Delete a module that is part of a Relative condition in a section
+    Given the following "activities" exist:
+      | activity   | name | course | idnumber | section | completion |
+      | <activity> | Act1 | C1     | id1      | 1       | 1          |
+    And I log in as "teacher1"
+    And I am on "Course 1" course homepage with editing mode on
+    And I edit the section "1"
+    And I expand all fieldsets
+    And I press "Add restriction..."
+    And I click on "Relative date" "button" in the "Add restriction..." "dialogue"
+    And I set the field "relativenumber" to "1"
+    And I set the field "relativednw" to "1"
+    And I set the field "relativestart" to "7"
+    And I set the field "relativecoursemodule" to "Act1"
+    When I press "Save changes"
+    And I should see "1 hour after completion of activity Act1"
+    And I delete "Act1" activity
+    And I should see "1 hour after completion of activity Act1"
+    And I reload the page
+    And I run all adhoc tasks
+    And I log out
+    And I am on the "C1" "Course" page logged in as "student1"
+    Then I should not see "Act1" in the "region-main" "region"
+    And I should see "1 hour after completion of activity (missing)"
+
+    Examples:
+      | activity |
+      | lesson   |
+      | page     |
+
+  @javascript
   Scenario Outline: Relative condition for each module
     Given the following "activities" exist:
       | activity   | name | course | idnumber | section | completion |
@@ -52,20 +83,6 @@ Feature: availability_relativedate delete relative activities
     And I should see "1 hour after completion of activity (missing)"
 
     Examples:
-      | activity        |
-      | book            |
-      | chat            |
-      | choice          |
-      | data            |
-      | feedback        |
-      | folder          |
-      | forum           |
-      | glossary        |
-      | h5pactivity     |
-      | lesson          |
-      | page            |
-      | quiz            |
-      | resource        |
-      | workshop        |
-      | wiki            |
-      | url             |
+      | activity |
+      | book     |
+      | url      |

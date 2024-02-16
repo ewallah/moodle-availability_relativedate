@@ -25,9 +25,8 @@
 
 // NOTE: no MOODLE_INTERNAL test here, this file may be required by behat before including /config.php.
 // For that reason, we can't even rely on $CFG->admin being available here.
-// @codeCoverageIgnoreStart
+
 require_once(__DIR__ . '/../../../../../lib/behat/behat_base.php');
-// @codeCoverageIgnoreEnd
 
 /**
  * Step definitions to add enrolment.
@@ -74,7 +73,7 @@ class behat_availability_relativedate extends behat_base {
 
     /**
      * Make one activity available after another
-     * @Given /^I make "(?P<activity2>[^"]*)" relative date depending on "(?P<avtivity1>[^"]*)"$/
+     * @Given /^I make "(?P<activity2>[^"]*)" relative date depending on "(?P<activity1>[^"]*)"$/
      * @param string $activity1
      * @param string $activity2
      */
@@ -85,9 +84,10 @@ class behat_availability_relativedate extends behat_base {
         if ($cm1 && $cm2) {
             $str = '{"op":"|","c":[{"type":"relativedate","n":1,"d":1,"s":7,"m":' . $cm1->id . '}],"show":true}';
             $DB->set_field('course_modules', 'availability', $str, ['id' => $cm2->id]);
-            get_fast_modinfo(0, 0, true);
-            rebuild_course_cache();
         }
+        $this->execute('behat_general::i_run_all_adhoc_tasks');
+        core_courseformat\base::reset_course_cache(0);
+        get_fast_modinfo(0, 0, true);
     }
 
     /**

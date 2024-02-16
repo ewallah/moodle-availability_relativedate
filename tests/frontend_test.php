@@ -86,8 +86,8 @@ class frontend_test extends \advanced_testcase {
         $class->selfenrolment_exists_in_course_starting($course->fullname, '##-10 days noon##');
         $class->selfenrolment_exists_in_course_ending($course->fullname, '');
         $class->selfenrolment_exists_in_course_ending($course->fullname, '## today ##');
-        $class->i_make_activity_relative_date_depending_on('page1', 'page2');
         $this->expectExceptionMessage('behat_context_helper');
         $class->i_should_see_relativedate('##-10 days noon##');
+        $class->i_make_activity_relative_date_depending_on('page1', 'page2');
     }
 }

@@ -13,16 +13,20 @@ Feature: availability_relativedate ui
       | enablecompletion  | 1                    |
       | startdate         | ## -10 days 17:00 ## |
       | enddate           | ## +2 weeks 17:00 ## |
+    And the following "activities" exist:
+      | activity   | name   | intro | course | idnumber    | section | visible |
+      | page       | Page A | intro | C1     | pageA       | 1       | 1       |
+      | page       | Page B | intro | C1     | pageB       | 1       | 1       |
+    And the following "users" exist:
+      | username |
+      | teacher1 |
+    And the following "course enrolments" exist:
+      | user     | course | role           |
+      | teacher1 | C1     | editingteacher |
     And selfenrolment exists in course "C1" ending "## tomorrow 17:00 ##"
-    And I log in as "admin"
-    And I am on "Course 1" course homepage with editing mode on
 
   Scenario Outline: Add relative condition ui
-    When I add a "Page" to section "1"
-    And I set the following fields to these values:
-      | Name         | Page |
-      | Description  | Test |
-      | Page content | Test |
+    Given I am on the "pageA" "page activity editing" page logged in as teacher1
     And I expand all fieldsets
     And I click on "Add restriction..." "button"
     And I click on "Relative date" "button" in the "Add restriction..." "dialogue"
@@ -43,12 +47,8 @@ Feature: availability_relativedate ui
       | "7"    | "4" | "6"      | 7 months before course start date  |
 
   Scenario: Add relative condition ui to a section
-    When I add a "Page" to section "1"
-    And I set the following fields to these values:
-      | Name         | Page1 |
-      | Description  | Test  |
-      | Page content | Test  |
-    And I press "Save and return to course"
+    When I log in as "teacher1"
+    And I am on "Course 1" course homepage with editing mode on
     And I edit the section "1"
     And I expand all fieldsets
     And I press "Add restriction..."
@@ -56,35 +56,18 @@ Feature: availability_relativedate ui
     And I set the field "relativenumber" to "1"
     And I set the field "relativednw" to "1"
     And I set the field "relativestart" to "7"
-    And I set the field "relativecoursemodule" to "Page1"
-    And I press "Save changes"
+    And I set the field "relativecoursemodule" to "Page A"
+    When I press "Save changes"
     Then I should see "1 hour after completion of"
-    And I delete "Page1" activity
-    Then I should see "1 hour after completion of"
-    And I navigate to "Development > Purge caches" in site administration
-    And I press "Purge all caches"
-    Then I should see "All caches were purged"
-    And I am on "Course 1" course homepage with editing mode on
-    # TODO; Then I should not see "1 hour after completion of"
 
   Scenario: Add relative condition ui with a module
-    When I add a "Page" to section "1"
-    And I set the following fields to these values:
-      | Name         | Page1 |
-      | Description  | Test  |
-      | Page content | Test  |
-    And I press "Save and return to course"
-    And I add a "Page" to section "1"
-    And I set the following fields to these values:
-      | Name         | Page2 |
-      | Description  | Test  |
-      | Page content | Test  |
+    Given I am on the "pageB" "page activity editing" page logged in as teacher1
     And I expand all fieldsets
     And I click on "Add restriction..." "button"
     And I click on "Relative date" "button" in the "Add restriction..." "dialogue"
     And I set the field "relativenumber" to "1"
     And I set the field "relativednw" to "2"
     And I set the field "relativestart" to "7"
-    And I set the field "relativecoursemodule" to "Page1"
-    And I press "Save and return to course"
-    Then I should see "1 day after completion of activity Page1"
+    And I set the field "relativecoursemodule" to "Page A"
+    When I press "Save and return to course"
+    Then I should see "1 day after completion of activity Page A"
