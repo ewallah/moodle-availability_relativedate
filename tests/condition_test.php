@@ -50,7 +50,7 @@ class condition_test extends \advanced_testcase {
     /**
      * Create course and page.
      */
-    public function setUp():void {
+    public function setUp(): void {
         global $CFG;
         require_once($CFG->dirroot . '/availability/tests/fixtures/mock_info.php');
         require_once($CFG->dirroot . '/availability/tests/fixtures/mock_info_module.php');

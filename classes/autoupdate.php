@@ -33,7 +33,7 @@ class autoupdate {
      * @param \core\event\base $event
      * @return void
      */
-    public static function update_from_event(\core\event\base $event) : void {
+    public static function update_from_event(\core\event\base $event): void {
         $data = $event->get_data();
         $courseid = $data['courseid'];
         if (isset($courseid) && $courseid > 0) {
