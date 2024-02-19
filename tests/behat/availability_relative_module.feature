@@ -140,7 +140,7 @@ Feature: availability_relativedate relative activities
     And I set the field "relativestart" to "7"
     And I set the field "relativecoursemodule" to "Page A1"
     And I press "Save changes"
-    And I change window size to "large"
+    And I am on "Course 1" course homepage with editing mode on
     And I delete "Page A1" activity
     And I reload the page
     And I run all adhoc tasks

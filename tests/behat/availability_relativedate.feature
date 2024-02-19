@@ -91,6 +91,7 @@ Feature: availability_relativedate
     And I set the field "relativestart" to "1"
     And I press "Save changes"
 
+    And I am on "Course 1" course homepage with editing mode on
     And I edit the section "2"
     When I expand all fieldsets
     Then I should see "5" in the "Restrict access" "fieldset"
@@ -99,6 +100,7 @@ Feature: availability_relativedate
     And I press "Cancel"
 
     # 5 days after course end date.
+    And I am on "Course 1" course homepage with editing mode on
     And I edit the section "3"
     When I expand all fieldsets
     Then I should see "None" in the "Restrict access" "fieldset"
@@ -109,6 +111,7 @@ Feature: availability_relativedate
     And I set the field "relativestart" to "2"
     And I press "Save changes"
 
+    And I am on "Course 1" course homepage
     And I should see "PageA" in the "region-main" "region"
     And I should see "2 hours after course start date" in the "region-main" "region"
     And I should see "4 days before course end date" in the "region-main" "region"
