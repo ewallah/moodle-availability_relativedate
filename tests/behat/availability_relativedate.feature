@@ -20,15 +20,15 @@ Feature: availability_relativedate
       | startdate         | ## -10 days 17:00 ## |
       | enddate           | ## +2 weeks 17:00 ## |
       | numsections       | 5                    |
-     And the following "activities" exist:
+    And the following "activities" exist:
       | activity   | name  | course | idnumber | section | completion |
       | page       | PageA | C1     | pageA    | 1       | 1          |
       | page       | PageB | C1     | pageB    | 1       | 1          |
       | page       | PageC | C1     | pageC    | 1       | 1          |
       | page       | PageD | C1     | pageD    | 1       | 1          |
       | page       | PageE | C1     | pageE    | 1       | 1          |
-   And selfenrolment exists in course "C1" ending "## tomorrow 17:00 ##"
-   And the following "course enrolments" exist:
+    And selfenrolment exists in course "C1" ending "## tomorrow 17:00 ##"
+    And the following "course enrolments" exist:
       | user     | course | role           | timestart             |
       | teacher1 | C1     | editingteacher | ## yesterday 17:00 ## |
       | student1 | C1     | student        | ## yesterday 17:00 ## |
