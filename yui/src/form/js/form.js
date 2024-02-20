@@ -72,11 +72,11 @@ M.availability_relativedate.form.getNode = function(json) {
     for (i = 0; i < this.activitySelector.length; i++) {
         html += '<option disabled>' + this.activitySelector[i].name + '</option>';
         for (j = 0; j < this.activitySelector[i].coursemodules.length; j++) {
-            html += '<option value="' + this.activitySelector[i].coursemodules[j].id;
+            html += '<option value="' + this.activitySelector[i].coursemodules[j].id + '"';
             if (this.activitySelector[i].coursemodules[j].completionenabled == 0) {
                 html += ' disabled';
             }
-            html += '">' + this.activitySelector[i].coursemodules[j].name + '</option>';
+            html += '>' + this.activitySelector[i].coursemodules[j].name + '</option>';
         }
     }
     html += '</select></label>';
