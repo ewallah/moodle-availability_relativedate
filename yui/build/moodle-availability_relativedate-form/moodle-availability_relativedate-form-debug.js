@@ -133,10 +133,10 @@ M.availability_relativedate.form.getNode = function(json) {
 };
 
 M.availability_relativedate.form.fillValue = function(value, node) {
-    value.n = node.one('select[name=relativenumber]').get('value');
-    value.d = node.one('select[name=relativednw]').get('value');
-    value.s = node.one('select[name=relativestart]').get('value');
-    value.m = node.one('select[name=relativecoursemodule]').get('value');
+    value.n = Number(node.one('select[name=relativenumber]').get('value'));
+    value.d = Number(node.one('select[name=relativednw]').get('value'));
+    value.s = Number(node.one('select[name=relativestart]').get('value'));
+    value.m = Number(node.one('select[name=relativecoursemodule]').get('value'));
 };
 
 M.availability_relativedate.form.fillErrors = function(errors, node) {
