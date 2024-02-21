@@ -66,7 +66,7 @@ class frontend extends \core_availability\frontend {
         }
         $activitysel = [];
         if ($course->enablecompletion != 0) {
-            $currentCmId = $cm ? $cm->id : 0;
+            $currentcmid = $cm ? $cm->id : 0;
             $modinfo = get_fast_modinfo($course);
 
             $s = [];
@@ -79,7 +79,7 @@ class frontend extends \core_availability\frontend {
                 }
                 $s['coursemodules'] = [];
                 foreach ($section as $cmid) {
-                    if ($currentCmId == $cmid) {
+                    if ($currentcmid == $cmid) {
                         continue;
                     }
                     $module = $modinfo->get_cm($cmid);
