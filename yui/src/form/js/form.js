@@ -141,7 +141,7 @@ M.availability_relativedate.form.fillValue = function(value, node) {
     value.d = Number(node.one('select[name=relativednw]').get('value'));
     value.s = Number(node.one('select[name=relativestart]').get('value'));
     value.m = 0;
-    if (value.n == 7) {
+    if (value.s == 7) {
         value.m = Number(node.one('select[name=relativecoursemodule]').get('value'));
     }
 };
