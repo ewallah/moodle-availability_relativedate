@@ -66,19 +66,23 @@ class frontend extends \core_availability\frontend {
         }
         $activitysel = [];
         if ($course->enablecompletion != 0) {
-            $cm = get_fast_modinfo($course);
+            $currentcmid = $cm ? $cm->id : 0;
+            $modinfo = get_fast_modinfo($course);
 
             $s = [];
             // Gets only sections with content.
-            foreach ($cm->get_sections() as $sectionnum => $section) {
-                $sectioninfo = $cm->get_section_info($sectionnum);
+            foreach ($modinfo->get_sections() as $sectionnum => $section) {
+                $sectioninfo = $modinfo->get_section_info($sectionnum);
                 $s['name'] = $sectioninfo->name;
                 if (empty($s['name'])) {
                     $s['name'] = get_string('section') . ' ' . $sectionnum;
                 }
                 $s['coursemodules'] = [];
                 foreach ($section as $cmid) {
-                    $module = $cm->get_cm($cmid);
+                    if ($currentcmid == $cmid) {
+                        continue;
+                    }
+                    $module = $modinfo->get_cm($cmid);
                     // Get only course modules which are not deleted.
                     if ($module->deletioninprogress == 0) {
                         $s['coursemodules'][] = [

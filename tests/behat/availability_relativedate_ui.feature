@@ -14,9 +14,9 @@ Feature: availability_relativedate ui
       | startdate         | ## -10 days 17:00 ## |
       | enddate           | ## +2 weeks 17:00 ## |
     And the following "activities" exist:
-      | activity   | name   | intro | course | idnumber    | section | visible |
-      | page       | Page A | intro | C1     | pageA       | 1       | 1       |
-      | page       | Page B | intro | C1     | pageB       | 1       | 1       |
+      | activity   | name   | intro | course | idnumber    | section | visible | completion |
+      | page       | Page A | intro | C1     | pageA       | 1       | 1       | 1          |
+      | page       | Page B | intro | C1     | pageB       | 1       | 1       | 1          |
     And the following "users" exist:
       | username |
       | teacher1 |

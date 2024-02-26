@@ -69,14 +69,20 @@ M.availability_relativedate.form.getNode = function(json) {
     html += '</select></label>';
     html += '<label><select name="relativecoursemodule"' + (json.s != 7 ? ' style="display: none;"' : '') + '>';
 
+    var defaultCourseModuleId = 0;
+
     for (i = 0; i < this.activitySelector.length; i++) {
         html += '<option disabled>' + this.activitySelector[i].name + '</option>';
         for (j = 0; j < this.activitySelector[i].coursemodules.length; j++) {
-            html += '<option value="' + this.activitySelector[i].coursemodules[j].id;
+            html += '<option value="' + this.activitySelector[i].coursemodules[j].id + '"';
             if (this.activitySelector[i].coursemodules[j].completionenabled == 0) {
                 html += ' disabled';
+            } else {
+                if (!defaultCourseModuleId) {
+                    defaultCourseModuleId = this.activitySelector[i].coursemodules[j].id;
+                }
             }
-            html += '">' + this.activitySelector[i].coursemodules[j].name + '</option>';
+            html += '>' + this.activitySelector[i].coursemodules[j].name + '</option>';
         }
     }
     html += '</select></label>';
@@ -101,7 +107,7 @@ M.availability_relativedate.form.getNode = function(json) {
     }
     node.one('select[name=relativestart]').set('value', i);
 
-    i = 0;
+    i = defaultCourseModuleId;
     if (json.m !== undefined) {
         i = json.m;
     }
@@ -131,10 +137,13 @@ M.availability_relativedate.form.getNode = function(json) {
 };
 
 M.availability_relativedate.form.fillValue = function(value, node) {
-    value.n = node.one('select[name=relativenumber]').get('value');
-    value.d = node.one('select[name=relativednw]').get('value');
-    value.s = node.one('select[name=relativestart]').get('value');
-    value.m = node.one('select[name=relativecoursemodule]').get('value');
+    value.n = Number(node.one('select[name=relativenumber]').get('value'));
+    value.d = Number(node.one('select[name=relativednw]').get('value'));
+    value.s = Number(node.one('select[name=relativestart]').get('value'));
+    value.m = 0;
+    if (value.s == 7) {
+        value.m = Number(node.one('select[name=relativecoursemodule]').get('value'));
+    }
 };
 
 M.availability_relativedate.form.fillErrors = function(errors, node) {
