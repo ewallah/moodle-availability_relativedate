@@ -62,6 +62,15 @@ class frontend_test extends \advanced_testcase {
         $name = '\availability_relativedate\frontend';
         $frontend = new frontend();
         $this->assertCount(5, \phpunit_util::call_internal_method($frontend, 'get_javascript_init_params', [$course], $name));
+        foreach ($modinfo->get_instances() as $cms) {
+            foreach ($cms as $cm) {
+                $this->assertCount(5, \phpunit_util::call_internal_method(
+                    $frontend,
+                    'get_javascript_init_params',
+                    [$course, $cm],
+                    $name));
+            }
+        }
         $this->assertTrue(\phpunit_util::call_internal_method($frontend, 'allow_add', [$course, null, $sections[0]], $name));
         $this->assertTrue(\phpunit_util::call_internal_method($frontend, 'allow_add', [$course, null, $sections[1]], $name));
         $this->assertTrue(\phpunit_util::call_internal_method($frontend, 'allow_add', [$course], $name));
