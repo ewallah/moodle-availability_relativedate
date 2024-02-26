@@ -9,7 +9,7 @@ This availability condition makes it easy to show modules or sections only x day
   - before / after course end date
   - after user enrolment date
   - after end of enrolment period
-  - after the completion of an activity (THX to Stefan Hanauska)
+  - after the completion of an activity (THX to Stefan Hanauska and Daniel Poggenpohl)
 
 ## Conditional availability conditions
 
@@ -18,7 +18,7 @@ Check the global documentation about conditional availability conditions:
 
 ## Requirements
 
-This plugin requires Moodle 3.11+
+This plugin requires Moodle 4.1+
 
 ## Installation
 
@@ -60,7 +60,7 @@ This plugin is maintained for the latest major releases of Moodle.
 
 ## Copyright
 
-2023 eWallah.net
+2024 eWallah.net
 
 This program is free software: you can redistribute it and/or modify it under
 the terms of the GNU General Public License as published by the Free Software
