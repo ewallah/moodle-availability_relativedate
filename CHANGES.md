@@ -2,7 +2,7 @@
 
 * fix phpunit Moodle 311 
 * better theme support 
-* checkout@v3 
+* checkout@v4 
 * section test added 
 * get_section_info_all availability is always null 
 * version update 
