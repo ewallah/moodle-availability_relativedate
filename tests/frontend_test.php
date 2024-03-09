@@ -34,7 +34,7 @@ namespace availability_relativedate;
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @coversDefaultClass \availability_relativedate\frontend
  */
-class frontend_test extends \advanced_testcase {
+final class frontend_test extends \advanced_testcase {
 
     /**
      * Tests using relativedate condition in front end.

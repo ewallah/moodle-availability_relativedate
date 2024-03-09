@@ -35,7 +35,7 @@ use availability_relativedate\condition;
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @coversDefaultClass \availability_relativedate\condition
  */
-class simple_test extends \advanced_testcase {
+final class simple_test extends \advanced_testcase {
 
     /**
      * Tests the constructor including error conditions.

@@ -37,7 +37,7 @@ use core_privacy\local\metadata\collection;
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @coversDefaultClass \availability_relativedate\privacy\provider
  */
-class privacy_test extends provider_testcase {
+final class privacy_test extends provider_testcase {
 
     /**
      * Test returning metadata.

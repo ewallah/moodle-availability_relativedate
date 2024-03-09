@@ -35,7 +35,7 @@ use availability_relativedate\condition;
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @coversDefaultClass \availability_relativedate\condition
  */
-class backup_test extends \advanced_testcase {
+final class backup_test extends \advanced_testcase {
 
     /**
      * Backup check.
