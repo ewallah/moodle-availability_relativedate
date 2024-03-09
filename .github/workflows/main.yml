@@ -121,7 +121,7 @@ jobs:
       
       - name: chrome
         if: ${{ always() }}
-        run: moodle-plugin-ci --ansi behat --profile chrome -f moodle_screenshot
+        run: moodle-plugin-ci --ansi behat --profile chrome
 
       - name: firefox classic
         if: ${{ always() }}
@@ -141,13 +141,3 @@ jobs:
         run: moodle-plugin-ci --ansi behat --auto-rerun=0 --profile chrome admin/tool/xmldb
         working-directory: moodle
 
-      - name: ls
-        if: ${{ always() }}
-        run: ls -aR
-        working-directory: moodledata/behat_dump
-
-      - name: artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: assets-for-download
-          path: moodledata/behat_dump
