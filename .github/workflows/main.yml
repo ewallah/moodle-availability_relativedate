@@ -2,9 +2,6 @@ name: Tests
 
 on: [push, pull_request]
 
-env:
-  BEHATDUMP: downloads
-
 jobs:
   ci:
     name: ci
@@ -60,22 +57,12 @@ jobs:
           echo $(cd ci/bin; pwd) >> $GITHUB_PATH
           echo $(cd ci/vendor/bin; pwd) >> $GITHUB_PATH
           sudo locale-gen en_AU.UTF-8
-          mkdir downloads
 
       - name: install Moodle
         run: moodle-plugin-ci install --db-host=127.0.0.1 --plugin this-plugin
         env:
           DB: ${{ matrix.database }}
           MOODLE_BRANCH: ${{ matrix.moodle-branch }}
-
-      - name: config
-        if: ${{ always() }}
-        run: cat config.php
-        working-directory: moodle
-
-      - name: ls
-        if: ${{ always() }}
-        run: ls -aR > downloads/ls.txt
 
       - name: phplint
         if: ${{ always() }}
@@ -134,7 +121,7 @@ jobs:
       
       - name: chrome
         if: ${{ always() }}
-        run: moodle-plugin-ci --ansi behat --profile chrome
+        run: moodle-plugin-ci --ansi behat --profile chrome -f moodle_screenshot
 
       - name: firefox classic
         if: ${{ always() }}
@@ -154,8 +141,13 @@ jobs:
         run: moodle-plugin-ci --ansi behat --auto-rerun=0 --profile chrome admin/tool/xmldb
         working-directory: moodle
 
+      - name: ls
+        if: ${{ always() }}
+        run: ls -aR
+        working-directory: moodledata/behat_dump
+
       - name: artifacts
-        uses: actions/upload-artifact@v2
-        with: 
+        uses: actions/upload-artifact@v4
+        with:
           name: assets-for-download
-          path: downloads
+          path: moodledata/behat_dump
