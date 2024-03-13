@@ -65,6 +65,7 @@ class frontend extends \core_availability\frontend {
             $optionsstart[] = (object)['field' => 4, 'display' => condition::options_start(4)];
         }
         $activitysel = [];
+        $allowrelativecmcondition = false;
         if ($course->enablecompletion != 0) {
             $currentcmid = $cm ? $cm->id : 0;
             $modinfo = get_fast_modinfo($course);
@@ -85,6 +86,9 @@ class frontend extends \core_availability\frontend {
                     $module = $modinfo->get_cm($cmid);
                     // Get only course modules which are not deleted.
                     if ($module->deletioninprogress == 0) {
+                        if ($module->completion > 0) {
+                            $allowrelativecmcondition = true;
+                        }
                         $s['coursemodules'][] = [
                             'id' => $cmid,
                             'name' => $module->name,
@@ -94,7 +98,11 @@ class frontend extends \core_availability\frontend {
                 }
                 $activitysel[] = $s;
             }
-            $optionsstart[] = (object)['field' => 7, 'display' => condition::options_start(7)];
+            if ($allowrelativecmcondition) {
+                $optionsstart[] = (object)['field' => 7, 'display' => condition::options_start(7)];
+            } else {
+                $activitysel = [];
+            }
         }
         return [$optionsdwm, $optionsstart, is_null($section), [], $activitysel];
     }
