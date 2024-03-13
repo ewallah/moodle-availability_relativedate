@@ -18,7 +18,7 @@ Check the global documentation about conditional availability conditions:
 
 ## Requirements
 
-This plugin requires Moodle 4.1+
+This plugin requires Moodle 4.2+
 
 ## Installation
 
