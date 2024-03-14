@@ -68,33 +68,35 @@ class frontend extends \core_availability\frontend {
         if ($course->enablecompletion != 0) {
             $currentcmid = $cm ? $cm->id : 0;
             $modinfo = get_fast_modinfo($course);
-
+            $str = get_string('section');
             $s = [];
+            $enabled = false;
             // Gets only sections with content.
             foreach ($modinfo->get_sections() as $sectionnum => $section) {
-                $sectioninfo = $modinfo->get_section_info($sectionnum);
-                $s['name'] = $sectioninfo->name;
-                if (empty($s['name'])) {
-                    $s['name'] = get_string('section') . ' ' . $sectionnum;
-                }
+                $name = $modinfo->get_section_info($sectionnum)->name;
+                $s['name'] = empty($name) ? $str . ' ' . $sectionnum : $name;
                 $s['coursemodules'] = [];
                 foreach ($section as $cmid) {
                     if ($currentcmid == $cmid) {
                         continue;
                     }
                     $module = $modinfo->get_cm($cmid);
+                    $compused = $module->completion > 0;
                     // Get only course modules which are not deleted.
                     if ($module->deletioninprogress == 0) {
                         $s['coursemodules'][] = [
                             'id' => $cmid,
                             'name' => $module->name,
-                            'completionenabled' => $module->completion > 0,
+                            'completionenabled' => $compused,
                         ];
+                        $enabled = $enabled || $compused;
                     }
                 }
                 $activitysel[] = $s;
             }
-            $optionsstart[] = (object)['field' => 7, 'display' => condition::options_start(7)];
+            if ($enabled) {
+                $optionsstart[] = (object)['field' => 7, 'display' => condition::options_start(7)];
+            }
         }
         return [$optionsdwm, $optionsstart, is_null($section), [], $activitysel];
     }
