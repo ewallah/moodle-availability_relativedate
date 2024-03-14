@@ -51,6 +51,7 @@ final class frontend_test extends \advanced_testcase {
         $dg = $this->getDataGenerator();
         $course = $dg->create_course(['enablecompletion' => 1, 'enddate' => time() + 999999]);
         $dg->get_plugin_generator('mod_page')->create_instance(['course' => $course]);
+        $dg->create_module('assign', ['course' => $course->id], ['completion' => 1]);
         $modinfo = get_fast_modinfo($course);
         $sections = $modinfo->get_section_info_all();
         $selfplugin = enrol_get_plugin('self');
