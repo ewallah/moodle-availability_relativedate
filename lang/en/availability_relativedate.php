@@ -25,11 +25,11 @@
 
 $string['after'] = ' after ';
 $string['before'] = ' before ';
+$string['datecompletion'] = 'after completion of activity';
 $string['dateend'] = 'before course end date';
 $string['dateendafter'] = 'after course end date';
-$string['dateenrol'] = 'after user enrolment date';
 $string['dateendenrol'] = 'after enrolment method end date';
-$string['datecompletion'] = 'after completion of activity';
+$string['dateenrol'] = 'after user enrolment date';
 $string['datestart'] = 'after course start date';
 $string['datestartbefore'] = 'before course start date';
 $string['day'] = 'day';
