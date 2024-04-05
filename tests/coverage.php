@@ -25,6 +25,14 @@
 
 defined('MOODLE_INTERNAL') || die();
 
+/**
+ * Unit tests for the relative date condition.
+ *
+ * @package   availability_relativedate
+ * @copyright 2022 eWallah.net
+ * @author    Renaat Debleu <info@eWallah.net>
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 return new class extends phpunit_coverage_info {
     /** @var array The list of folders relative to the plugin root to include in coverage generation. */
     protected $includelistfolders = ['classes'];
