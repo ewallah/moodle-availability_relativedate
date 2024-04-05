@@ -38,7 +38,6 @@ use stdClass;
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class condition extends \core_availability\condition {
-
     /** @var int relativenumber (how many relative) for condition. */
     private $relativenumber;
 
@@ -73,7 +72,7 @@ class condition extends \core_availability\condition {
     /**
      * Constructor.
      *
-     * @param stdClass $structure Data structure from JSON decode
+     * @param stdClass $structure Data structure from JSON decode.
      */
     public function __construct($structure) {
         $this->relativenumber = property_exists($structure, 'n') ? (int)$structure->n : 1;
@@ -144,11 +143,11 @@ class condition extends \core_availability\condition {
         }
         $calc = $this->calc($course, $USER->id);
         if ($calc === 0) {
-            return '('. trim($this->get_debug_string()) . ')';
+            return '(' . trim($this->get_debug_string()) . ')';
         }
         $a = new stdClass();
         $a->rnumber = userdate($calc, get_string('strftimedatetime', 'langconfig'));
-        $a->rtime = ($capability && $full) ? '('. trim($this->get_debug_string()) . ')' : '';
+        $a->rtime = ($capability && $full) ? '(' . trim($this->get_debug_string()) . ')' : '';
         $a->rela = '';
         return trim(get_string($frut, 'availability_relativedate', $a));
     }
@@ -245,7 +244,7 @@ class condition extends \core_availability\condition {
      * @return int relative date.
      */
     private function calc($course, $userid): int {
-        $x = $this->relativenumber . ' '. $this->option_dwm($this->relativedwm);
+        $x = $this->relativenumber . ' ' . $this->option_dwm($this->relativedwm);
         switch ($this->relativestart) {
             case 6:
                 // Before course start date.
@@ -290,7 +289,7 @@ class condition extends \core_availability\condition {
                     return 0;
                 }
 
-                $cm = new stdClass;
+                $cm = new stdClass();
                 $cm->id = $this->relativecoursemodule;
                 $cm->course = $course->id;
                 try {
@@ -382,9 +381,11 @@ class condition extends \core_availability\condition {
      * @return bool
      */
     public function update_dependency_id($table, $oldid, $newid) {
-        if (($table === 'course_modules' || $table === 'course_sections') &&
+        if (
+            ($table === 'course_modules' || $table === 'course_sections') &&
             (int)$this->relativestart === 7 &&
-            (int)$this->relativecoursemodule === (int)$oldid) {
+            (int)$this->relativecoursemodule === (int)$oldid
+        ) {
             $this->relativecoursemodule = $newid;
             return true;
         }
@@ -407,13 +408,14 @@ class condition extends \core_availability\condition {
             // If we are on the same course (e.g. duplicate) then we can just use the existing one.
             if (!$DB->record_exists('course_modules', ['id' => $this->relativecoursemodule, 'course' => $courseid])) {
                 $this->relativecoursemodule = 0;
-                $logger->process("Restored item ($name has availability condition on module that was not restored",
-                \backup::LOG_WARNING);
+                $logger->process(
+                    "Restored item ($name has availability condition on module that was not restored",
+                    \backup::LOG_WARNING
+                );
             }
         } else {
             $this->relativecoursemodule = (int)$rec->newitemid;
         }
         return true;
     }
-
 }

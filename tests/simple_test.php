@@ -36,7 +36,6 @@ use availability_relativedate\condition;
  * @coversDefaultClass \availability_relativedate\condition
  */
 final class simple_test extends \advanced_testcase {
-
     /**
      * Tests the constructor including error conditions.
      * @covers \availability_relativedate\condition
@@ -146,5 +145,4 @@ final class simple_test extends \advanced_testcase {
                 $daybefore, ],
         ];
     }
-
 }

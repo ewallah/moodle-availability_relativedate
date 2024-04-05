@@ -36,7 +36,6 @@ use availability_relativedate\condition;
  * @coversDefaultClass \availability_relativedate\condition
  */
 final class backup_test extends \advanced_testcase {
-
     /**
      * Backup check.
      * @covers \availability_relativedate\condition
@@ -62,8 +61,14 @@ final class backup_test extends \advanced_testcase {
         $str = '{"op":"|","c":[{"type":"relativedate","n":1,"d":1,"s":6,"m":999999}], "show":true}';
         $DB->set_field('course_modules', 'availability', $str, ['id' => $page2->cmid]);
         rebuild_course_cache($course->id, true);
-        $bc = new \backup_controller(\backup::TYPE_1COURSE, $course->id, \backup::FORMAT_MOODLE, \backup::INTERACTIVE_NO,
-            \backup::MODE_GENERAL, 2);
+        $bc = new \backup_controller(
+            \backup::TYPE_1COURSE,
+            $course->id,
+            \backup::FORMAT_MOODLE,
+            \backup::INTERACTIVE_NO,
+            \backup::MODE_GENERAL,
+            2
+        );
         $bc->execute_plan();
         $results = $bc->get_results();
         $file = $results['backup_destination'];
@@ -71,8 +76,14 @@ final class backup_test extends \advanced_testcase {
         $filepath = $CFG->dataroot . '/temp/backup/test-restore-course-event';
         $file->extract_to_pathname($fp, $filepath);
         $bc->destroy();
-        $rc = new \restore_controller('test-restore-course-event', $course->id, \backup::INTERACTIVE_NO,
-            \backup::MODE_GENERAL, 2, \backup::TARGET_NEW_COURSE);
+        $rc = new \restore_controller(
+            'test-restore-course-event',
+            $course->id,
+            \backup::INTERACTIVE_NO,
+            \backup::MODE_GENERAL,
+            2,
+            \backup::TARGET_NEW_COURSE
+        );
         $rc->execute_precheck();
         $rc->execute_plan();
         $newid = $rc->get_courseid();
@@ -81,8 +92,14 @@ final class backup_test extends \advanced_testcase {
         $modinfo = get_fast_modinfo($newcourse);
         $this->assertCount(6, $modinfo->get_instances_of('page'));
 
-        $bc = new \backup_controller(\backup::TYPE_1COURSE, $course->id, \backup::FORMAT_MOODLE, \backup::INTERACTIVE_NO,
-            \backup::MODE_GENERAL, 2);
+        $bc = new \backup_controller(
+            \backup::TYPE_1COURSE,
+            $course->id,
+            \backup::FORMAT_MOODLE,
+            \backup::INTERACTIVE_NO,
+            \backup::MODE_GENERAL,
+            2
+        );
         $bc->execute_plan();
         $results = $bc->get_results();
         $file = $results['backup_destination'];
@@ -90,8 +107,14 @@ final class backup_test extends \advanced_testcase {
         $filepath = $CFG->dataroot . '/temp/backup/test-restore-course-event';
         $file->extract_to_pathname($fp, $filepath);
         $bc->destroy();
-        $rc = new \restore_controller('test-restore-course-event', $course->id, \backup::INTERACTIVE_NO,
-            \backup::MODE_GENERAL, 2, \backup::TARGET_CURRENT_ADDING);
+        $rc = new \restore_controller(
+            'test-restore-course-event',
+            $course->id,
+            \backup::INTERACTIVE_NO,
+            \backup::MODE_GENERAL,
+            2,
+            \backup::TARGET_CURRENT_ADDING
+        );
         $rc->execute_precheck();
         $rc->execute_plan();
         $newid = $rc->get_courseid();
@@ -100,5 +123,4 @@ final class backup_test extends \advanced_testcase {
         $modinfo = get_fast_modinfo($course);
         $this->assertCount(12, $modinfo->get_instances_of('page'));
     }
-
 }

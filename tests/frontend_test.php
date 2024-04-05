@@ -35,7 +35,6 @@ namespace availability_relativedate;
  * @coversDefaultClass \availability_relativedate\frontend
  */
 final class frontend_test extends \advanced_testcase {
-
     /**
      * Tests using relativedate condition in front end.
      * @covers \availability_relativedate\frontend
@@ -69,7 +68,8 @@ final class frontend_test extends \advanced_testcase {
                     $frontend,
                     'get_javascript_init_params',
                     [$course, $cm],
-                    $name));
+                    $name
+                ));
             }
         }
         $this->assertTrue(\phpunit_util::call_internal_method($frontend, 'allow_add', [$course, null, $sections[0]], $name));

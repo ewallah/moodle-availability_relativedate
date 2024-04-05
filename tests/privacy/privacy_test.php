@@ -38,7 +38,6 @@ use core_privacy\local\metadata\collection;
  * @coversDefaultClass \availability_relativedate\privacy\provider
  */
 final class privacy_test extends provider_testcase {
-
     /**
      * Test returning metadata.
      * @covers \availability_relativedate\privacy\provider

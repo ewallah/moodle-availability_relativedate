@@ -40,7 +40,6 @@ use stdClass;
  * @coversDefaultClass \availability_relativedate\condition
  */
 final class condition_test extends \advanced_testcase {
-
     /** @var stdClass course. */
     private $course;
 
@@ -120,14 +119,13 @@ final class condition_test extends \advanced_testcase {
         $tree = new tree($stru);
         $this->setUser($this->user);
         $info = new mock_info($this->course, $this->user->id);
-        list($sql, $params) = $tree->get_user_list_sql(false, $info, false);
+        [$sql, $params] = $tree->get_user_list_sql(false, $info, false);
         $this->assertEquals('', $sql);
         $this->assertEquals([], $params);
         // 7 Minutes after completion of module.
         $this->assertStringContainsString('7 minutes after completion of activity', $tree->get_full_information($info));
         $this->do_cron();
         $this->assertFalse($tree->is_available_for_all());
-
     }
 
     /**
@@ -309,7 +307,9 @@ final class condition_test extends \advanced_testcase {
         $this->assertEquals(
             $daybefore . ' ' .
             get_string('datecompletion', 'availability_relativedate')
-            . ' ' . condition::description_cm_name($page0->cmid), $result);
+            . ' ' . condition::description_cm_name($page0->cmid),
+            $result
+        );
 
         $condition = new condition((object)['type' => 'relativedate', 'n' => 1, 'd' => 2, 's' => 7, 'm' => 999999]);
         $result = \phpunit_util::call_internal_method($condition, 'get_debug_string', [], $name);
@@ -355,7 +355,8 @@ final class condition_test extends \advanced_testcase {
             null,
             'manual',
             (int)$this->course->startdate + HOURSECS,
-            (int)$this->course->startdate + HOURSECS * 24);
+            (int)$this->course->startdate + HOURSECS * 24
+        );
         $enrol2 = $DB->get_record('user_enrolments', ['userid' => $user2->id]);
         $condition32 = new condition((object)['type' => 'relativedate', 'n' => 1, 'd' => 2, 's' => 3, 'm' => 999999]);
         $result32 = \phpunit_util::call_internal_method($condition32, 'calc', [$this->course, $user2->id], $name);
@@ -436,8 +437,10 @@ final class condition_test extends \advanced_testcase {
         $event->trigger();
 
         $actual = $DB->get_record('course_modules', ['id' => $page1->cmid]);
-        self::assertEquals('{"op":"|","show":true,"c":[{"type":"relativedate","n":4,"d":4,"s":7,"m":-1}]}',
-            $actual->availability);
+        self::assertEquals(
+            '{"op":"|","show":true,"c":[{"type":"relativedate","n":4,"d":4,"s":7,"m":-1}]}',
+            $actual->availability
+        );
     }
 
     /**
