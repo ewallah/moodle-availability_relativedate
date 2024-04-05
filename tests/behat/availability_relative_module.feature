@@ -11,6 +11,8 @@ Feature: availability_relativedate relative activities
     And the following config values are set as admin:
       | enableavailability       | 1 |        |
       | backup_import_activities | 0 | backup |
+      | enableasyncbackup        | 0 |        |
+
     And the following "course" exists:
       | fullname          | Course 1             |
       | shortname         | C1                   |
