@@ -472,8 +472,8 @@ final class condition_test extends \advanced_testcase {
             case 1:
             case 6:
                 return $this->course->startdate;
-            case 2;
-            case 5;
+            case 2:
+            case 5:
                 return $this->course->enddate;
             case 3:
             case 4:

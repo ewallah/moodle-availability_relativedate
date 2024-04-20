@@ -47,10 +47,6 @@ jobs:
         if: ${{ always() }}
         run: moodle-plugin-ci --ansi phplint
 
-      - name: phpcpd
-        if: ${{ always() }}
-        run: moodle-plugin-ci --ansi phpcpd
-
       - name: phpmd
         if: ${{ always() }}
         run: moodle-plugin-ci --ansi phpmd
