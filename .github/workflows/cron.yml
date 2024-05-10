@@ -78,7 +78,7 @@ jobs:
       - name: phpunit
         continue-on-error: true
         if: ${{ always() }}
-        run: moodle-plugin-ci --ansi phpunit --coverage-text --coverage-clover
+        run: moodle-plugin-ci --ansi phpunit --testdox --coverage-text --coverage-clover
 
       - name: behat
         if: ${{ always() }}
