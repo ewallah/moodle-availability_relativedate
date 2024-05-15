@@ -85,6 +85,11 @@ final class simple_test extends \advanced_testcase {
      */
     public function test_static(): void {
         $this->assertCount(5, condition::options_dwm());
+        $expected = [0 => 'minutes', 1 => 'hours', 2 => 'days', 3 => 'weeks', 4 => 'months'];
+        $this->assertEquals($expected, condition::options_dwm());
+        $this->assertEquals($expected, condition::options_dwm(2));
+        $expected = [0 => 'minute', 1 => 'hour', 2 => 'day', 3 => 'week', 4 => 'month'];
+        $this->assertEquals($expected, condition::options_dwm(1));
         $this->assertEquals('minute', condition::option_dwm(0));
         $this->assertEquals('hour', condition::option_dwm(1));
         $this->assertEquals('day', condition::option_dwm(2));

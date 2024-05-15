@@ -67,7 +67,6 @@ class frontend extends \core_availability\frontend {
         if ($course->enablecompletion != 0) {
             $currentcmid = $cm ? $cm->id : 0;
             $modinfo = get_fast_modinfo($course);
-            $context = \context_course::instance($course->id);
             $str = get_string('section');
             $s = [];
             $enabled = false;
@@ -75,9 +74,9 @@ class frontend extends \core_availability\frontend {
             foreach ($modinfo->get_sections() as $sectionnum => $section) {
                 $name = $modinfo->get_section_info($sectionnum)->name;
                 if (empty($name)) {
-                    $name = $str . ' ' . $sectionnum;
+                    $name = "$str $sectionnum";
                 }
-                $s['name'] = format_string($name, true, ['context' => $context]);
+                $s['name'] = format_string($name);
                 $s['coursemodules'] = [];
                 foreach ($section as $cmid) {
                     if ($currentcmid == $cmid) {
@@ -89,7 +88,7 @@ class frontend extends \core_availability\frontend {
                         $compused = $module->completion > 0;
                         $s['coursemodules'][] = [
                             'id' => $cmid,
-                            'name' => format_string($module->name, true, ['context' => $context]),
+                            'name' => format_string($module->name),
                             'completionenabled' => $compused,
                         ];
                         $enabled = $enabled || $compused;

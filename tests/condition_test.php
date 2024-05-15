@@ -290,6 +290,16 @@ final class condition_test extends \advanced_testcase {
         $information = $cond->get_description(false, false, $info);
         $this->assertEquals("Until $str", $information);
         $this->assertEquals('{relativedate: 7 days before course start date}', "$cond");
+
+        $cond = new condition((object)['type' => 'relativedate', 'n' => '7', 'd' => '2', 's' => '6', 'm' => '1']);
+        $information = $cond->get_description(false, false, $info);
+        $this->assertEquals("Until $str", $information);
+        $this->assertEquals('{relativedate: 7 days before course start date}', "$cond");
+
+        $cond = new condition((object)['type' => 'relativedate', 'n' => 'null', 'd' => 'null', 's' => 'null', 'm' => 'null']);
+        $information = $cond->get_description(false, false, $info);
+        $this->assertNotEquals("Until $str", $information);
+        $this->assertEquals('{relativedate: 0 minutes }', "$cond");
     }
 
     /**
