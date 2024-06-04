@@ -35,7 +35,7 @@ use availability_relativedate\condition;
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @coversDefaultClass \availability_relativedate\condition
  */
-final class simple_test extends \advanced_testcase {
+final class simple_test extends \basic_testcase {
     /**
      * Tests the constructor including error conditions.
      * @covers \availability_relativedate\condition
@@ -43,27 +43,61 @@ final class simple_test extends \advanced_testcase {
     public function test_constructor(): void {
         $structure = (object)['type' => 'relativedate'];
         $cond = new condition($structure);
-        $this->assertNotEqualsCanonicalizing($structure, $cond->save());
+        $newcond = $cond->save();
+        $this->assertNotEqualsCanonicalizing($structure, $newcond);
+        $this->assertEquals($newcond, (object)['type' => 'relativedate', 'n' => 1, 'd' => 2, 's' => 1, 'm' => 0]);
+
         $structure->n = 1;
-        $this->assertNotEqualsCanonicalizing($structure, $cond->save());
         $cond = new condition($structure);
-        $structure->d = 1;
         $this->assertNotEqualsCanonicalizing($structure, $cond->save());
-        $cond = new condition($structure);
-        $structure->d = '2';
-        $this->assertNotEqualsCanonicalizing($structure, $cond->save());
-        $cond = new condition($structure);
         $structure->n = 'a';
-        $this->assertNotEqualsCanonicalizing($structure, $cond->save());
-        $cond = new condition($structure);
-        $structure->e = 'a';
         $cond = new condition($structure);
         $this->assertNotEqualsCanonicalizing($structure, $cond->save());
-        $structure->c = 'a';
+
+        $structure = (object)['type' => 'relativedate'];
+        $structure->d = 2;
         $cond = new condition($structure);
         $this->assertNotEqualsCanonicalizing($structure, $cond->save());
-        $structure->n = 9;
+        $structure->d = 'b';
+        $cond = new condition($structure);
+        $this->assertNotEqualsCanonicalizing($structure, $cond->save());
+
+        $structure = (object)['type' => 'relativedate'];
+        $structure->c = 3;
+        $cond = new condition($structure);
+        $this->assertNotEqualsCanonicalizing($structure, $cond->save());
+        $structure->c = 'c';
+        $cond = new condition($structure);
+        $this->assertNotEqualsCanonicalizing($structure, $cond->save());
+
+        $structure = (object)['type' => 'relativedate'];
+        $structure->e = 4;
+        $cond = new condition($structure);
+        $this->assertNotEqualsCanonicalizing($structure, $cond->save());
+        $structure->e = 'd';
+        $cond = new condition($structure);
+        $this->assertNotEqualsCanonicalizing($structure, $cond->save());
+
+        $structure = (object)['type' => 'relativedate'];
+        $structure->s = 4;
+        $cond = new condition($structure);
+        $this->assertNotEqualsCanonicalizing($structure, $cond->save());
+        $structure->s = 'd';
+        $cond = new condition($structure);
+        $this->assertNotEqualsCanonicalizing($structure, $cond->save());
+
+        $structure = (object)['type' => 'relativedate'];
+        $structure->n = 5;
+        $cond = new condition($structure);
+        $this->assertNotEqualsCanonicalizing($structure, $cond->save());
+        $structure->n = 'e';
+        $cond = new condition($structure);
+        $this->assertNotEqualsCanonicalizing($structure, $cond->save());
+
         $structure->c = 1111;
+        $cond = new condition($structure);
+        $this->assertNotEqualsCanonicalizing($structure, $cond->save());
+        $structure->s = 1;
         $cond = new condition($structure);
         $this->assertNotEqualsCanonicalizing($structure, $cond->save());
     }
@@ -88,6 +122,8 @@ final class simple_test extends \advanced_testcase {
         $expected = [0 => 'minutes', 1 => 'hours', 2 => 'days', 3 => 'weeks', 4 => 'months'];
         $this->assertEquals($expected, condition::options_dwm());
         $this->assertEquals($expected, condition::options_dwm(2));
+        $this->assertEquals(condition::options_dwm(4), condition::options_dwm(3));
+
         $expected = [0 => 'minute', 1 => 'hour', 2 => 'day', 3 => 'week', 4 => 'month'];
         $this->assertEquals($expected, condition::options_dwm(1));
         $this->assertEquals('minute', condition::option_dwm(0));
@@ -96,6 +132,9 @@ final class simple_test extends \advanced_testcase {
         $this->assertEquals('week', condition::option_dwm(3));
         $this->assertEquals('month', condition::option_dwm(4));
         $this->assertEquals('', condition::option_dwm(5));
+        $this->assertEquals('', condition::option_dwm(6));
+
+        $this->assertEquals('', condition::options_start(0));
         $this->assertEquals('after course start date', condition::options_start(1));
         $this->assertEquals('before course end date', condition::options_start(2));
         $this->assertEquals('after user enrolment date', condition::options_start(3));
@@ -104,6 +143,7 @@ final class simple_test extends \advanced_testcase {
         $this->assertEquals('before course start date', condition::options_start(6));
         $this->assertEquals('after completion of activity', condition::options_start(7));
         $this->assertEquals('', condition::options_start(8));
+        $this->assertEquals('', condition::options_start(9));
     }
 
     /**
@@ -148,6 +188,9 @@ final class simple_test extends \advanced_testcase {
             'After invalid module' => [
                 ['type' => 'relativedate', 'n' => 1, 'd' => 2, 's' => 999, 'm' => 999999],
                 $daybefore, ],
+            'Weeks after start course' => [
+                ['type' => 'relativedate', 'n' => 2, 'd' => 3, 's' => 1, 'm' => 999999],
+                ' 2 weeks after course start date', ],
         ];
     }
 }

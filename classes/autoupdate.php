@@ -42,7 +42,7 @@ class autoupdate {
                 \core_availability\info::update_dependency_id_across_course($course, 'course_modules', $modid, -1);
                 // Added to be sure no errors are thrown (issue #22).
                 rebuild_course_cache($course->id, true);
-                get_fast_modinfo(0, 0, true);
+                // Perhaps this is also needed get_fast_modinfo(0, 0, true).
             }
         }
     }

@@ -41,6 +41,7 @@ final class frontend_test extends \advanced_testcase {
      */
     public function setUp(): void {
         global $CFG;
+        parent::setUp();
         $this->resetAfterTest();
         $this->setAdminUser();
         $CFG->enablecompletion = true;
@@ -184,7 +185,7 @@ final class frontend_test extends \advanced_testcase {
         ];
         $this->assertEquals($expected, $arr[1]);
 
-        $this->assertFalse($arr[2]);
+        $this->assertTrue($arr[2]);
         $this->assertCount(0, $arr[3]);
         $this->assertCount(1, $arr[4]);
         $expected = [

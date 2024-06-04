@@ -64,22 +64,19 @@ class frontend extends \core_availability\frontend {
             $optionsstart[] = ['field' => 4, 'display' => condition::options_start(4)];
         }
         $activitysel = [];
-        if ($course->enablecompletion != 0) {
+        if ($course->enablecompletion) {
             $currentcmid = $cm ? $cm->id : 0;
             $modinfo = get_fast_modinfo($course);
             $str = get_string('section');
             $s = [];
             $enabled = false;
             // Gets only sections with content.
-            foreach ($modinfo->get_sections() as $sectionnum => $section) {
+            foreach ($modinfo->get_sections() as $sectionnum => $cursection) {
                 $name = $modinfo->get_section_info($sectionnum)->name;
-                if (empty($name)) {
-                    $name = "$str $sectionnum";
-                }
-                $s['name'] = format_string($name);
+                $s['name'] = empty($name) ? "$str $sectionnum" : format_string($name);
                 $s['coursemodules'] = [];
-                foreach ($section as $cmid) {
-                    if ($currentcmid == $cmid) {
+                foreach ($cursection as $cmid) {
+                    if ($currentcmid === $cmid) {
                         continue;
                     }
                     $module = $modinfo->get_cm($cmid);

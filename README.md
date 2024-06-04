@@ -57,11 +57,11 @@ This plugin is maintained for the latest major releases of Moodle.
 
 [![Build Status](https://github.com/ewallah/moodle-availability_relativedate/workflows/Tests/badge.svg)](https://github.com/ewallah/moodle-availability_relativedate/actions)
 [![Coverage Status](https://coveralls.io/repos/github/ewallah/moodle-availability_relativedate/badge.svg?branch=main)](https://coveralls.io/github/ewallah/moodle-availability_relativedate?branch=main)
-![Mutation score](https://badgen.net/badge/Mutation%20Score%20Indicator/90)
+![Mutation score](https://badgen.net/badge/Mutation%20Score%20Indicator/94)
 
 ## Copyright
 
-2024 eWallah.net
+eWallah.net
 
 This program is free software: you can redistribute it and/or modify it under
 the terms of the GNU General Public License as published by the Free Software

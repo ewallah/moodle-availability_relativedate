@@ -111,7 +111,7 @@ class condition extends \core_availability\condition {
             // Always not available if for some reason the value could not be calculated.
             return false;
         }
-        $allow = time() >= $calc;
+        $allow = time() > $calc;
         if ($not) {
             $allow = !$allow;
         }
@@ -383,13 +383,13 @@ class condition extends \core_availability\condition {
      * @return bool
      */
     public function update_dependency_id($table, $oldid, $newid) {
-        if (
-            ($table === 'course_modules' || $table === 'course_sections') &&
-            $this->relativestart === 7 &&
-            $this->relativecoursemodule === $oldid
-        ) {
-            $this->relativecoursemodule = $newid;
-            return true;
+        if ($this->relativestart === 7){
+            if ($table === 'course_modules' || $table === 'course_sections') {
+                if ($this->relativecoursemodule === $oldid) {
+                    $this->relativecoursemodule = $newid;
+                    return true;
+                }
+            }
         }
         return false;
     }
