@@ -383,7 +383,7 @@ class condition extends \core_availability\condition {
      * @return bool
      */
     public function update_dependency_id($table, $oldid, $newid) {
-        if ($this->relativestart === 7){
+        if ($this->relativestart === 7) {
             if ($table === 'course_modules' || $table === 'course_sections') {
                 if ($this->relativecoursemodule === $oldid) {
                     $this->relativecoursemodule = $newid;

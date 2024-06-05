@@ -404,7 +404,7 @@ final class condition_test extends \advanced_testcase {
 
         $condition72 = new condition((object)['type' => 'relativedate', 'n' => 1, 'd' => 2, 's' => 7, 'm' => $page0->cmid]);
         $result72 = \phpunit_util::call_internal_method($condition72, 'calc', [$this->course, $this->user->id], $name);
-        // $this->assertEquals($activitycompletion->timemodified + DAYSECS, $result72);
+        $this->assertEquals($activitycompletion->timemodified + DAYSECS, $result72);
 
         $condition73 = new condition((object)['type' => 'relativedate', 'n' => 1, 'd' => 2, 's' => 7, 'm' => 999999]);
         $result73 = \phpunit_util::call_internal_method($condition73, 'calc', [$this->course, $this->user->id], $name);

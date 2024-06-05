@@ -44,11 +44,11 @@ class frontend extends \core_availability\frontend {
      * Default returns no parameters.
      *
      * @param stdClass $course Course object
-     * @param cm_info $cm Course-module currently being edited (null if none)
-     * @param section_info $section Section currently being edited (null if none)
+     * @param cm_info|null $cm Course-module currently being edited (null if none)
+     * @param section_info|null $section Section currently being edited (null if none)
      * @return array Array of parameters for the JavaScript function
      */
-    protected function get_javascript_init_params($course, cm_info $cm = null, section_info $section = null) {
+    protected function get_javascript_init_params($course, ?cm_info $cm = null, ?section_info $section = null) {
         global $DB;
         $optionsdwm = self::convert_associative_array_for_js(condition::options_dwm(), 'field', 'display');
         $optionsstart = [
