@@ -63,20 +63,26 @@ final class frontend_test extends \advanced_testcase {
         $instance = $DB->get_record('enrol', ['courseid' => $course->id, 'enrol' => 'self'], '*', MUST_EXIST);
         $DB->set_field('enrol', 'enrolenddate', time() + 10000, ['id' => $instance->id]);
         $DB->set_field('enrol', 'enrolstartdate', time() - 100, ['id' => $instance->id]);
+        $page = $dg->get_plugin_generator('mod_page')->create_instance(['course' => $course, 'completion' => 1]);
+        $modinfo = get_fast_modinfo($course);
+        $cms = $modinfo->get_instances();
+        $cm = $cms['page'][$page->id];
+        $DB->set_field('course_modules', 'deletioninprogress', true, ['id' => $cm->id]);
         $arr = $this->call_method([$course]);
         $this->assertCount(5, $arr);
-        $this->assertCount(4, $arr[1]);
+        $this->assertCount(5, $arr[1]);
         $expected = [
             ['field' => 1, 'display' => 'after course start date'],
             ['field' => 6, 'display' => 'before course start date'],
             ['field' => 3, 'display' => 'after user enrolment date'],
             ['field' => 4, 'display' => 'after enrolment method end date'],
+            ['field' => 7, 'display' => 'after completion of activity'],
         ];
         $this->assertEquals($expected, $arr[1]);
         $this->assertTrue($arr[2]);
         $this->assertCount(0, $arr[3]);
-        $this->assertCount(0, $arr[4]);
-
+        $this->assertCount(1, $arr[4]);
+        $this->assertCount(2, $arr[4][0]);
     }
 
     /**
@@ -216,8 +222,8 @@ final class frontend_test extends \advanced_testcase {
         $class->selfenrolment_exists_in_course_ending($course->fullname, '');
         $class->selfenrolment_exists_in_course_ending($course->fullname, '## today ##');
         $this->expectExceptionMessage('behat_context_helper');
-        $class->i_should_see_relativedate('##-10 days noon##');
         $class->i_make_activity_relative_date_depending_on('page1', 'page2');
+        $class->i_should_see_relativedate('##-10 days noon##');
     }
 
     /**

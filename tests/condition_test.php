@@ -27,7 +27,7 @@ namespace availability_relativedate;
 use availability_relativedate\condition;
 use context_module;
 use core\event\course_module_completion_updated;
-use core_availability\{tree, mock_info, info_module};
+use core_availability\{tree, mock_info, info_module, info_section};
 use stdClass;
 
 /**
@@ -54,6 +54,7 @@ final class condition_test extends \advanced_testcase {
         parent::setUp();
         require_once($CFG->dirroot . '/availability/tests/fixtures/mock_info.php');
         require_once($CFG->dirroot . '/availability/tests/fixtures/mock_info_module.php');
+        require_once($CFG->dirroot . '/availability/tests/fixtures/mock_info_section.php');
         require_once($CFG->libdir . '/completionlib.php');
         $this->resetAfterTest();
         $this->setAdminUser();
@@ -72,12 +73,12 @@ final class condition_test extends \advanced_testcase {
      */
     public static function tree_provider(): array {
         return [
-            'After start course' => [2, 1, 1, "+2 hour", "From"],
-            'Before end course' => [3, 2, 2, '-3 day', 'Until'],
-            'After end enrol' => [4, 3, 3, '+4 week', 'From'],
-            'After end method' => [4, 3, 4, '+4 week', 'From'],
-            'After end course' => [3, 2, 5, '+3 day', 'From'],
-            'Before start course' => [2, 1, 6, "-2 hour", "Until"],
+            'After start course' => [2, 1, 1, "+2 hour", "From", false, true],
+            'Before end course' => [3, 2, 2, '-3 day', 'Until', false, true],
+            'After end enrol' => [4, 3, 3, '+4 week', 'From', false, true],
+            'After end method' => [4, 3, 4, '+4 week', 'From', false, true],
+            'After end course' => [3, 2, 5, '+3 day', 'From', false, true],
+            'Before start course' => [2, 1, 6, '-2 hour', 'Until', true, false],
         ];
     }
 
@@ -90,9 +91,11 @@ final class condition_test extends \advanced_testcase {
      * @param int $s relative to
      * @param string $str
      * @param string $result
+     * @param bool $availablefalse
+     * @param bool $availabletrue
      * @covers \availability_relativedate\condition
      */
-    public function test_tree($n, $d, $s, $str, $result): void {
+    public function test_tree($n, $d, $s, $str, $result, $availablefalse, $availabletrue): void {
         $arr = (object)['type' => 'relativedate', 'n' => $n, 'd' => $d, 's' => $s, 'm' => 9999999];
         $stru = (object)['op' => '|', 'show' => true, 'c' => [$arr]];
         $tree = new tree($stru);
@@ -103,7 +106,8 @@ final class condition_test extends \advanced_testcase {
         $nau = 'Not available unless:';
         $calc = userdate(strtotime($str, $this->get_reldate($s)), $strf, 0);
         $this->assertEquals("$nau $result $calc", $tree->get_full_information($info));
-        $tree->check_available(false, $info, false, $this->user->id)->is_available();
+        $this->assertEquals($availablefalse, $tree->check_available(false, $info, false, $this->user->id)->is_available());
+        $this->assertEquals($availabletrue, $tree->check_available(true, $info, false, $this->user->id)->is_available());
     }
 
     /**
@@ -172,7 +176,10 @@ final class condition_test extends \advanced_testcase {
 
         $this->setAdminUser();
         $this->assertStringContainsString($result3, $cond->get_description(true, false, $info));
-        $this->assertNotEmpty($cond->get_standalone_description(false, false, $info));
+        $this->assertNotEquals("$nau $result1 $calc", $cond->get_standalone_description(false, false, $info));
+        $this->assertNotEquals("$nau $result2 $calc", $cond->get_standalone_description(false, true, $info));
+        $this->assertNotEquals("$nau $result1 $calc", $cond->get_standalone_description(true, false, $info));
+        $this->assertNotEquals("$nau $result2 $calc", $cond->get_standalone_description(true, true, $info));
     }
 
     /**
@@ -194,10 +201,9 @@ final class condition_test extends \advanced_testcase {
         $DB->set_field('course_modules', 'availability', $str, ['id' => $page0->cmid]);
         rebuild_course_cache($this->course->id, true);
         $cond = new condition((object)['type' => 'relativedate', 'n' => 4, 'd' => 4, 's' => 7, 'm' => $page1->cmid]);
-        $this->assertStringContainsString("4 months after completion of activity", $cond->get_description(true, false, $info));
-        $this->assertStringContainsString("4 months after completion of activity", $cond->get_description(true, true, $info));
-        $this->assertStringContainsString("4 months after completion of activity", $cond->get_description(false, false, $info));
-        $this->assertStringContainsString("4 months after completion of activity", $cond->get_description(false, true, $info));
+        $str = "(4 months after completion of activity <AVAILABILITY_CMNAME_$page1->cmid/>)";
+        $this->assertEquals($str, $cond->get_description(true, false, $info));
+        $this->assertEquals($str, $cond->get_description(true, true, $info));
         $this->assertFalse($cond->completion_value_used($this->course, $page0->cmid));
         $this->assertTrue($cond->completion_value_used($this->course, $page1->cmid));
 
@@ -215,8 +221,10 @@ final class condition_test extends \advanced_testcase {
 
         $cond = new condition((object)['type' => 'relativedate', 'n' => 4, 'd' => 4, 's' => 7, 'm' => $page0->cmid]);
         $this->assertTrue($cond->update_dependency_id('course_sections', $page0->cmid, 3));
+        $this->assertFalse($cond->update_dependency_id('course_sections', $page0->cmid, $page0->cmid));
         $this->assertFalse($cond->update_dependency_id('course_modules', $page0->cmid, $page0->cmid));
         $this->assertFalse($cond->update_dependency_id('course_modules', $page0->cmid, $page1->cmid));
+        $this->assertFalse($cond->update_dependency_id('course_modules', $page0->cmid, 3));
         $this->assertFalse($cond->update_dependency_id('course_modules', $page1->cmid, 3));
         $this->assertFalse($cond->update_dependency_id('', $page1->cmid, 3));
         $this->assertFalse($cond->update_dependency_id('', $page1->cmid, $page0->cmid));
@@ -247,6 +255,13 @@ final class condition_test extends \advanced_testcase {
         $pg->create_instance(['course' => $course2]);
         $modinfo1 = get_fast_modinfo($course1);
         $modinfo2 = get_fast_modinfo($course2);
+        $info = new info_section($modinfo2->get_section_info_all()[1]);
+        $cond = new condition((object)['type' => 'relativedate', 'n' => 6, 'd' => 2, 's' => 2, 'm' => 1]);
+        $information = $cond->get_description(false, false, $info);
+        $strf = get_string('strftimedatetime', 'langconfig');
+        $str = userdate($course2->enddate - (6 * 24 * 3600), $strf);
+        $this->assertEquals("Until $str", $information);
+
         $cm1 = $modinfo1->get_cm($page1->cmid);
         $cm2 = $modinfo2->get_cm($page2->cmid);
         $info = new info_module($cm1);
@@ -259,7 +274,6 @@ final class condition_test extends \advanced_testcase {
         $this->assertFalse($cond->is_available(true, $info, false, $user->id));
         $info = new info_module($cm2);
         $information = $cond->get_description(true, false, $info);
-        $strf = get_string('strftimedatetime', 'langconfig');
         $this->assertStringNotContainsString('(No course enddate)', $information);
         $str = userdate($course2->enddate - (7 * 24 * 3600), $strf);
         $this->assertEquals("Until $str (7 days before course end date)", $information);

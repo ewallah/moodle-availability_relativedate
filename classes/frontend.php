@@ -50,7 +50,7 @@ class frontend extends \core_availability\frontend {
      */
     protected function get_javascript_init_params($course, ?cm_info $cm = null, ?section_info $section = null) {
         global $DB;
-        $optionsdwm = self::convert_associative_array_for_js(condition::options_dwm(), 'field', 'display');
+        $optionsdwm = self::convert_associative_array_for_js(condition::options_dwm(2), 'field', 'display');
         $optionsstart = [
             ['field' => 1, 'display' => condition::options_start(1)],
             ['field' => 6, 'display' => condition::options_start(6)],
@@ -65,7 +65,6 @@ class frontend extends \core_availability\frontend {
         }
         $activitysel = [];
         if ($course->enablecompletion) {
-            $currentcmid = $cm ? $cm->id : 0;
             $modinfo = get_fast_modinfo($course);
             $str = get_string('section');
             $s = [];
@@ -76,7 +75,7 @@ class frontend extends \core_availability\frontend {
                 $s['name'] = empty($name) ? "$str $sectionnum" : format_string($name);
                 $s['coursemodules'] = [];
                 foreach ($cursection as $cmid) {
-                    if ($currentcmid === $cmid) {
+                    if ($cm && $cm->id === $cmid) {
                         continue;
                     }
                     $module = $modinfo->get_cm($cmid);
@@ -88,7 +87,7 @@ class frontend extends \core_availability\frontend {
                             'name' => format_string($module->name),
                             'completionenabled' => $compused,
                         ];
-                        $enabled = $enabled || $compused;
+                        $enabled = $compused ? true : $enabled;
                     }
                 }
                 $activitysel[] = $s;

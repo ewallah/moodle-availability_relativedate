@@ -43,10 +43,10 @@ class behat_availability_relativedate extends behat_base {
      * @param string $date
      */
     public function i_should_see_relativedate($date) {
-        global $USER;
+        $user = self::get_session_user();
         $times = array_filter(explode('##', $date));
         $time = reset($times);
-        $stime = userdate($time, get_string('strftimedate', 'langconfig'), $USER->timezone);
+        $stime = userdate($time, get_string('strftimedate', 'langconfig'), $user->timezone);
         $this->execute("behat_general::assert_element_contains_text", [$stime, '.course-content', 'css_element']);
     }
 

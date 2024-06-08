@@ -158,6 +158,7 @@ class condition extends \core_availability\condition {
      * @return string Text representation of parameters
      */
     protected function get_debug_string() {
+        // TODO: remove concat.
         $modname = '';
         if ($this->relativestart === 7) {
             $modname = ' ';
@@ -203,7 +204,7 @@ class condition extends \core_availability\condition {
      * @param int $number
      * @return array
      */
-    public static function options_dwm($number = 2) {
+    public static function options_dwm($number = 1) {
         $s = $number === 1 ? '' : 's';
         return [
             0 => get_string('minute' . $s, 'availability_relativedate'),
@@ -384,7 +385,7 @@ class condition extends \core_availability\condition {
      */
     public function update_dependency_id($table, $oldid, $newid) {
         if ($this->relativestart === 7) {
-            if ($table === 'course_modules' || $table === 'course_sections') {
+            if (in_array($table, ['course_modules', 'course_sections'])) {
                 if ($this->relativecoursemodule === $oldid) {
                     $this->relativecoursemodule = $newid;
                     return true;
@@ -405,7 +406,7 @@ class condition extends \core_availability\condition {
      */
     public function update_after_restore($restoreid, $courseid, \base_logger $logger, $name): bool {
         $rec = \restore_dbops::get_backup_ids_record($restoreid, 'course_module', $this->relativecoursemodule);
-        if (!$rec || !$rec->newitemid) {
+        if (!($rec && $rec->newitemid)) {
             // If we are on the same course (e.g. duplicate) then we can just use the existing one.
             if (!get_coursemodule_from_id('', $this->relativecoursemodule, $courseid)) {
                 $this->relativecoursemodule = 0;
@@ -413,6 +414,7 @@ class condition extends \core_availability\condition {
                     "Restored item ($name has availability condition on module that was not restored",
                     \backup::LOG_WARNING
                 );
+                return false;
             }
         } else {
             $this->relativecoursemodule = $rec->newitemid;

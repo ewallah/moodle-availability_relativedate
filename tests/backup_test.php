@@ -25,6 +25,7 @@
 namespace availability_relativedate;
 
 use availability_relativedate\condition;
+use core_availability\info_module;
 
 /**
  * Unit tests for the relativedate condition.
@@ -121,6 +122,7 @@ final class backup_test extends \advanced_testcase {
         $rc->destroy();
         $course = get_course($newid);
         $modinfo = get_fast_modinfo($course);
-        $this->assertCount(12, $modinfo->get_instances_of('page'));
+        $pages = $modinfo->get_instances_of('page');
+        $this->assertCount(12, $pages);
     }
 }
