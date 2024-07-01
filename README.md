@@ -16,6 +16,10 @@ This availability condition makes it easy to show modules or sections only x day
 Check the global documentation about conditional availability conditions:
    https://docs.moodle.org/en/Conditional_activities_settings
 
+## Warning
+
+This plugin is 100% open source and has NOT been tested in Moodle Workplace, Totara, or any other proprietary software system. As long as the latter do not reward plugin developers, you can use this plugin only in 100% open source environments.
+
 ## Requirements
 
 This plugin requires Moodle 4.2+
