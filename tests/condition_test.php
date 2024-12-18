@@ -208,9 +208,16 @@ final class condition_test extends \advanced_testcase {
         $this->assertTrue($cond->completion_value_used($this->course, $page1->cmid));
 
         $modinfo = get_fast_modinfo($this->course);
-        $str = '{"op":"|","show":true,"c":[{"type":"relativedate","n":4,"d":4,"s":7,"m":' . $page0->cmid . '}]}';
+        $str1 = '{"op":"|","show":true,"c":[{"type":"relativedate","n":4,"d":4,"s":7,"m":' . $page0->cmid . '}]}';
+        $str2 = '{"op":"|","show":true,"c":[{"type":"relativedate","n":4,"d":4,"s":7,"m":666}]}';
+        $i = 1;
         foreach ($modinfo->get_section_info_all() as $section) {
-            $DB->set_field('course_sections', 'availability', $str, ['id' => $section->id]);
+            if (($i % 2) == 0) {
+                $DB->set_field('course_sections', 'availability', $str1, ['id' => $section->id]);
+            } else {
+                $DB->set_field('course_sections', 'availability', $str2, ['id' => $section->id]);
+            }
+            $i++;
         }
         $this->do_cron();
         $cond = new condition((object)['type' => 'relativedate', 'n' => 4, 'd' => 4, 's' => 7, 'm' => $page1->cmid]);
@@ -348,6 +355,7 @@ final class condition_test extends \advanced_testcase {
         $result = \phpunit_util::call_internal_method($condition, 'get_debug_string', [], $name);
         $this->assertStringContainsString(get_string('missing', 'availability_relativedate'), $result);
         $this->assertStringContainsString('alert', $result);
+        $this->assertStringContainsString('1 day after completion of activity', $result);
     }
 
     /**

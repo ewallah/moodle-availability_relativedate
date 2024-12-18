@@ -179,23 +179,16 @@ class condition extends \core_availability\condition {
      * @return string
      */
     public static function options_start(int $i) {
-        switch ($i) {
-            case 1:
-                return get_string('datestart', 'availability_relativedate');
-            case 2:
-                return get_string('dateend', 'availability_relativedate');
-            case 3:
-                return get_string('dateenrol', 'availability_relativedate');
-            case 4:
-                return get_string('dateendenrol', 'availability_relativedate');
-            case 5:
-                return get_string('dateendafter', 'availability_relativedate');
-            case 6:
-                return get_string('datestartbefore', 'availability_relativedate');
-            case 7:
-                return get_string('datecompletion', 'availability_relativedate');
-        }
-        return '';
+        return match($i) {
+            1 => get_string('datestart', 'availability_relativedate'),
+            2 => get_string('dateend', 'availability_relativedate'),
+            3 => get_string('dateenrol', 'availability_relativedate'),
+            4 => get_string('dateendenrol', 'availability_relativedate'),
+            5 => get_string('dateendafter', 'availability_relativedate'),
+            6 => get_string('datestartbefore', 'availability_relativedate'),
+            7 => get_string('datecompletion', 'availability_relativedate'),
+            default => '',
+        };
     }
 
     /**
@@ -222,19 +215,14 @@ class condition extends \core_availability\condition {
      * @return string
      */
     public static function option_dwm(int $i): string {
-        switch ($i) {
-            case 0:
-                return 'minute';
-            case 1:
-                return 'hour';
-            case 2:
-                return 'day';
-            case 3:
-                return 'week';
-            case 4:
-                return 'month';
-        }
-        return '';
+        return match($i) {
+            0 => 'minute',
+            1 => 'hour',
+            2 => 'day',
+            3 => 'week',
+            4 => 'month',
+            default => '',
+        };
     }
 
     /**
