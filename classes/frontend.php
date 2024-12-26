@@ -38,64 +38,86 @@ use stdClass;
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class frontend extends \core_availability\frontend {
+
     /**
-     * Gets additional parameters for the plugin's initInner function.
+     * Get JavaScript initialization parameters.
      *
-     * Default returns no parameters.
-     *
-     * @param stdClass $course Course object
-     * @param cm_info|null $cm Course-module currently being edited (null if none)
-     * @param section_info|null $section Section currently being edited (null if none)
-     * @return array Array of parameters for the JavaScript function
+     * @param stdClass $course The course object.
+     * @param cm_info|null $cm The course module info.
+     * @param section_info|null $section The section info.
+     * @return array The JavaScript initialization parameters.
      */
     protected function get_javascript_init_params($course, ?cm_info $cm = null, ?section_info $section = null) {
         global $DB;
+
+        // Convert associative array for JS.
         $optionsdwm = self::convert_associative_array_for_js(condition::options_dwm(2), 'field', 'display');
+
+        // Initialize start options.
         $optionsstart = [
             ['field' => 1, 'display' => condition::options_start(1)],
             ['field' => 6, 'display' => condition::options_start(6)],
         ];
+
+        // Add course end date dependent options.
         if ($course->enddate != 0) {
             $optionsstart[] = ['field' => 5, 'display' => condition::options_start(5)];
             $optionsstart[] = ['field' => 2, 'display' => condition::options_start(2)];
         }
+
+        // Add additional start options.
         $optionsstart[] = ['field' => 3, 'display' => condition::options_start(3)];
+
+        // Check if the course has enrolments with end dates.
         if ($DB->count_records_select('enrol', 'courseid = :courseid AND enrolenddate > 0', ['courseid' => $course->id]) > 0) {
             $optionsstart[] = ['field' => 4, 'display' => condition::options_start(4)];
         }
+
+        // Initialize activity selection array.
         $activitysel = [];
         if ($course->enablecompletion) {
             $modinfo = get_fast_modinfo($course);
             $str = get_string('section');
-            $s = [];
             $enabled = false;
-            // Gets only sections with content.
+
+            // Get sections with content.
             foreach ($modinfo->get_sections() as $sectionnum => $cursection) {
-                $name = $modinfo->get_section_info($sectionnum)->name;
-                $s['name'] = empty($name) ? "$str $sectionnum" : format_string($name);
-                $s['coursemodules'] = [];
+                $sectioninfo = $modinfo->get_section_info($sectionnum);
+                $sectionname = empty($sectioninfo->name) ? "$str $sectionnum" : format_string($sectioninfo->name);
+                $sectionmodules = [];
+
+                // Get course modules in the section.
                 foreach ($cursection as $cmid) {
                     if ($cm && $cm->id === $cmid) {
                         continue;
                     }
+
                     $module = $modinfo->get_cm($cmid);
+
                     // Get only course modules which are not being deleted.
                     if ($module->deletioninprogress == 0) {
-                        $compused = $module->completion > 0;
-                        $s['coursemodules'][] = [
+                        $completionenabled = ($module->completion > 0);
+                        $sectionmodules[] = [
                             'id' => $cmid,
                             'name' => format_string($module->name),
-                            'completionenabled' => $compused,
+                            'completionenabled' => $completionenabled,
                         ];
-                        $enabled = $compused ? true : $enabled;
+                        $enabled = $completionenabled ? true : $enabled;
                     }
                 }
-                $activitysel[] = $s;
+
+                $activitysel[] = [
+                    'name' => $sectionname,
+                    'coursemodules' => $sectionmodules,
+                ];
             }
+
+            // Add activity completion start option if any activity has completion enabled.
             if ($enabled) {
                 $optionsstart[] = ['field' => 7, 'display' => condition::options_start(7)];
             }
         }
+
         return [$optionsdwm, $optionsstart, is_null($section), [], $activitysel];
     }
 }
