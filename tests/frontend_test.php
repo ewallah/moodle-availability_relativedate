@@ -32,7 +32,7 @@ namespace availability_relativedate;
  * @copyright eWallah (www.eWallah.net)
  * @author    Renaat Debleu <info@eWallah.net>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- * @coversDefaultClass \availability_relativedate\frontend
+ * @coversDefaultClass \availability_relativedate\frontend)]
  */
 final class frontend_test extends \advanced_testcase {
 
@@ -51,7 +51,7 @@ final class frontend_test extends \advanced_testcase {
 
     /**
      * Tests using relativedate condition in front end.
-     * @covers \availability_relativedate\frontend
+     * #[CoversClass(availability_relativedate\frontend)]
      */
     public function test_frontend(): void {
         global $DB;
@@ -87,7 +87,7 @@ final class frontend_test extends \advanced_testcase {
 
     /**
      * Test course
-     * @covers \availability_relativedate\frontend
+     * #[CoversClass(availability_relativedate\frontend)]
      */
     public function test_javascript_course(): void {
         $course = $this->getDataGenerator()->create_course(['enablecompletion' => 1]);
@@ -120,7 +120,7 @@ final class frontend_test extends \advanced_testcase {
 
     /**
      * Test section
-     * @covers \availability_relativedate\frontend
+     * #[CoversClass(availability_relativedate\frontend)]
      */
     public function test_javascript_section(): void {
         $dg = $this->getDataGenerator();
@@ -162,7 +162,7 @@ final class frontend_test extends \advanced_testcase {
 
     /**
      * Test module
-     * @covers \availability_relativedate\frontend
+     * #[CoversClass(availability_relativedate\frontend)]
      */
     public function test_javascript_module(): void {
         $dg = $this->getDataGenerator();
@@ -207,7 +207,7 @@ final class frontend_test extends \advanced_testcase {
 
     /**
      * Test behat funcs
-     * @covers \behat_availability_relativedate
+     * #[CoversClass(behat_availability_relativedate)]
      */
     public function test_behat(): void {
         global $CFG;

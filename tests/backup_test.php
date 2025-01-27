@@ -34,12 +34,12 @@ use core_availability\info_module;
  * @copyright eWallah (www.eWallah.net)
  * @author    Renaat Debleu <info@eWallah.net>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- * @coversDefaultClass \availability_relativedate\condition
+ * @coversDefaultClass \availability_relativedate\condition)]
  */
 final class backup_test extends \advanced_testcase {
     /**
      * Backup check.
-     * @covers \availability_relativedate\condition
+     * #[CoversClass(availability_relativedate\condition)]
      */
     public function test_backup(): void {
         global $CFG, $DB;

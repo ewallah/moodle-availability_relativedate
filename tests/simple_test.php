@@ -33,12 +33,12 @@ use availability_relativedate\condition;
  * @copyright eWallah (www.eWallah.net)
  * @author    Renaat Debleu <info@eWallah.net>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- * @coversDefaultClass \availability_relativedate\condition
+ * @coversDefaultClass \availability_relativedate\condition)]
  */
 final class simple_test extends \basic_testcase {
     /**
      * Tests the constructor including error conditions.
-     * @covers \availability_relativedate\condition
+     * #[CoversClass(availability_relativedate\condition)]
      */
     public function test_constructor(): void {
         $structure = (object)['type' => 'relativedate'];
@@ -104,7 +104,7 @@ final class simple_test extends \basic_testcase {
 
     /**
      * Tests the save() function.
-     * @covers \availability_relativedate\condition
+     * #[CoversClass(availability_relativedate\condition)]
      */
     public function test_save(): void {
         $structure = (object)['n' => 1, 'd' => 2, 's' => 1, 'm' => 1];
@@ -115,7 +115,7 @@ final class simple_test extends \basic_testcase {
 
     /**
      * Tests static methods.
-     * @covers \availability_relativedate\condition
+     * #[CoversClass(availability_relativedate\condition)]
      */
     public function test_static(): void {
         $this->assertCount(5, condition::options_dwm());
@@ -151,7 +151,7 @@ final class simple_test extends \basic_testcase {
      * @dataProvider debug_provider
      * @param array $cond
      * @param string $result
-     * @covers \availability_relativedate\condition
+     * #[CoversClass(availability_relativedate\condition)]
      */
     public function test_debug($cond, $result): void {
         $name = 'availability_relativedate\condition';
