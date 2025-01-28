@@ -32,7 +32,7 @@ namespace availability_relativedate;
  * @copyright eWallah (www.eWallah.net)
  * @author    Renaat Debleu <info@eWallah.net>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- * @coversDefaultClass \availability_relativedate\frontend)]
+ * #[CoversClass(availability_relativedate\frontend)]
  */
 final class frontend_test extends \advanced_testcase {
 

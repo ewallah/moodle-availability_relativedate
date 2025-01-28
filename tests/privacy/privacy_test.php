@@ -35,7 +35,7 @@ use core_privacy\local\metadata\collection;
  * @copyright eWallah (www.eWallah.net)
  * @author    Renaat Debleu <info@eWallah.net>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- * @coversDefaultClass \availability_relativedate\privacy\provider)]
+ * #[CoversClass(availability_relativedate\privacy\provider)]
  */
 final class privacy_test extends provider_testcase {
     /**
