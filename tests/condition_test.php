@@ -28,6 +28,7 @@ use availability_relativedate\condition;
 use context_module;
 use core\event\course_module_completion_updated;
 use core_availability\{tree, mock_info, info_module, info_section};
+use Generator;
 use stdClass;
 
 /**
@@ -37,7 +38,6 @@ use stdClass;
  * @copyright eWallah (www.eWallah.net)
  * @author    Renaat Debleu <info@eWallah.net>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- * #[CoversClass(availability_relativedate\condition)]
  */
 final class condition_test extends \advanced_testcase {
     /** @var stdClass course. */
@@ -70,22 +70,20 @@ final class condition_test extends \advanced_testcase {
 
     /**
      * Relative dates tree provider.
+     * @return Generator
      */
-    public static function tree_provider(): array {
-        return [
-            'After start course' => [2, 1, 1, "+2 hour", "From", false, true],
-            'Before end course' => [3, 2, 2, '-3 day', 'Until', false, true],
-            'After end enrol' => [4, 3, 3, '+4 week', 'From', false, true],
-            'After end method' => [4, 3, 4, '+4 week', 'From', false, true],
-            'After end course' => [3, 2, 5, '+3 day', 'From', false, true],
-            'Before start course' => [2, 1, 6, '-2 hour', 'Until', true, false],
-        ];
+    public static function tree_provider(): Generator {
+        yield 'After start course' => [2, 1, 1, '+2 hour', 'From', false, true];
+        yield 'Before end course' => [3, 2, 2, '-3 day', 'Until', false, true];
+        yield 'After end enrol' => [4, 3, 3, '+4 week', 'From', false, true];
+        yield 'After end method' => [4, 3, 4, '+4 week', 'From', false, true];
+        yield 'After end course' => [3, 2, 5, '+3 day', 'From', false, true];
+        yield 'Before start course' => [2, 1, 6, '-2 hour', 'Until', true, false];
     }
 
     /**
      * Test tree.
      *
-     * @dataProvider tree_provider
      * @param int $n number to skip
      * @param int $d Minute - hour - day - week  - month
      * @param int $s relative to
@@ -93,7 +91,8 @@ final class condition_test extends \advanced_testcase {
      * @param string $result
      * @param bool $availablefalse
      * @param bool $availabletrue
-     * #[CoversClass(availability_relativedate\condition)]
+     * @covers \availability_relativedate\condition
+     * @dataProvider tree_provider
      */
     public function test_tree($n, $d, $s, $str, $result, $availablefalse, $availabletrue): void {
         $arr = (object)['type' => 'relativedate', 'n' => $n, 'd' => $d, 's' => $s, 'm' => 9999999];
@@ -112,7 +111,7 @@ final class condition_test extends \advanced_testcase {
 
     /**
      * Tests relative module.
-     * #[CoversClass(availability_relativedate\condition)]
+     * @covers \availability_relativedate\condition
      */
     public function test_relative_module(): void {
         $this->setTimezone('UTC');
@@ -135,22 +134,20 @@ final class condition_test extends \advanced_testcase {
 
     /**
      * Relative dates description provider.
+     * @return Generator
      */
-    public static function description_provider(): array {
-        return [
-            'After start course' => [2, 1, 1, '+2 hour', 'From', 'Until', '2 hours after course start date'],
-            'Before end course' => [3, 2, 2, '-3 day', 'Until', 'From', '3 days before course end date'],
-            'After end enrol' => [4, 3, 3, '+4 week', 'From', 'Until', '4 weeks after user enrolment date'],
-            'After end method' => [4, 3, 4, '+4 week', 'From', 'Until', '4 weeks after enrolment method end date'],
-            'After end course' => [3, 2, 5, '+3 day', 'From', 'Until', '3 days after course end date'],
-            'Before start course' => [2, 1, 6, '-2 hour', 'Until', 'From', '2 hours before course start date'],
-        ];
+    public static function description_provider(): Generator {
+        yield 'After start course' => [2, 1, 1, '+2 hour', 'From', 'Until', '2 hours after course start date'];
+        yield 'Before end course' => [3, 2, 2, '-3 day', 'Until', 'From', '3 days before course end date'];
+        yield 'After end enrol' => [4, 3, 3, '+4 week', 'From', 'Until', '4 weeks after user enrolment date'];
+        yield 'After end method' => [4, 3, 4, '+4 week', 'From', 'Until', '4 weeks after enrolment method end date'];
+        yield 'After end course' => [3, 2, 5, '+3 day', 'From', 'Until', '3 days after course end date'];
+        yield 'Before start course' => [2, 1, 6, '-2 hour', 'Until', 'From', '2 hours before course start date'];
     }
 
     /**
      * Test description.
      *
-     * @dataProvider description_provider
      * @param int $n number to skip
      * @param int $d Minute - hour - day - week  - month
      * @param int $s relative to
@@ -158,7 +155,8 @@ final class condition_test extends \advanced_testcase {
      * @param string $result1
      * @param string $result2
      * @param string $result3
-     * #[CoversClass(availability_relativedate\condition)]
+     * @covers \availability_relativedate\condition
+     * @dataProvider description_provider
      */
     public function test_description($n, $d, $s, $str, $result1, $result2, $result3): void {
         $strf = get_string('strftimedatetime', 'langconfig');
@@ -184,7 +182,7 @@ final class condition_test extends \advanced_testcase {
 
     /**
      * Tests the get_description and get_standalone_description functions.
-     * #[CoversClass(availability_relativedate\condition)]
+     * @covers \availability_relativedate\condition
      */
     public function test_get_description(): void {
         global $DB;
@@ -243,7 +241,7 @@ final class condition_test extends \advanced_testcase {
 
     /**
      * Tests a course with no enddate.
-     * #[CoversClass(availability_relativedate\condition)]
+     * @covers \availability_relativedate\condition
      */
     public function test_no_enddate(): void {
         global $DB, $USER;
@@ -334,7 +332,7 @@ final class condition_test extends \advanced_testcase {
 
     /**
      * Tests debug strings (reflection).
-     * #[CoversClass(availability_relativedate\condition)]
+     * @covers \availability_relativedate\condition
      */
     public function test_reflection_debug_strings(): void {
         $name = 'availability_relativedate\condition';
@@ -360,7 +358,7 @@ final class condition_test extends \advanced_testcase {
 
     /**
      * Tests a reflection.
-     * #[CoversClass(availability_relativedate\condition)]
+     * @covers \availability_relativedate\condition
      */
     public function test_reflection_calc(): void {
         global $DB;
@@ -454,7 +452,8 @@ final class condition_test extends \advanced_testcase {
 
     /**
      * Tests the autoupdate event.
-     * #[CoversClass(availability_relativedate\autoupdate)]
+     * @covers \availability_relativedate\autoupdate
+     * @covers \availability_relativedate\condition
      */
     public function test_autoupdate(): void {
         global $DB;
@@ -492,7 +491,7 @@ final class condition_test extends \advanced_testcase {
 
     /**
      * Cron function.
-     * #[CoversNothing]
+     * @coversNothing
      */
     private function do_cron(): void {
         $task = new \core\task\completion_regular_task();
@@ -508,10 +507,10 @@ final class condition_test extends \advanced_testcase {
 
     /**
      * Which date.
-     * #[CoversNothing]
      *
      * @param int $s
      * @return int
+     * @coversNothing
      */
     private function get_reldate($s): int {
         global $DB;

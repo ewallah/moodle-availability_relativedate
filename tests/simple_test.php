@@ -25,6 +25,7 @@
 namespace availability_relativedate;
 
 use availability_relativedate\condition;
+use Generator;
 
 /**
  * Unit tests for the relativedate condition.
@@ -33,12 +34,11 @@ use availability_relativedate\condition;
  * @copyright eWallah (www.eWallah.net)
  * @author    Renaat Debleu <info@eWallah.net>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- * #[CoversClass(availability_relativedate\condition)]
  */
 final class simple_test extends \basic_testcase {
     /**
      * Tests the constructor including error conditions.
-     * #[CoversClass(availability_relativedate\condition)]
+     * @covers \availability_relativedate\condition
      */
     public function test_constructor(): void {
         $structure = (object)['type' => 'relativedate'];
@@ -104,18 +104,23 @@ final class simple_test extends \basic_testcase {
 
     /**
      * Tests the save() function.
-     * #[CoversClass(availability_relativedate\condition)]
+     * @covers \availability_relativedate\condition
      */
     public function test_save(): void {
         $structure = (object)['n' => 1, 'd' => 2, 's' => 1, 'm' => 1];
         $cond = new condition($structure);
         $structure->type = 'relativedate';
         $this->assertEquals($structure, $cond->save());
+
+        $structure1 = (object)['n' => 1.75, 'd' => 2.5, 's' => 1.3, 'm' => 1.6];
+        $cond = new condition($structure1);
+        $structure->type = 'relativedate';
+        $this->assertEquals($structure, $cond->save());
     }
 
     /**
      * Tests static methods.
-     * #[CoversClass(availability_relativedate\condition)]
+     * @covers \availability_relativedate\condition
      */
     public function test_static(): void {
         $this->assertCount(5, condition::options_dwm());
@@ -148,10 +153,10 @@ final class simple_test extends \basic_testcase {
     /**
      * Test debug string.
      *
-     * @dataProvider debug_provider
      * @param array $cond
      * @param string $result
-     * #[CoversClass(availability_relativedate\condition)]
+     * @covers \availability_relativedate\condition
+     * @dataProvider debug_provider
      */
     public function test_debug($cond, $result): void {
         $name = 'availability_relativedate\condition';
@@ -162,34 +167,33 @@ final class simple_test extends \basic_testcase {
 
     /**
      * Relative dates debug provider.
+     * @return Generator
      */
-    public static function debug_provider(): array {
+    public static function debug_provider(): Generator {
         $daybefore = ' 1 ' . get_string('day', 'availability_relativedate') . ' ';
-        return [
-            'After start course' => [
-                ['type' => 'relativedate', 'n' => 1, 'd' => 2, 's' => 1, 'm' => 999999],
-                $daybefore . get_string('datestart', 'availability_relativedate'), ],
-            'Before end course' => [
-                ['type' => 'relativedate', 'n' => 1, 'd' => 2, 's' => 2, 'm' => 999999],
-                $daybefore . get_string('dateend', 'availability_relativedate'), ],
-            'After end enrol' => [
-                ['type' => 'relativedate', 'n' => 1, 'd' => 2, 's' => 3, 'm' => 999999],
-                $daybefore . get_string('dateenrol', 'availability_relativedate'), ],
-            'After end method' => [
-                ['type' => 'relativedate', 'n' => 1, 'd' => 2, 's' => 4, 'm' => 999999],
-                $daybefore . get_string('dateendenrol', 'availability_relativedate'), ],
-            'After end course' => [
-                ['type' => 'relativedate', 'n' => 1, 'd' => 2, 's' => 5, 'm' => 999999],
-                $daybefore . get_string('dateendafter', 'availability_relativedate'), ],
-            'Before start course' => [
-                ['type' => 'relativedate', 'n' => 1, 'd' => 2, 's' => 6, 'm' => 999999],
-                $daybefore . get_string('datestartbefore', 'availability_relativedate'), ],
-            'After invalid module' => [
-                ['type' => 'relativedate', 'n' => 1, 'd' => 2, 's' => 999, 'm' => 999999],
-                $daybefore, ],
-            'Weeks after start course' => [
-                ['type' => 'relativedate', 'n' => 2, 'd' => 3, 's' => 1, 'm' => 999999],
-                ' 2 weeks after course start date', ],
-        ];
+        yield 'After start course' => [
+            ['type' => 'relativedate', 'n' => 1, 'd' => 2, 's' => 1, 'm' => 999999],
+            $daybefore . get_string('datestart', 'availability_relativedate'), ];
+        yield 'Before end course' => [
+            ['type' => 'relativedate', 'n' => 1, 'd' => 2, 's' => 2, 'm' => 999999],
+            $daybefore . get_string('dateend', 'availability_relativedate'), ];
+        yield 'After end enrol' => [
+            ['type' => 'relativedate', 'n' => 1, 'd' => 2, 's' => 3, 'm' => 999999],
+            $daybefore . get_string('dateenrol', 'availability_relativedate'), ];
+        yield 'After end method' => [
+            ['type' => 'relativedate', 'n' => 1, 'd' => 2, 's' => 4, 'm' => 999999],
+            $daybefore . get_string('dateendenrol', 'availability_relativedate'), ];
+        yield 'After end course' => [
+            ['type' => 'relativedate', 'n' => 1, 'd' => 2, 's' => 5, 'm' => 999999],
+            $daybefore . get_string('dateendafter', 'availability_relativedate'), ];
+        yield 'Before start course' => [
+            ['type' => 'relativedate', 'n' => 1, 'd' => 2, 's' => 6, 'm' => 999999],
+            $daybefore . get_string('datestartbefore', 'availability_relativedate'), ];
+        yield 'After invalid module' => [
+            ['type' => 'relativedate', 'n' => 1, 'd' => 2, 's' => 999, 'm' => 999999],
+            $daybefore, ];
+        yield 'Weeks after start course' => [
+            ['type' => 'relativedate', 'n' => 2, 'd' => 3, 's' => 1, 'm' => 999999],
+            ' 2 weeks after course start date', ];
     }
 }

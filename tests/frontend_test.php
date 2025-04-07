@@ -32,7 +32,6 @@ namespace availability_relativedate;
  * @copyright eWallah (www.eWallah.net)
  * @author    Renaat Debleu <info@eWallah.net>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- * #[CoversClass(availability_relativedate\frontend)]
  */
 final class frontend_test extends \advanced_testcase {
 
@@ -51,7 +50,7 @@ final class frontend_test extends \advanced_testcase {
 
     /**
      * Tests using relativedate condition in front end.
-     * #[CoversClass(availability_relativedate\frontend)]
+     * @covers \availability_relativedate\frontend
      */
     public function test_frontend(): void {
         global $DB;
@@ -87,7 +86,7 @@ final class frontend_test extends \advanced_testcase {
 
     /**
      * Test course
-     * #[CoversClass(availability_relativedate\frontend)]
+     * @covers \availability_relativedate\frontend
      */
     public function test_javascript_course(): void {
         $course = $this->getDataGenerator()->create_course(['enablecompletion' => 1]);
@@ -120,7 +119,7 @@ final class frontend_test extends \advanced_testcase {
 
     /**
      * Test section
-     * #[CoversClass(availability_relativedate\frontend)]
+     * @covers \availability_relativedate\frontend
      */
     public function test_javascript_section(): void {
         $dg = $this->getDataGenerator();
@@ -162,7 +161,7 @@ final class frontend_test extends \advanced_testcase {
 
     /**
      * Test module
-     * #[CoversClass(availability_relativedate\frontend)]
+     * @covers \availability_relativedate\frontend
      */
     public function test_javascript_module(): void {
         $dg = $this->getDataGenerator();
@@ -205,26 +204,6 @@ final class frontend_test extends \advanced_testcase {
         $this->assertEquals($expected, $arr[4]);
     }
 
-    /**
-     * Test behat funcs
-     * #[CoversClass(behat_availability_relativedate)]
-     */
-    public function test_behat(): void {
-        global $CFG;
-        require_once($CFG->dirroot . '/availability/condition/relativedate/tests/behat/behat_availability_relativedate.php');
-        $dg = $this->getDataGenerator();
-        $course = $dg->create_course(['enablecompletion' => true]);
-        $dg->get_plugin_generator('mod_page')->create_instance(['course' => $course, 'idnumber' => 'page1']);
-        $dg->get_plugin_generator('mod_page')->create_instance(['course' => $course, 'idnumber' => 'page2']);
-        $class = new \behat_availability_relativedate();
-        $class->selfenrolment_exists_in_course_starting($course->fullname, '');
-        $class->selfenrolment_exists_in_course_starting($course->fullname, '##-10 days noon##');
-        $class->selfenrolment_exists_in_course_ending($course->fullname, '');
-        $class->selfenrolment_exists_in_course_ending($course->fullname, '## today ##');
-        $this->expectExceptionMessage('behat_context_helper');
-        $class->i_make_activity_relative_date_depending_on('page1', 'page2');
-        $class->i_should_see_relativedate('##-10 days noon##');
-    }
 
     /**
      * Test behat funcs

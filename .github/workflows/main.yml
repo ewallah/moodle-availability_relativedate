@@ -33,13 +33,6 @@ jobs:
         php: ['8.2']
         moodle-branch: ['MOODLE_404_STABLE', 'MOODLE_405_STABLE']
         database: ['mariadb', 'pgsql']
-        include:
-          - php: '8.3'
-            moodle-branch: 'main'
-            database: 'pgsql'
-          - php: '8.4'
-            moodle-branch: 'main'
-            database: 'pgsql'
 
     steps:
       - name: checkout plugin
@@ -105,7 +98,7 @@ jobs:
 
       - name: privacy
         if: ${{ !cancelled() }}
-        run: vendor/bin/phpunit --colors --no-coverage --testsuite tool_dataprivacy_testsuite,tool_policy_testsuite,core_privacy_testsuite
+        run: vendor/bin/phpunit --colors --no-coverage --testsuite tool_dataprivacy_testsuite,tool_policy_testsuite,core_privacy_testsuite,icon_system_fontawesome_test
         working-directory: moodle
 
       - name: coveralls

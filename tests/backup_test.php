@@ -34,12 +34,11 @@ use core_availability\info_module;
  * @copyright eWallah (www.eWallah.net)
  * @author    Renaat Debleu <info@eWallah.net>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- * #[CoversClass(availability_relativedate\condition)]
  */
 final class backup_test extends \advanced_testcase {
     /**
      * Backup check.
-     * #[CoversClass(availability_relativedate\condition)]
+     * @covers \availability_relativedate\condition
      */
     public function test_backup(): void {
         global $CFG, $DB;
@@ -124,5 +123,11 @@ final class backup_test extends \advanced_testcase {
         $modinfo = get_fast_modinfo($course);
         $pages = $modinfo->get_instances_of('page');
         $this->assertCount(12, $pages);
+        foreach ($pages as $page) {
+            if (!is_null($page->availability)) {
+                $completed = new condition($page->availability);
+                $this->assertNotEmpty($completed);
+            }
+        }
     }
 }
