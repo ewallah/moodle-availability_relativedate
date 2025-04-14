@@ -26,6 +26,7 @@ namespace availability_relativedate;
 
 use availability_relativedate\condition;
 use Generator;
+use PHPUnit\Framework\Attributes\{CoversClass, DataProvider};
 
 /**
  * Unit tests for the relativedate condition.
@@ -35,10 +36,10 @@ use Generator;
  * @author    Renaat Debleu <info@eWallah.net>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+#[CoversClass(condition::class)]
 final class simple_test extends \basic_testcase {
     /**
      * Tests the constructor including error conditions.
-     * @covers \availability_relativedate\condition
      */
     public function test_constructor(): void {
         $structure = (object)['type' => 'relativedate'];
@@ -104,7 +105,6 @@ final class simple_test extends \basic_testcase {
 
     /**
      * Tests the save() function.
-     * @covers \availability_relativedate\condition
      */
     public function test_save(): void {
         $structure = (object)['n' => 1, 'd' => 2, 's' => 1, 'm' => 1];
@@ -120,7 +120,6 @@ final class simple_test extends \basic_testcase {
 
     /**
      * Tests static methods.
-     * @covers \availability_relativedate\condition
      */
     public function test_static(): void {
         $this->assertCount(5, condition::options_dwm());
@@ -155,9 +154,8 @@ final class simple_test extends \basic_testcase {
      *
      * @param array $cond
      * @param string $result
-     * @covers \availability_relativedate\condition
-     * @dataProvider debug_provider
      */
+    #[DataProvider('debug_provider')]
     public function test_debug($cond, $result): void {
         $name = 'availability_relativedate\condition';
         $condition = new condition((object)$cond);

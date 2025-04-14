@@ -30,6 +30,7 @@ use core\event\course_module_completion_updated;
 use core_availability\{tree, mock_info, info_module, info_section};
 use Generator;
 use stdClass;
+use PHPUnit\Framework\Attributes\{CoversClass, DataProvider};
 
 /**
  * Unit tests for the relativedate condition.
@@ -39,6 +40,8 @@ use stdClass;
  * @author    Renaat Debleu <info@eWallah.net>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+#[CoversClass(condition::class)]
+#[CoversClass(autoupdate::class)]
 final class condition_test extends \advanced_testcase {
     /** @var stdClass course. */
     private $course;
@@ -91,9 +94,8 @@ final class condition_test extends \advanced_testcase {
      * @param string $result
      * @param bool $availablefalse
      * @param bool $availabletrue
-     * @covers \availability_relativedate\condition
-     * @dataProvider tree_provider
      */
+    #[DataProvider('tree_provider')]
     public function test_tree($n, $d, $s, $str, $result, $availablefalse, $availabletrue): void {
         $arr = (object)['type' => 'relativedate', 'n' => $n, 'd' => $d, 's' => $s, 'm' => 9999999];
         $stru = (object)['op' => '|', 'show' => true, 'c' => [$arr]];
@@ -111,7 +113,6 @@ final class condition_test extends \advanced_testcase {
 
     /**
      * Tests relative module.
-     * @covers \availability_relativedate\condition
      */
     public function test_relative_module(): void {
         $this->setTimezone('UTC');
@@ -155,9 +156,8 @@ final class condition_test extends \advanced_testcase {
      * @param string $result1
      * @param string $result2
      * @param string $result3
-     * @covers \availability_relativedate\condition
-     * @dataProvider description_provider
      */
+    #[DataProvider('description_provider')]
     public function test_description($n, $d, $s, $str, $result1, $result2, $result3): void {
         $strf = get_string('strftimedatetime', 'langconfig');
         $nau = 'Not available unless:';
@@ -182,7 +182,6 @@ final class condition_test extends \advanced_testcase {
 
     /**
      * Tests the get_description and get_standalone_description functions.
-     * @covers \availability_relativedate\condition
      */
     public function test_get_description(): void {
         global $DB;
@@ -241,7 +240,6 @@ final class condition_test extends \advanced_testcase {
 
     /**
      * Tests a course with no enddate.
-     * @covers \availability_relativedate\condition
      */
     public function test_no_enddate(): void {
         global $DB, $USER;
@@ -332,7 +330,6 @@ final class condition_test extends \advanced_testcase {
 
     /**
      * Tests debug strings (reflection).
-     * @covers \availability_relativedate\condition
      */
     public function test_reflection_debug_strings(): void {
         $name = 'availability_relativedate\condition';
@@ -358,7 +355,6 @@ final class condition_test extends \advanced_testcase {
 
     /**
      * Tests a reflection.
-     * @covers \availability_relativedate\condition
      */
     public function test_reflection_calc(): void {
         global $DB;
@@ -452,8 +448,6 @@ final class condition_test extends \advanced_testcase {
 
     /**
      * Tests the autoupdate event.
-     * @covers \availability_relativedate\autoupdate
-     * @covers \availability_relativedate\condition
      */
     public function test_autoupdate(): void {
         global $DB;
@@ -491,7 +485,6 @@ final class condition_test extends \advanced_testcase {
 
     /**
      * Cron function.
-     * @coversNothing
      */
     private function do_cron(): void {
         $task = new \core\task\completion_regular_task();
@@ -510,7 +503,6 @@ final class condition_test extends \advanced_testcase {
      *
      * @param int $s
      * @return int
-     * @coversNothing
      */
     private function get_reldate($s): int {
         global $DB;

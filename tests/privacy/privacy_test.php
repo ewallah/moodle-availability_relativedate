@@ -27,6 +27,7 @@ namespace availability_relativedate\privacy;
 
 use core_privacy\tests\provider_testcase;
 use core_privacy\local\metadata\collection;
+use PHPUnit\Framework\Attributes\CoversClass;
 
 /**
  * Privacy tests for relative date availability.
@@ -36,10 +37,10 @@ use core_privacy\local\metadata\collection;
  * @author    Renaat Debleu <info@eWallah.net>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+#[CoversClass(provider::class)]
 final class privacy_test extends provider_testcase {
     /**
      * Test returning metadata.
-     * @covers \availability_relativedate\privacy\provider
      */
     public function test_get_metadata(): void {
         $collection = new collection('availability_relativedate');

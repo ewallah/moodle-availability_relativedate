@@ -26,6 +26,7 @@ namespace availability_relativedate;
 
 use availability_relativedate\condition;
 use core_availability\info_module;
+use PHPUnit\Framework\Attributes\CoversClass;
 
 /**
  * Unit tests for the relativedate condition.
@@ -35,6 +36,7 @@ use core_availability\info_module;
  * @author    Renaat Debleu <info@eWallah.net>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+#[CoversClass(\behat_availability_relativedate::class)]
 final class behat_test extends \advanced_testcase {
 
     /**
@@ -52,7 +54,6 @@ final class behat_test extends \advanced_testcase {
 
     /**
      * Test behat funcs
-     * @covers \behat_availability_relativedate
      */
     public function test_behat(): void {
         global $CFG;

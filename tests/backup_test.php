@@ -26,6 +26,7 @@ namespace availability_relativedate;
 
 use availability_relativedate\condition;
 use core_availability\info_module;
+use PHPUnit\Framework\Attributes\CoversClass;
 
 /**
  * Unit tests for the relativedate condition.
@@ -35,10 +36,10 @@ use core_availability\info_module;
  * @author    Renaat Debleu <info@eWallah.net>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+#[CoversClass(condition::class)]
 final class backup_test extends \advanced_testcase {
     /**
      * Backup check.
-     * @covers \availability_relativedate\condition
      */
     public function test_backup(): void {
         global $CFG, $DB;

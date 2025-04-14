@@ -24,6 +24,7 @@
  */
 
 namespace availability_relativedate;
+use PHPUnit\Framework\Attributes\CoversClass;
 
 /**
  * Unit tests for frontend of relativedate condition.
@@ -33,6 +34,7 @@ namespace availability_relativedate;
  * @author    Renaat Debleu <info@eWallah.net>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+#[CoversClass(frontend::class)]
 final class frontend_test extends \advanced_testcase {
 
     /**
@@ -50,7 +52,6 @@ final class frontend_test extends \advanced_testcase {
 
     /**
      * Tests using relativedate condition in front end.
-     * @covers \availability_relativedate\frontend
      */
     public function test_frontend(): void {
         global $DB;
@@ -86,7 +87,6 @@ final class frontend_test extends \advanced_testcase {
 
     /**
      * Test course
-     * @covers \availability_relativedate\frontend
      */
     public function test_javascript_course(): void {
         $course = $this->getDataGenerator()->create_course(['enablecompletion' => 1]);
@@ -119,7 +119,6 @@ final class frontend_test extends \advanced_testcase {
 
     /**
      * Test section
-     * @covers \availability_relativedate\frontend
      */
     public function test_javascript_section(): void {
         $dg = $this->getDataGenerator();
@@ -161,7 +160,6 @@ final class frontend_test extends \advanced_testcase {
 
     /**
      * Test module
-     * @covers \availability_relativedate\frontend
      */
     public function test_javascript_module(): void {
         $dg = $this->getDataGenerator();
