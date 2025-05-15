@@ -118,7 +118,7 @@ class frontend extends \core_availability\frontend {
             }
         }
         $config = get_config('availability_relativedate');
-        $max = property_exists($config, 'maxnumber') ? $config->maxnumber : 60;
+        $max = property_exists($config, 'maxnumber') ? $config->maxnumber + 1 : 60;
         $default = property_exists($config, 'defaultnumber') ? $config->defaultnumber : 1;
         $dwm = property_exists($config, 'defaultdwm') ? $config->defaultdwm : 2;
         $start = property_exists($config, 'defaultstart') ? $config->defaultstart : 1;

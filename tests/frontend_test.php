@@ -83,7 +83,7 @@ final class frontend_test extends \advanced_testcase {
         $this->assertCount(0, $arr[3]);
         $this->assertCount(1, $arr[4]);
         $this->assertCount(2, $arr[4][0]);
-        $this->assertEquals([60, 1, 2, 1], $arr[5]);
+        $this->assertEquals([59, 1, 2, 1], $arr[5]);
     }
 
     /**
