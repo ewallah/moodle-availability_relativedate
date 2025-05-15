@@ -137,19 +137,20 @@ class condition extends \core_availability\condition {
             }
         }
         if ($relative === 2 || $relative === 6) {
-            $frut = $not ? 'from' : 'until';
+            $fromuntil = $not ? 'from' : 'until';
         } else {
-            $frut = $not ? 'until' : 'from';
+            $fromuntil = $not ? 'until' : 'from';
         }
         $calc = $this->calc($course, $USER->id);
+        $brackets = '(' . trim($this->get_debug_string()) . ')';
         if ($calc === 0) {
-            return '(' . trim($this->get_debug_string()) . ')';
+            return $brackets;
         }
         $a = new stdClass();
         $a->rnumber = userdate($calc, get_string('strftimedatetime', 'langconfig'));
-        $a->rtime = ($capability && $full) ? '(' . trim($this->get_debug_string()) . ')' : '';
+        $a->rtime = ($capability && $full) ? $brackets : '';
         $a->rela = '';
-        return trim(get_string($frut, 'availability_relativedate', $a));
+        return trim(get_string($fromuntil, 'availability_relativedate', $a));
     }
 
     /**

@@ -30,7 +30,7 @@ Feature: availability relative enrol start date
     And I click on "Add restriction..." "button"
     And I click on "Relative date" "button" in the "Add restriction..." "dialogue"
     And I set the field "relativenumber" to "3"
-    And I set the field "relativednw" to <relweek>
+    And I set the field "relativedmw" to <relweek>
     And I set the field "relativestart" to <relstart>
     And I press "Save and return to course"
     And I should see "Not available unless" in the "region-main" "region"

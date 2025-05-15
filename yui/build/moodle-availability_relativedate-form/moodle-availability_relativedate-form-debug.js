@@ -19,9 +19,11 @@ M.availability_relativedate.form.startFields = null;
 // A section or a module.
 M.availability_relativedate.form.isSection = null;
 
-// Optional warnings that can be displayed.
+// Warnings that can be displayed.
 M.availability_relativedate.form.warningStrings = null;
 
+// Default values.
+M.availability_relativedate.form.defaultFields = null;
 
 /**
  * Initialises this plugin.
@@ -32,13 +34,17 @@ M.availability_relativedate.form.warningStrings = null;
  * @param {boolean} isSection Is this a section
  * @param {array} warningStrings Collection of warning strings
  * @param {array} activitySelector Collection of activity fields
+ * @param {array} defaultFields Collection of default settings
  */
-M.availability_relativedate.form.initInner = function(timeFields, startFields, isSection, warningStrings, activitySelector) {
+M.availability_relativedate.form.initInner = function(
+    timeFields, startFields, isSection, warningStrings, activitySelector, defaultFields) {
+
     this.timeFields = timeFields;
     this.startFields = startFields;
     this.isSection = isSection;
     this.warningStrings = warningStrings;
     this.activitySelector = activitySelector;
+    this.defaultFields = defaultFields;
 };
 
 M.availability_relativedate.form.getNode = function(json) {
@@ -51,12 +57,12 @@ M.availability_relativedate.form.getNode = function(json) {
         html += '<div class="alert alert-warning alert-block fade in " role="alert">' + this.warningStrings[i] + '</div>';
     }
     html += '<label><select name="relativenumber">';
-    for (i = 1; i < 60; i++) {
+    for (i = 1; i <= this.defaultFields[0]; i++) {
         html += '<option value="' + i + '">' + i + '</option>';
     }
 
     html += '</select></label> ';
-    html += '<label><select name="relativednw">';
+    html += '<label><select name="relativedmw">';
     for (i = 0; i < this.timeFields.length; i++) {
         fieldInfo = this.timeFields[i];
         html += '<option value="' + fieldInfo.field + '">' + fieldInfo.display + '</option>';
@@ -91,19 +97,19 @@ M.availability_relativedate.form.getNode = function(json) {
     var node = Y.Node.create('<span>' + html + '</span>');
 
     // Set initial values if specified.
-    i = 1;
+    i = this.defaultFields[1];
     if (json.n !== undefined) {
         i = json.n;
     }
     node.one('select[name=relativenumber]').set('value', i);
 
-    i = 2;
+    i = this.defaultFields[2];
     if (json.d !== undefined) {
         i = json.d;
     }
-    node.one('select[name=relativednw]').set('value', i);
+    node.one('select[name=relativedmw]').set('value', i);
 
-    i = 1;
+    i = this.defaultFields[3];
     if (json.s !== undefined) {
         i = json.s;
     }
@@ -140,7 +146,7 @@ M.availability_relativedate.form.getNode = function(json) {
 
 M.availability_relativedate.form.fillValue = function(value, node) {
     value.n = Number(node.one('select[name=relativenumber]').get('value'));
-    value.d = Number(node.one('select[name=relativednw]').get('value'));
+    value.d = Number(node.one('select[name=relativedmw]').get('value'));
     value.s = Number(node.one('select[name=relativestart]').get('value'));
     value.m = 0;
     if (value.s == 7) {

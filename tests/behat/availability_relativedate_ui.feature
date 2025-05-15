@@ -31,7 +31,7 @@ Feature: availability_relativedate ui
     And I click on "Add restriction..." "button"
     And I click on "Relative date" "button" in the "Add restriction..." "dialogue"
     And I set the field "relativenumber" to <number>
-    And I set the field "relativednw" to <dmw>
+    And I set the field "relativedmw" to <dmw>
     And I set the field "relativestart" to <relstart>
     And I press "Save and return to course"
     Then I should see "<cond>"
@@ -54,7 +54,7 @@ Feature: availability_relativedate ui
     And I press "Add restriction..."
     And I click on "Relative date" "button" in the "Add restriction..." "dialogue"
     And I set the field "relativenumber" to "1"
-    And I set the field "relativednw" to "1"
+    And I set the field "relativedmw" to "1"
     And I set the field "relativestart" to "7"
     And I set the field "relativecoursemodule" to "Page A"
     When I press "Save changes"
@@ -66,7 +66,7 @@ Feature: availability_relativedate ui
     And I click on "Add restriction..." "button"
     And I click on "Relative date" "button" in the "Add restriction..." "dialogue"
     And I set the field "relativenumber" to "1"
-    And I set the field "relativednw" to "2"
+    And I set the field "relativedmw" to "2"
     And I set the field "relativestart" to "7"
     And I set the field "relativecoursemodule" to "Page A"
     When I press "Save and return to course"

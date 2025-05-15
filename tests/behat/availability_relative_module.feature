@@ -150,7 +150,7 @@ Feature: availability_relativedate relative activities
     And I press "Add restriction..."
     And I click on "Relative date" "button" in the "Add restriction..." "dialogue"
     And I set the field "relativenumber" to "1"
-    And I set the field "relativednw" to "1"
+    And I set the field "relativedmw" to "1"
     And I set the field "relativestart" to "7"
     And I set the field "relativecoursemodule" to "Page A1"
     And I press "Save changes"

@@ -69,7 +69,7 @@ final class frontend_test extends \advanced_testcase {
         $cm = $cms['page'][$page->id];
         $DB->set_field('course_modules', 'deletioninprogress', true, ['id' => $cm->id]);
         $arr = $this->call_method([$course]);
-        $this->assertCount(5, $arr);
+        $this->assertCount(6, $arr);
         $this->assertCount(5, $arr[1]);
         $expected = [
             ['field' => 1, 'display' => 'after course start date'],
@@ -83,6 +83,7 @@ final class frontend_test extends \advanced_testcase {
         $this->assertCount(0, $arr[3]);
         $this->assertCount(1, $arr[4]);
         $this->assertCount(2, $arr[4][0]);
+        $this->assertEquals([60, 1, 2, 1], $arr[5]);
     }
 
     /**
@@ -91,7 +92,7 @@ final class frontend_test extends \advanced_testcase {
     public function test_javascript_course(): void {
         $course = $this->getDataGenerator()->create_course(['enablecompletion' => 1]);
         $arr = $this->call_method([$course]);
-        $this->assertCount(5, $arr);
+        $this->assertCount(6, $arr);
 
         // Hours - minutes.
         $this->assertCount(5, $arr[0]);
@@ -128,7 +129,7 @@ final class frontend_test extends \advanced_testcase {
         $page3 = $dg->get_plugin_generator('mod_page')->create_instance(['course' => $course, 'completion' => 0]);
         $section = get_fast_modinfo($course)->get_section_info(0);
         $arr = $this->call_method([$course, null, $section]);
-        $this->assertCount(5, $arr);
+        $this->assertCount(6, $arr);
 
         $this->assertCount(5, $arr[0]);
         $this->assertCount(6, $arr[1]);
@@ -176,7 +177,7 @@ final class frontend_test extends \advanced_testcase {
         $cms = $modinfo->get_instances();
         $cm = $cms['page'][$page2->id];
         $arr = $this->call_method([$course, $cm]);
-        $this->assertCount(5, $arr);
+        $this->assertCount(6, $arr);
 
         $this->assertCount(5, $arr[0]);
         $this->assertCount(4, $arr[1]);

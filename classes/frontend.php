@@ -117,7 +117,12 @@ class frontend extends \core_availability\frontend {
                 $optionsstart[] = ['field' => 7, 'display' => condition::options_start(7)];
             }
         }
-
-        return [$optionsdwm, $optionsstart, is_null($section), [], $activitysel];
+        $config = get_config('availability_relativedate');
+        $max = property_exists($config, 'maxnumber') ? $config->maxnumber : 60;
+        $default = property_exists($config, 'defaultnumber') ? $config->defaultnumber : 1;
+        $dwm = property_exists($config, 'defaultdwm') ? $config->defaultdwm : 2;
+        $start = property_exists($config, 'defaultstart') ? $config->defaultstart : 1;
+        $arr = [$max, $default, $dwm, $start];
+        return [$optionsdwm, $optionsstart, is_null($section), [], $activitysel, $arr];
     }
 }

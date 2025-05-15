@@ -47,7 +47,7 @@ Feature: availability_relativedate
     And I click on "Add restriction..." "button"
     And I click on "Relative date" "button" in the "Add restriction..." "dialogue"
     And I set the field "relativenumber" to "2"
-    And I set the field "relativednw" to "1"
+    And I set the field "relativedmw" to "1"
     And I set the field "relativestart" to "1"
     And I press "Save and return to course"
 
@@ -56,7 +56,7 @@ Feature: availability_relativedate
     And I click on "Add restriction..." "button"
     And I click on "Relative date" "button" in the "Add restriction..." "dialogue"
     And I set the field "relativenumber" to "4"
-    And I set the field "relativednw" to "2"
+    And I set the field "relativedmw" to "2"
     And I set the field "relativestart" to "2"
     And I press "Save and return to course"
 
@@ -65,7 +65,7 @@ Feature: availability_relativedate
     And I click on "Add restriction..." "button"
     And I click on "Relative date" "button" in the "Add restriction..." "dialogue"
     And I set the field "relativenumber" to "6"
-    And I set the field "relativednw" to "3"
+    And I set the field "relativedmw" to "3"
     And I set the field "relativestart" to "3"
     And I press "Save and return to course"
 
@@ -74,7 +74,7 @@ Feature: availability_relativedate
     And I click on "Add restriction..." "button"
     And I click on "Relative date" "button" in the "Add restriction..." "dialogue"
     And I set the field "relativenumber" to "7"
-    And I set the field "relativednw" to "4"
+    And I set the field "relativedmw" to "4"
     And I set the field "relativestart" to "4"
     And I press "Save and return to course"
 
@@ -87,7 +87,7 @@ Feature: availability_relativedate
     And I click on "Add restriction..." "button"
     And  I click on "Relative date" "button" in the "Add restriction..." "dialogue"
     And I set the field "relativenumber" to "5"
-    And I set the field "relativednw" to "2"
+    And I set the field "relativedmw" to "2"
     And I set the field "relativestart" to "1"
     And I press "Save changes"
 
@@ -107,7 +107,7 @@ Feature: availability_relativedate
     And I click on "Add restriction..." "button"
     And  I click on "Relative date" "button" in the "Add restriction..." "dialogue"
     And I set the field "relativenumber" to "5"
-    And I set the field "relativednw" to "2"
+    And I set the field "relativedmw" to "2"
     And I set the field "relativestart" to "2"
     And I press "Save changes"
 
