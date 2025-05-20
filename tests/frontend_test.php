@@ -90,6 +90,10 @@ final class frontend_test extends \advanced_testcase {
      * Test course
      */
     public function test_javascript_course(): void {
+        set_config('maxnumber', 100, 'availability_relativedate');
+        set_config('defaultnumber', 77, 'availability_relativedate');
+        set_config('defaultdwm', 3, 'availability_relativedate');
+        set_config('defaultstart', 7, 'availability_relativedate');
         $course = $this->getDataGenerator()->create_course(['enablecompletion' => 1]);
         $arr = $this->call_method([$course]);
         $this->assertCount(6, $arr);
@@ -116,12 +120,20 @@ final class frontend_test extends \advanced_testcase {
         $this->assertTrue($arr[2]);
         $this->assertCount(0, $arr[3]);
         $this->assertCount(0, $arr[4]);
+
+        $expected = [0 => 101, 1 => '77', 2 => '3', 3 => '7'];
+        $this->assertEquals($expected, $arr[5]);
+
     }
 
     /**
      * Test section
      */
     public function test_javascript_section(): void {
+        set_config('maxnumber', null, 'availability_relativedate');
+        set_config('defaultnumber', null, 'availability_relativedate');
+        set_config('defaultdwm', null, 'availability_relativedate');
+        set_config('defaultstart', null, 'availability_relativedate');
         $dg = $this->getDataGenerator();
         $course = $dg->create_course(['enablecompletion' => 1, 'enddate' => time() + 666666]);
         $page1 = $dg->get_plugin_generator('mod_page')->create_instance(['course' => $course, 'completion' => 1]);
@@ -157,6 +169,8 @@ final class frontend_test extends \advanced_testcase {
             ],
         ];
         $this->assertEquals($expected, $arr[4]);
+        $expected = [0 => 60, 1 => '1', 2 => '2', 3 => '1'];
+        $this->assertEquals($expected, $arr[5]);
     }
 
     /**

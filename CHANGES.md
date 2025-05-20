@@ -1,3 +1,16 @@
+## v5.2.1 (2025-05-20)
+
+* version update
+* settings file
+* maximum dropdown
+* infection 96%
+
+## v5.1.1 (2024-04-14)
+
+* version update
+* php 8.4
+* MOODLE_500_STABLE
+
 ## v4.4.2 (2024-10-07)
 
 * version update
