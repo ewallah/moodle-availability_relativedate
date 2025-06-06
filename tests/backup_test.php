@@ -50,7 +50,7 @@ final class backup_test extends \advanced_testcase {
         require_once($CFG->dirroot . '/backup/util/includes/restore_includes.php');
 
         $dg = $this->getDataGenerator();
-        $now = time();
+        $now = \core\di::get(\core\clock::class)->time();
         $course = $dg->create_course(['startdate' => $now, 'enddate' => $now + 7 * WEEKSECS, 'enablecompletion' => 1]);
 
         $pg = $this->getDataGenerator()->get_plugin_generator('mod_page');

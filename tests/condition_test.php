@@ -65,10 +65,10 @@ final class condition_test extends \advanced_testcase {
         $CFG->enableavailability = true;
         set_config('enableavailability', true);
         $dg = $this->getDataGenerator();
-        $now = time();
+        $now = \core\di::get(\core\clock::class)->time();
         $this->course = $dg->create_course(['startdate' => $now, 'enddate' => $now + 7 * WEEKSECS, 'enablecompletion' => 1]);
         $this->user = $dg->create_user(['timezone' => 'UTC']);
-        $dg->enrol_user($this->user->id, $this->course->id, 5, time());
+        $dg->enrol_user($this->user->id, $this->course->id, 5, $now);
     }
 
     /**
@@ -244,7 +244,7 @@ final class condition_test extends \advanced_testcase {
     public function test_no_enddate(): void {
         global $DB, $USER;
         $dg = $this->getDataGenerator();
-        $now = time();
+        $now = \core\di::get(\core\clock::class)->time();
         $course1 = $dg->create_course(['enablecompletion' => 1]);
         $course2 = $dg->create_course(['enddate' => $now + 14 * WEEKSECS, 'enablecompletion' => 1]);
         $user = $dg->create_user();
@@ -348,9 +348,7 @@ final class condition_test extends \advanced_testcase {
 
         $condition = new condition((object)['type' => 'relativedate', 'n' => 1, 'd' => 2, 's' => 7, 'm' => 999999]);
         $result = \phpunit_util::call_internal_method($condition, 'get_debug_string', [], $name);
-        $this->assertStringContainsString(get_string('missing', 'availability_relativedate'), $result);
-        $this->assertStringContainsString('alert', $result);
-        $this->assertStringContainsString('1 day after completion of activity', $result);
+        $this->assertEquals(' 1 day after completion of activity <span class="alert alert-danger">(missing)</span>', $result);
     }
 
     /**
@@ -441,7 +439,7 @@ final class condition_test extends \advanced_testcase {
         $activitycompletion->viewed = null;
         $activitycompletion->overrideby = null;
         $activitycompletion->completionstate = 1;
-        $activitycompletion->timemodified = time();
+        $activitycompletion->timemodified = \core\di::get(\core\clock::class)->time();
         $activitycompletion->id = $DB->insert_record('course_modules_completion', $activitycompletion);
         return $activitycompletion;
     }
@@ -515,7 +513,7 @@ final class condition_test extends \advanced_testcase {
                 return $this->course->enddate;
             case 3:
             case 4:
-                $now = time();
+                $now = \core\di::get(\core\clock::class)->time();
                 $selfplugin = enrol_get_plugin('self');
                 $instance = $DB->get_record('enrol', ['courseid' => $this->course->id, 'enrol' => 'self'], '*', MUST_EXIST);
                 $DB->set_field('enrol', 'enrolenddate', $now + 1000, ['id' => $instance->id]);
