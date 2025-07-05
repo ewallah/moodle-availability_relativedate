@@ -55,14 +55,15 @@ final class frontend_test extends \advanced_testcase {
      */
     public function test_frontend(): void {
         global $DB;
+        $now = \core\di::get(\core\clock::class)->time();
         $enabled = enrol_get_plugins(true);
         $enabled['self'] = true;
         set_config('enrol_plugins_enabled', implode(',', array_keys($enabled)));
         $dg = $this->getDataGenerator();
         $course = $dg->create_course(['enablecompletion' => 1]);
         $instance = $DB->get_record('enrol', ['courseid' => $course->id, 'enrol' => 'self'], '*', MUST_EXIST);
-        $DB->set_field('enrol', 'enrolenddate', time() + 10000, ['id' => $instance->id]);
-        $DB->set_field('enrol', 'enrolstartdate', time() - 100, ['id' => $instance->id]);
+        $DB->set_field('enrol', 'enrolenddate', $now + 10000, ['id' => $instance->id]);
+        $DB->set_field('enrol', 'enrolstartdate', $now - 100, ['id' => $instance->id]);
         $page = $dg->get_plugin_generator('mod_page')->create_instance(['course' => $course, 'completion' => 1]);
         $modinfo = get_fast_modinfo($course);
         $cms = $modinfo->get_instances();
@@ -130,12 +131,13 @@ final class frontend_test extends \advanced_testcase {
      * Test section
      */
     public function test_javascript_section(): void {
+        $now = \core\di::get(\core\clock::class)->time();
         set_config('maxnumber', null, 'availability_relativedate');
         set_config('defaultnumber', null, 'availability_relativedate');
         set_config('defaultdwm', null, 'availability_relativedate');
         set_config('defaultstart', null, 'availability_relativedate');
         $dg = $this->getDataGenerator();
-        $course = $dg->create_course(['enablecompletion' => 1, 'enddate' => time() + 666666]);
+        $course = $dg->create_course(['enablecompletion' => 1, 'enddate' => $now + 666666]);
         $page1 = $dg->get_plugin_generator('mod_page')->create_instance(['course' => $course, 'completion' => 1]);
         $page2 = $dg->get_plugin_generator('mod_page')->create_instance(['course' => $course, 'completion' => 1]);
         $page3 = $dg->get_plugin_generator('mod_page')->create_instance(['course' => $course, 'completion' => 0]);
@@ -178,7 +180,8 @@ final class frontend_test extends \advanced_testcase {
      */
     public function test_javascript_module(): void {
         $dg = $this->getDataGenerator();
-        $course = $dg->create_course(['enablecompletion' => 1, 'startdate' => time() - 666666]);
+        $now = \core\di::get(\core\clock::class)->time();
+        $course = $dg->create_course(['enablecompletion' => 1, 'startdate' => $now - 666666]);
         $page1 = $dg->get_plugin_generator('mod_page')->create_instance(
             [
                 'course' => $course,

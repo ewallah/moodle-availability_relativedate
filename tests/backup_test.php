@@ -24,8 +24,11 @@
  */
 namespace availability_relativedate;
 
+use advanced_testcase;
 use availability_relativedate\condition;
-use core_availability\info_module;
+use core_availability\{tree, info_module, info_section};
+use core\di;
+use core\clock;
 use PHPUnit\Framework\Attributes\CoversClass;
 
 /**
@@ -37,34 +40,51 @@ use PHPUnit\Framework\Attributes\CoversClass;
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 #[CoversClass(condition::class)]
-final class backup_test extends \advanced_testcase {
-    /**
-     * Backup check.
-     */
-    public function test_backup(): void {
-        global $CFG, $DB;
-        $this->resetAfterTest();
-        $this->setAdminUser();
+final class backup_test extends advanced_testcase {
+    /** @var stdClass course. */
+    private $course;
 
+    /**
+     * Create course and page.
+     */
+    public function setUp(): void {
+        global $CFG;
+        parent::setUp();
         require_once($CFG->dirroot . '/backup/util/includes/backup_includes.php');
         require_once($CFG->dirroot . '/backup/util/includes/restore_includes.php');
-
+        $this->resetAfterTest();
+        $this->setAdminUser();
+        $CFG->enablecompletion = true;
+        $CFG->enableavailability = true;
         $dg = $this->getDataGenerator();
-        $now = \core\di::get(\core\clock::class)->time();
-        $course = $dg->create_course(['startdate' => $now, 'enddate' => $now + 7 * WEEKSECS, 'enablecompletion' => 1]);
+        $now = di::get(clock::class)->time();
+        $this->course = $dg->create_course(['startdate' => $now, 'enddate' => $now + 7 * WEEKSECS, 'enablecompletion' => 1]);
+    }
 
-        $pg = $this->getDataGenerator()->get_plugin_generator('mod_page');
-        $page0 = $pg->create_instance(['course' => $course, 'completion' => COMPLETION_TRACKING_MANUAL]);
-        $page1 = $pg->create_instance(['course' => $course, 'completion' => COMPLETION_TRACKING_MANUAL]);
-        $page2 = $pg->create_instance(['course' => $course, 'completion' => COMPLETION_TRACKING_MANUAL]);
-        $str = '{"op":"|","show":true,"c":[{"type":"relativedate","n":4,"d":4,"s":7,"m":' . $page1->cmid . '}]}';
-        $DB->set_field('course_modules', 'availability', $str, ['id' => $page0->cmid]);
+    /**
+     * Backup course check.
+     */
+    public function test_backup_course(): void {
+        global $CFG, $DB;
+        $dg = $this->getDataGenerator();
+        $pg = $dg->get_plugin_generator('mod_page');
+        $page0 = $pg->create_instance(['course' => $this->course, 'completion' => COMPLETION_TRACKING_MANUAL]);
+        $page1 = $pg->create_instance(['course' => $this->course, 'completion' => COMPLETION_TRACKING_MANUAL]);
+        $page2 = $pg->create_instance(['course' => $this->course, 'completion' => COMPLETION_TRACKING_MANUAL]);
+        $page3 = $pg->create_instance(['course' => $this->course, 'completion' => COMPLETION_TRACKING_MANUAL]);
+        $page4 = $pg->create_instance(['course' => $this->course, 'completion' => COMPLETION_TRACKING_MANUAL]);
+        $str = '{"op":"|","show":true,"c":[{"type":"relativedate","n":4,"d":4,"s":7,"m":' . $page0->cmid . '}]}';
+        $DB->set_field('course_modules', 'availability', $str, ['id' => $page1->cmid]);
+        $str = '{"op":"|","show":true,"c":[{"type":"relativedate","n":3,"d":4,"s":7,"m":' . $page2->cmid . '}]}';
+        $DB->set_field('course_modules', 'availability', $str, ['id' => $page3->cmid]);
         $str = '{"op":"|","c":[{"type":"relativedate","n":1,"d":1,"s":7,"m":999999}], "show":true}';
-        $DB->set_field('course_modules', 'availability', $str, ['id' => $page2->cmid]);
-        rebuild_course_cache($course->id, true);
+        $DB->set_field('course_modules', 'availability', $str, ['id' => $page4->cmid]);
+        rebuild_course_cache($this->course->id, true);
+        $this->assertCount(5, get_fast_modinfo($this->course)->get_instances_of('page'));
+
         $bc = new \backup_controller(
             \backup::TYPE_1COURSE,
-            $course->id,
+            $this->course->id,
             \backup::FORMAT_MOODLE,
             \backup::INTERACTIVE_NO,
             \backup::MODE_GENERAL,
@@ -77,9 +97,11 @@ final class backup_test extends \advanced_testcase {
         $filepath = $CFG->dataroot . '/temp/backup/test-restore-course-event';
         $file->extract_to_pathname($fp, $filepath);
         $bc->destroy();
+
+        $newcourse = $dg->create_course(['enablecompletion' => 1]);
         $rc = new \restore_controller(
             'test-restore-course-event',
-            $course->id,
+            $newcourse->id,
             \backup::INTERACTIVE_NO,
             \backup::MODE_GENERAL,
             2,
@@ -87,15 +109,39 @@ final class backup_test extends \advanced_testcase {
         );
         $rc->execute_precheck();
         $rc->execute_plan();
-        $newid = $rc->get_courseid();
         $rc->destroy();
-        $newcourse = get_course($newid);
+
         $modinfo = get_fast_modinfo($newcourse);
-        $this->assertCount(6, $modinfo->get_instances_of('page'));
+        $pages = $modinfo->get_instances_of('page');
+        $this->assertCount(5, $pages);
+        $arr = [];
+        foreach ($pages as $page) {
+            if ($page->availability) {
+                $arr[] = $page->availability;
+            }
+        }
+        $this->assertStringContainsString('[{"type":"relativedate","n":4,"d":4,"s":7,"m"', $arr[0]);
+        $this->assertStringNotContainsString($page0->cmid, $arr[0]);
+        $this->assertStringContainsString('[{"type":"relativedate","n":3,"d":4,"s":7,"m"', $arr[1]);
+        $this->assertStringNotContainsString($page2->cmid, $arr[1]);
+        $this->assertStringContainsString('"m":999999}], "show":true}', $arr[2]);
+    }
+
+    /*
+     * Backup same course.
+     */
+    public function test_backup_same_course(): void {
+        global $CFG, $DB;
+        $dg = $this->getDataGenerator();
+        $pg = $dg->get_plugin_generator('mod_page');
+        $page0 = $pg->create_instance(['course' => $this->course, 'completion' => COMPLETION_TRACKING_MANUAL]);
+        $page1 = $pg->create_instance(['course' => $this->course, 'completion' => COMPLETION_TRACKING_MANUAL]);
+        $str = '{"op":"|","show":true,"c":[{"type":"relativedate","n":2,"d":5,"s":7,"m":' . $page0->cmid . '}]}';
+        $DB->set_field('course_modules', 'availability', $str, ['id' => $page1->cmid]);
 
         $bc = new \backup_controller(
             \backup::TYPE_1COURSE,
-            $course->id,
+            $this->course->id,
             \backup::FORMAT_MOODLE,
             \backup::INTERACTIVE_NO,
             \backup::MODE_GENERAL,
@@ -108,9 +154,10 @@ final class backup_test extends \advanced_testcase {
         $filepath = $CFG->dataroot . '/temp/backup/test-restore-course-event';
         $file->extract_to_pathname($fp, $filepath);
         $bc->destroy();
+
         $rc = new \restore_controller(
             'test-restore-course-event',
-            $course->id,
+            $this->course->id,
             \backup::INTERACTIVE_NO,
             \backup::MODE_GENERAL,
             2,
@@ -118,17 +165,75 @@ final class backup_test extends \advanced_testcase {
         );
         $rc->execute_precheck();
         $rc->execute_plan();
-        $newid = $rc->get_courseid();
         $rc->destroy();
-        $course = get_course($newid);
-        $modinfo = get_fast_modinfo($course);
+        $modinfo = get_fast_modinfo($this->course);
         $pages = $modinfo->get_instances_of('page');
-        $this->assertCount(12, $pages);
+        $this->assertCount(4, $pages);
+        $arr = [];
         foreach ($pages as $page) {
             if (!is_null($page->availability)) {
-                $completed = new condition($page->availability);
-                $this->assertNotEmpty($completed);
+                $arr[] = $page->availability;
             }
         }
+        $this->assertStringContainsString('[{"type":"relativedate","n":2,"d":5,"s":7,"m":' . $page0->cmid, $arr[0]);
+        $this->assertStringContainsString($page0->cmid, $arr[0]);
+        $this->assertStringContainsString('[{"type":"relativedate","n":2,"d":5,"s":7,"m"', $arr[1]);
+        $this->assertStringNotContainsString($page0->cmid, $arr[1]);
+    }
+
+    /*
+     * Backup module.
+     */
+    public function test_backup_module(): void {
+        global $CFG, $DB;
+        $dg = $this->getDataGenerator();
+        $pg = $dg->get_plugin_generator('mod_page');
+        $page0 = $pg->create_instance(['course' => $this->course, 'completion' => COMPLETION_TRACKING_MANUAL]);
+        $page1 = $pg->create_instance(['course' => $this->course, 'completion' => COMPLETION_TRACKING_MANUAL]);
+        $str = '{"op":"|","show":true,"c":[{"type":"relativedate","n":66,"d":5,"s":7,"m":' . $page0->cmid . '}]}';
+        $DB->set_field('course_modules', 'availability', $str, ['id' => $page1->cmid]);
+        $modinfo = get_fast_modinfo($this->course);
+        $cms = $modinfo->get_instances();
+        $cm = $cms['page'][$page1->id];
+        $bc = new \backup_controller(
+            \backup::TYPE_1ACTIVITY,
+            $cm->id,
+            \backup::FORMAT_MOODLE,
+            \backup::INTERACTIVE_NO,
+            \backup::MODE_GENERAL,
+            2
+        );
+        $bc->execute_plan();
+        $results = $bc->get_results();
+        $file = $results['backup_destination'];
+        $fp = get_file_packer('application/vnd.moodle.backup');
+        $filepath = $CFG->dataroot . '/temp/backup/test-restore-course-event';
+        $file->extract_to_pathname($fp, $filepath);
+        $bc->destroy();
+
+        $rc = new \restore_controller(
+            'test-restore-course-event',
+            $this->course->id,
+            \backup::INTERACTIVE_NO,
+            \backup::MODE_GENERAL,
+            2,
+            \backup::TARGET_CURRENT_ADDING
+        );
+        $rc->execute_precheck();
+        $rc->execute_plan();
+        $rc->destroy();
+        $modinfo = get_fast_modinfo($this->course);
+        $pages = $modinfo->get_instances_of('page');
+        $this->assertCount(3, $pages);
+        $arr = [];
+        foreach ($pages as $page) {
+            if (!is_null($page->availability)) {
+                $arr[] = $page->availability;
+            }
+        }
+        $this->assertStringContainsString('[{"type":"relativedate","n":66,"d":5,"s":7,"m":' . $page0->cmid, $arr[0]);
+        $this->assertStringContainsString($page0->cmid, $arr[0]);
+        $this->assertStringContainsString('[{"type":"relativedate","n":66,"d":5,"s":7,"m"', $arr[1]);
+        $this->assertStringContainsString($page0->cmid, $arr[1]);
     }
 }

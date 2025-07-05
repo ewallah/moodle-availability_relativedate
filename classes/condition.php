@@ -26,7 +26,9 @@
 namespace availability_relativedate;
 
 use context_course;
-use core_availability\info;
+use core_availability\{info, info_module, info_section};
+use core\di;
+use core\clock;
 use stdClass;
 
 /**
@@ -111,7 +113,7 @@ class condition extends \core_availability\condition {
             // Always not available if for some reason the value could not be calculated.
             return false;
         }
-        $allow = time() > $calc;
+        $allow = di::get(clock::class)->time() >= $calc;
         if ($not) {
             $allow = !$allow;
         }
@@ -276,14 +278,10 @@ class condition extends \core_availability\condition {
                 return $this->fixdate("+$x", $lowest);
             case 7:
                 // Since completion of a module.
-
-                if ($this->relativecoursemodule < 1) {
-                    return 0;
-                }
-
                 $cm = new stdClass();
                 $cm->id = $this->relativecoursemodule;
                 $cm->course = $course->id;
+
                 try {
                     $completion = new \completion_info($course);
                     $data = $completion->get_data($cm, false, $userid);
@@ -336,32 +334,47 @@ class condition extends \core_availability\condition {
     }
 
     /**
-     * Used in course/lib.php because we need to disable the completion JS if
-     * a completion value affects a conditional activity.
+     * We need to know if a completion value affects a conditional activity.
      * @param int|stdClass $course Moodle course object
      * @param int $cmid Course-module id
      * @return bool True if this is used in a condition, false otherwise
      */
     public static function completion_value_used($course, $cmid): bool {
-        global $DB;
         $courseobj = (is_object($course)) ? $course : get_course($course);
         $modinfo = get_fast_modinfo($courseobj);
         foreach ($modinfo->cms as $othercm) {
-            if (is_null($othercm->availability)) {
-                continue;
-            }
-            $ci = new \core_availability\info_module($othercm);
-            $tree = $ci->get_availability_tree();
-            foreach ($tree->get_all_children('availability_relativedate\condition') as $cond) {
-                if ($cond->relativestart === 7 && $cond->relativecoursemodule === $cmid) {
+            if ($othercm->availability) {
+                $info = new info_module($othercm);
+                if (self::check_used($info, $cmid)) {
                     return true;
                 }
             }
         }
-        // Availability of sections (get_section_info_all) is always null.
-        $sqllike = $DB->sql_like('availability', ':availability');
-        $params = ['course' => $courseobj->id, 'availability' => '%"s":7,"m":' . $cmid . '%'];
-        return count($DB->get_records_sql("SELECT id FROM {course_sections} WHERE course = :course AND $sqllike", $params)) > 0;
+        foreach ($modinfo->get_section_info_all() as $section) {
+            if ($section->availability) {
+                $info = new info_section($section);
+                if (self::check_used($info, $cmid)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    /**
+     * We need to know if a completion value affects a conditional activity.
+     * @param info $info availability info
+     * @param int $cmid Course module id
+     * @return bool True if this is used in a condition, false otherwise
+     */
+    public static function check_used(info $info, int $cmid): bool {
+        $tree = $info->get_availability_tree();
+        foreach ($tree->get_all_children('availability_relativedate\condition') as $cond) {
+            if ($cond->relativestart === 7 && $cond->relativecoursemodule === $cmid) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
@@ -395,19 +408,20 @@ class condition extends \core_availability\condition {
      */
     public function update_after_restore($restoreid, $courseid, \base_logger $logger, $name): bool {
         $rec = \restore_dbops::get_backup_ids_record($restoreid, 'course_module', $this->relativecoursemodule);
-        if (!($rec && $rec->newitemid)) {
-            // If we are on the same course (e.g. duplicate) then we can just use the existing one.
-            if (!get_coursemodule_from_id('', $this->relativecoursemodule, $courseid)) {
-                $this->relativecoursemodule = 0;
-                $logger->process(
-                    "Restored item ($name has availability condition on module that was not restored",
-                    \backup::LOG_WARNING
-                );
-                return false;
-            }
-        } else {
+        if ($rec) {
             $this->relativecoursemodule = $rec->newitemid;
+            return true;
         }
-        return true;
+        // If we are on the same course then we can just use the existing one.
+        if (get_coursemodule_from_id('', $this->relativecoursemodule, $courseid)) {
+            return true;
+        }
+        // Otherwise we have a warning.
+        $this->relativecoursemodule = 0;
+        $logger->process(
+            "Restored item ($name) has availability condition on module that was not restored",
+            \backup::LOG_WARNING
+        );
+        return false;
     }
 }

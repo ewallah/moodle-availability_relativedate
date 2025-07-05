@@ -220,6 +220,10 @@ final class condition_test extends \advanced_testcase {
         $cond = new condition((object)['type' => 'relativedate', 'n' => 4, 'd' => 4, 's' => 7, 'm' => $page1->cmid]);
         $this->assertTrue($cond->completion_value_used($this->course, $page0->cmid));
         $this->assertTrue($cond->completion_value_used($this->course, $page1->cmid));
+        $this->assertFalse($cond->completion_value_used($this->course, 99));
+        $infomod = new info_module($modinfo->cms[$page0->cmid]);
+        $this->assertTrue($cond->check_used($infomod, $page1->cmid));
+        $this->assertFalse($cond->check_used($infomod, 33));
         $completion = new \completion_info($this->course);
         $completion->reset_all_state($modinfo->get_cm($page1->cmid));
 
