@@ -1,3 +1,8 @@
+## v5.2.2 (2025-06-07)
+
+* version update
+* infection 97%
+
 ## v5.2.1 (2025-05-20)
 
 * version update
