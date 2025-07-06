@@ -124,7 +124,7 @@ final class backup_test extends advanced_testcase {
         $this->assertStringNotContainsString($page0->cmid, $arr[0]);
         $this->assertStringContainsString('[{"type":"relativedate","n":3,"d":4,"s":7,"m"', $arr[1]);
         $this->assertStringNotContainsString($page2->cmid, $arr[1]);
-        $this->assertStringContainsString('"m":999999}], "show":true}', $arr[2]);
+        $this->assertStringContainsString('[{"type":"relativedate","n":1,"d":1,"s":7,"m":0}]', $arr[2]);
     }
 
     /*
