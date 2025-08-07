@@ -36,7 +36,6 @@ use PHPUnit\Framework\Attributes\CoversClass;
  */
 #[CoversClass(frontend::class)]
 final class frontend_test extends \advanced_testcase {
-
     /**
      * Enable completion and availability.
      */
@@ -124,7 +123,6 @@ final class frontend_test extends \advanced_testcase {
 
         $expected = [0 => 101, 1 => '77', 2 => '3', 3 => '7'];
         $this->assertEquals($expected, $arr[5]);
-
     }
 
     /**
@@ -164,9 +162,9 @@ final class frontend_test extends \advanced_testcase {
             [
                 'name' => 'Section 0',
                 'coursemodules' => [
-                    1 => ['id' => $page2->cmid,  'name' => 'Page 2', 'completionenabled' => true],
-                    2 => ['id' => $page3->cmid,  'name' => 'Page 3', 'completionenabled' => false],
-                    0 => ['id' => $page1->cmid,  'name' => 'Page 1', 'completionenabled' => true],
+                    1 => ['id' => $page2->cmid, 'name' => 'Page 2', 'completionenabled' => true],
+                    2 => ['id' => $page3->cmid, 'name' => 'Page 3', 'completionenabled' => false],
+                    0 => ['id' => $page1->cmid, 'name' => 'Page 1', 'completionenabled' => true],
                 ],
             ],
         ];
@@ -213,7 +211,7 @@ final class frontend_test extends \advanced_testcase {
             [
                 'name' => 'Section 0',
                 'coursemodules' => [
-                    0 => ['id' => $page1->cmid,  'name' => 'Page 1', 'completionenabled' => true],
+                    0 => ['id' => $page1->cmid, 'name' => 'Page 1', 'completionenabled' => true],
                 ],
             ],
         ];

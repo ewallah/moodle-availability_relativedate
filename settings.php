@@ -26,7 +26,6 @@
 defined('MOODLE_INTERNAL') || die();
 
 if ($ADMIN->fulltree) {
-
     $component = 'availability_relativedate';
     $maxnumber = during_initial_install() ? 100 : get_config($component, 'maxnumber') + 1;
 
@@ -110,6 +109,4 @@ if ($ADMIN->fulltree) {
             choices: $optionsstart
         )
     );
-
-
 }

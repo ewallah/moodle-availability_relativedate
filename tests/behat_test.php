@@ -38,7 +38,6 @@ use PHPUnit\Framework\Attributes\CoversClass;
  */
 #[CoversClass(\behat_availability_relativedate::class)]
 final class behat_test extends \advanced_testcase {
-
     /**
      * Enable completion and availability.
      */

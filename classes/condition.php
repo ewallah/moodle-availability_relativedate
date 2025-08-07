@@ -182,7 +182,7 @@ class condition extends \core_availability\condition {
      * @return string
      */
     public static function options_start(int $i) {
-        return match($i) {
+        return match ($i) {
             1 => get_string('datestart', 'availability_relativedate'),
             2 => get_string('dateend', 'availability_relativedate'),
             3 => get_string('dateenrol', 'availability_relativedate'),
@@ -218,7 +218,7 @@ class condition extends \core_availability\condition {
      * @return string
      */
     public static function option_dwm(int $i): string {
-        return match($i) {
+        return match ($i) {
             0 => 'minute',
             1 => 'hour',
             2 => 'day',
