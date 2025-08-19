@@ -349,6 +349,8 @@ final class condition_test extends \advanced_testcase {
             . ' ' . condition::description_cm_name($page0->cmid),
             $result
         );
+        $result = \phpunit_util::call_internal_method($condition, 'fixdate', ["+6", $this->course->startdate], $name);
+        $this->assertEquals($result, $this->course->startdate);
 
         $condition = new condition((object)['type' => 'relativedate', 'n' => 1, 'd' => 2, 's' => 7, 'm' => 999999]);
         $result = \phpunit_util::call_internal_method($condition, 'get_debug_string', [], $name);
@@ -475,7 +477,6 @@ final class condition_test extends \advanced_testcase {
             ],
         ]);
         $event->trigger();
-
         $actual = $DB->get_record('course_modules', ['id' => $page1->cmid]);
         self::assertEquals(
             '{"op":"|","show":true,"c":[{"type":"relativedate","n":4,"d":4,"s":7,"m":-1}]}',

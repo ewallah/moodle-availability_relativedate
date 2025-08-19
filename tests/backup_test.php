@@ -53,6 +53,9 @@ final class backup_test extends advanced_testcase {
         require_once($CFG->dirroot . '/backup/util/includes/backup_includes.php');
         require_once($CFG->dirroot . '/backup/util/includes/restore_includes.php');
         $this->resetAfterTest();
+        $this->preventResetByRollback();
+        set_config('enabled_stores', 'logstore_standard', 'tool_log');
+        set_config('buffersize', 0, 'logstore_standard');
         $this->setAdminUser();
         $CFG->enablecompletion = true;
         $CFG->enableavailability = true;
@@ -66,6 +69,7 @@ final class backup_test extends advanced_testcase {
      */
     public function test_backup_course(): void {
         global $CFG, $DB;
+        $logger = new \core_backup_html_logger(\backup::LOG_WARNING);
         $dg = $this->getDataGenerator();
         $pg = $dg->get_plugin_generator('mod_page');
         $page0 = $pg->create_instance(['course' => $this->course, 'completion' => COMPLETION_TRACKING_MANUAL]);
@@ -90,6 +94,7 @@ final class backup_test extends advanced_testcase {
             \backup::MODE_GENERAL,
             2
         );
+        $bc->add_logger($logger);
         $bc->execute_plan();
         $results = $bc->get_results();
         $file = $results['backup_destination'];
@@ -97,6 +102,7 @@ final class backup_test extends advanced_testcase {
         $filepath = $CFG->dataroot . '/temp/backup/test-restore-course-event';
         $file->extract_to_pathname($fp, $filepath);
         $bc->destroy();
+        $this->assertEquals('', $logger->get_html());
 
         $newcourse = $dg->create_course(['enablecompletion' => 1]);
         $rc = new \restore_controller(
@@ -107,10 +113,12 @@ final class backup_test extends advanced_testcase {
             2,
             \backup::TARGET_NEW_COURSE
         );
+        $rc->add_logger($logger);
         $rc->execute_precheck();
         $rc->execute_plan();
         $rc->destroy();
-
+        // TODO:  We should see a warning.
+        $this->assertEquals('', $logger->get_html());
         $modinfo = get_fast_modinfo($newcourse);
         $pages = $modinfo->get_instances_of('page');
         $this->assertCount(5, $pages);
@@ -204,10 +212,10 @@ final class backup_test extends advanced_testcase {
             2
         );
         $bc->execute_plan();
+        $filepath = $CFG->dataroot . '/temp/backup/test-restore-course-event';
+        $fp = get_file_packer('application/vnd.moodle.backup');
         $results = $bc->get_results();
         $file = $results['backup_destination'];
-        $fp = get_file_packer('application/vnd.moodle.backup');
-        $filepath = $CFG->dataroot . '/temp/backup/test-restore-course-event';
         $file->extract_to_pathname($fp, $filepath);
         $bc->destroy();
 

@@ -188,6 +188,7 @@ final class frontend_test extends \advanced_testcase {
             ]
         );
         $page2 = $dg->get_plugin_generator('mod_page')->create_instance(['course' => $course, 'completion' => 1]);
+        $page3 = $dg->get_plugin_generator('mod_page')->create_instance(['course' => $course, 'completion' => 1]);
         $modinfo = get_fast_modinfo($course);
         $cms = $modinfo->get_instances();
         $cm = $cms['page'][$page2->id];
@@ -212,6 +213,7 @@ final class frontend_test extends \advanced_testcase {
                 'name' => 'Section 0',
                 'coursemodules' => [
                     0 => ['id' => $page1->cmid, 'name' => 'Page 1', 'completionenabled' => true],
+                    1 => ['id' => $page3->cmid, 'name' => 'Page 3', 'completionenabled' => true],
                 ],
             ],
         ];

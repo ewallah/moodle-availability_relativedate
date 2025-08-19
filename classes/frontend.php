@@ -50,7 +50,7 @@ class frontend extends \core_availability\frontend {
         global $DB;
 
         // Convert associative array for JS.
-        $optionsdwm = self::convert_associative_array_for_js(condition::options_dwm(2), 'field', 'display');
+        $optionsdwm = self::convert_associative_array_for_js(condition::options_dwm(), 'field', 'display');
 
         // Initialize start options.
         $optionsstart = [

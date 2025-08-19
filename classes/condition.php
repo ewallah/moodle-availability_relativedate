@@ -200,7 +200,7 @@ class condition extends \core_availability\condition {
      * @param int $number
      * @return array
      */
-    public static function options_dwm($number = 1) {
+    public static function options_dwm($number = 2) {
         $s = $number === 1 ? '' : 's';
         return [
             0 => get_string('minute' . $s, 'availability_relativedate'),
@@ -411,8 +411,8 @@ class condition extends \core_availability\condition {
         if ($rec) {
             $this->relativecoursemodule = $rec->newitemid;
         } else if (!get_coursemodule_from_id('', $this->relativecoursemodule, $courseid)) {
-            // We do not find the module, so we issue a warning.
             $this->relativecoursemodule = 0;
+            // We do not find the module, so we issue a warning.
             $logger->process(
                 "Restored item ($name) has availability condition on module that was not restored",
                 \backup::LOG_WARNING
