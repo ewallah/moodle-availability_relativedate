@@ -126,6 +126,21 @@ Feature: availability_relativedate relative activities
     And I am on "Course 2" course homepage
     Then I should see "Not available unless: (1 hour after completion of activity"
 
+  @javascript
+  Scenario: Admin should see a warning when restoring faulty module with relative restricted activities
+    When I am on "Course 1" course homepage with editing mode on
+    And I delete "Page B2" activity
+    And I delete "Page B3" activity
+    And I delete "Page B1" activity
+    And I reload the page
+    And I backup "Course 1" course using this options:
+      | Confirmation | Filename | test_backup.mbz |
+    And I restore "test_backup.mbz" backup into a new course using this options:
+      | Schema | Course name       | Course 2 |
+      | Schema | Course short name | C2       |
+    And I am on "Course 2" course homepage
+    Then I should see "Not available unless: (1 hour after completion of activity"
+
   Scenario: Admin can delete relatativedate restricted activities
     When I am on "Course 1" course homepage with editing mode on
     And I delete "Page A1" activity
