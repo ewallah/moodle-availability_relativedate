@@ -1,3 +1,8 @@
+## v5.2.3 (2025-08-08)
+
+* version update
+* checkout@v5
+
 ## v5.2.2 (2025-06-07)
 
 * version update
@@ -101,7 +106,7 @@
 
 * fix phpunit Moodle 311 
 * better theme support 
-* checkout@v4 
+* checkout@v5
 * section test added 
 * get_section_info_all availability is always null 
 * version update 
