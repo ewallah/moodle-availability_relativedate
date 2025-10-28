@@ -349,6 +349,8 @@ final class condition_test extends \advanced_testcase {
             . ' ' . condition::description_cm_name($page0->cmid),
             $result
         );
+
+        // TODO: Fails between 17h and 18h in GMT+02:00 timezone.
         $result = \phpunit_util::call_internal_method($condition, 'fixdate', ["+6", $this->course->startdate], $name);
         $this->assertEquals($result, $this->course->startdate);
 
