@@ -26,6 +26,7 @@ namespace availability_relativedate;
 
 use availability_relativedate\condition;
 use context_module;
+use core\clock;
 use core\event\course_module_completion_updated;
 use core_availability\{tree, mock_info, info_module, info_section};
 use Generator;
@@ -49,6 +50,9 @@ final class condition_test extends \advanced_testcase {
     /** @var stdClass user. */
     private $user;
 
+    /** @var clock $clock */
+    private readonly clock $clock;
+
     /**
      * Create course and page.
      */
@@ -65,7 +69,8 @@ final class condition_test extends \advanced_testcase {
         $CFG->enableavailability = true;
         set_config('enableavailability', true);
         $dg = $this->getDataGenerator();
-        $now = \core\di::get(\core\clock::class)->time();
+        $this->clock = $this->mock_clock_with_frozen();
+        $now = $this->clock->time();
         $this->course = $dg->create_course(['startdate' => $now, 'enddate' => $now + 7 * WEEKSECS, 'enablecompletion' => 1]);
         $this->user = $dg->create_user(['timezone' => 'UTC']);
         $dg->enrol_user($this->user->id, $this->course->id, 5, $now);
@@ -115,22 +120,65 @@ final class condition_test extends \advanced_testcase {
      * Tests relative module.
      */
     public function test_relative_module(): void {
-        $this->setTimezone('UTC');
         $dg = $this->getDataGenerator();
-        $page = $dg->get_plugin_generator('mod_page')->create_instance(['course' => $this->course]);
+        $page = $dg->create_module('page', ['course' => $this->course->id], ['completion' => 1]);
+        $cm = get_coursemodule_from_instance('page', $page->id);
         $stru = (object)['op' => '|', 'show' => true,
-            'c' => [(object)['type' => 'relativedate', 'n' => 7, 'd' => 0, 's' => 7, 'm' => $page->cmid]],
+            'c' => [(object)['type' => 'relativedate', 'n' => 7, 'd' => 0, 's' => 7, 'm' => $cm->id]],
         ];
         $tree = new tree($stru);
-        $this->setUser($this->user);
         $info = new mock_info($this->course, $this->user->id);
-        [$sql, $params] = $tree->get_user_list_sql(false, $info, false);
-        $this->assertEquals('', $sql);
-        $this->assertEquals([], $params);
-        // 7 Minutes after completion of module.
-        $this->assertStringContainsString('7 minutes after completion of activity', $tree->get_full_information($info));
-        $this->do_cron();
+
+        $completion = new \completion_info($this->course);
+        $this->assertEquals(COMPLETION_INCOMPLETE, $completion->get_data($cm, false, $this->user->id)->completionstate);
+        $completion->update_state($cm, COMPLETION_COMPLETE, $this->user->id);
+        $this->assertEquals(COMPLETION_COMPLETE, $completion->get_data($cm, false, $this->user->id)->completionstate);
+
+        $tree = new tree($stru);
+        $info = new mock_info($this->course, $this->user->id);
+        $this->setUser($this->user);
+        // Currently the activity is not available.
+        $this->assertFalse($tree->check_available(false, $info, false, $this->user->id)->is_available());
         $this->assertFalse($tree->is_available_for_all());
+
+        $this->clock->bump(500);
+        $this->assertTrue($tree->check_available(false, $info, false, $this->user->id)->is_available());
+    }
+
+    /**
+     * Tests relative quiz.
+     */
+    public function test_relative_quiz(): void {
+        global $DB;
+        $dg = $this->getDataGenerator();
+        $quiz = $dg->create_module('quiz', ['course' => $this->course->id, 'grade' => 100.0], ['completion' => 1]);
+        $cm = get_coursemodule_from_instance('quiz', $quiz->id);
+        $stru = (object)['op' => '|', 'show' => true,
+            'c' => [(object)['type' => 'relativedate', 'n' => 5, 'd' => 0, 's' => 7, 'm' => $cm->id]],
+        ];
+        $grade = new \stdClass();
+        $grade->quiz = $quiz->id;
+        $grade->userid = $this->user->id;
+        $grade->grade = 100;
+        $DB->insert_record('quiz_grades', $grade);
+        $gi = \grade_item::fetch([
+            'itemtype' => 'mod',
+            'itemmodule' => 'quiz',
+            'iteminstance' => $quiz->id,
+            'courseid' => $this->course->id,
+        ]);
+        $gi->update_final_grade($this->user->id, 100);
+        $completion = new \completion_info($this->course);
+        $completion->update_state($cm, COMPLETION_COMPLETE, $this->user->id);
+        $this->assertEquals(COMPLETION_COMPLETE, $completion->get_data($cm, true, $this->user->id)->completionstate);
+
+        $tree = new tree($stru);
+        $info = new mock_info($this->course, $this->user->id);
+        // Currently the quiz is not available.
+        $this->assertFalse($tree->check_available(false, $info, false, $this->user->id)->is_available());
+
+        $this->clock->bump(310);
+        $this->assertTrue($tree->check_available(false, $info, false, $this->user->id)->is_available());
     }
 
     /**
@@ -248,7 +296,7 @@ final class condition_test extends \advanced_testcase {
     public function test_no_enddate(): void {
         global $DB, $USER;
         $dg = $this->getDataGenerator();
-        $now = \core\di::get(\core\clock::class)->time();
+        $now = $this->clock->time();
         $course1 = $dg->create_course(['enablecompletion' => 1]);
         $course2 = $dg->create_course(['enddate' => $now + 14 * WEEKSECS, 'enablecompletion' => 1]);
         $user = $dg->create_user();
@@ -350,9 +398,9 @@ final class condition_test extends \advanced_testcase {
             $result
         );
 
-        // TODO: Fails between 17h and 18h in GMT+02:00 timezone.
-        $result = \phpunit_util::call_internal_method($condition, 'fixdate', ["+6", $this->course->startdate], $name);
-        $this->assertEquals($result, $this->course->startdate);
+        $result = \phpunit_util::call_internal_method($condition, 'fixdate', ["+1", $this->clock->time()], $name);
+        $this->clock->bump(24 * 3600);
+        $this->assertEquals($result, $this->clock->time());
 
         $condition = new condition((object)['type' => 'relativedate', 'n' => 1, 'd' => 2, 's' => 7, 'm' => 999999]);
         $result = \phpunit_util::call_internal_method($condition, 'get_debug_string', [], $name);
@@ -520,7 +568,7 @@ final class condition_test extends \advanced_testcase {
                 return $this->course->enddate;
             case 3:
             case 4:
-                $now = \core\di::get(\core\clock::class)->time();
+                $now = $this->clock->time();
                 $selfplugin = enrol_get_plugin('self');
                 $instance = $DB->get_record('enrol', ['courseid' => $this->course->id, 'enrol' => 'self'], '*', MUST_EXIST);
                 $DB->set_field('enrol', 'enrolenddate', $now + 1000, ['id' => $instance->id]);
