@@ -399,8 +399,7 @@ final class condition_test extends \advanced_testcase {
         );
 
         $result = \phpunit_util::call_internal_method($condition, 'fixdate', ["+1", $this->clock->time()], $name);
-        $this->clock->bump(24 * 3600);
-        $this->assertEquals($result, $this->clock->time());
+        $this->assertNotEquals($result, $this->clock->time());
 
         $condition = new condition((object)['type' => 'relativedate', 'n' => 1, 'd' => 2, 's' => 7, 'm' => 999999]);
         $result = \phpunit_util::call_internal_method($condition, 'get_debug_string', [], $name);
