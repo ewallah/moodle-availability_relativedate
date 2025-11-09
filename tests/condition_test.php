@@ -398,8 +398,15 @@ final class condition_test extends \advanced_testcase {
             $result
         );
 
+        $result = \phpunit_util::call_internal_method($condition, 'fixdate', ["+6", $this->course->startdate], $name);
+        $this->assertEquals($result, $this->course->startdate);
+
         $result = \phpunit_util::call_internal_method($condition, 'fixdate', ["+1", $this->clock->time()], $name);
+        $this->clock->bump(48 * 3600);
         $this->assertNotEquals($result, $this->clock->time());
+
+        $result = \phpunit_util::call_internal_method($condition, 'fixdate', ["+1", 0], $name);
+        $this->assertEquals($result, 0);
 
         $condition = new condition((object)['type' => 'relativedate', 'n' => 1, 'd' => 2, 's' => 7, 'm' => 999999]);
         $result = \phpunit_util::call_internal_method($condition, 'get_debug_string', [], $name);
