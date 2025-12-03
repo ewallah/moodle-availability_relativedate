@@ -62,7 +62,6 @@ class condition extends \core_availability\condition {
      * 5 => After Course End date
      * 6 => Before Course start date
      * 7 => After completion of an activity
-
      */
     private $relativestart;
 

@@ -26,7 +26,6 @@
 namespace availability_relativedate\privacy;
 
 use core_privacy\tests\provider_testcase;
-use core_privacy\local\metadata\collection;
 use PHPUnit\Framework\Attributes\CoversClass;
 
 /**
@@ -43,8 +42,7 @@ final class privacy_test extends provider_testcase {
      * Test returning metadata.
      */
     public function test_get_metadata(): void {
-        $collection = new collection('availability_relativedate');
-        $reason = provider::get_reason($collection);
+        $reason = provider::get_reason();
         $this->assertEquals($reason, 'privacy:metadata');
         $this->assertStringContainsString('does not store private user data.', get_string($reason, 'availability_relativedate'));
     }
