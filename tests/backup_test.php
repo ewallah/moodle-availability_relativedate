@@ -54,9 +54,10 @@ final class backup_test extends advanced_testcase {
         require_once($CFG->dirroot . '/backup/util/includes/restore_includes.php');
         $this->resetAfterTest();
         $this->preventResetByRollback();
+        $this->setAdminUser();
         set_config('enabled_stores', 'logstore_standard', 'tool_log');
         set_config('buffersize', 0, 'logstore_standard');
-        $this->setAdminUser();
+        get_log_manager(true);
         $CFG->enablecompletion = true;
         $CFG->enableavailability = true;
         $dg = $this->getDataGenerator();
@@ -69,7 +70,7 @@ final class backup_test extends advanced_testcase {
      */
     public function test_backup_course(): void {
         global $CFG, $DB;
-        $logger = new \core_backup_html_logger(\backup::LOG_WARNING);
+        $logger = new \core_backup_html_logger(\backup::LOG_DEBUG);
         $dg = $this->getDataGenerator();
         $pg = $dg->get_plugin_generator('mod_page');
         $page0 = $pg->create_instance(['course' => $this->course, 'completion' => COMPLETION_TRACKING_MANUAL]);
@@ -97,13 +98,15 @@ final class backup_test extends advanced_testcase {
         $bc->add_logger($logger);
         $bc->execute_plan();
         $results = $bc->get_results();
+        $this->assertNotEquals('', $logger->get_html());
+
         $file = $results['backup_destination'];
         $fp = get_file_packer('application/vnd.moodle.backup');
         $filepath = $CFG->dataroot . '/temp/backup/test-restore-course-event';
         $file->extract_to_pathname($fp, $filepath);
         $bc->destroy();
-        $this->assertEquals('', $logger->get_html());
 
+        $logger = new \core_backup_html_logger(\backup::LOG_DEBUG);
         $newcourse = $dg->create_course(['enablecompletion' => 1]);
         $rc = new \restore_controller(
             'test-restore-course-event',
@@ -118,7 +121,7 @@ final class backup_test extends advanced_testcase {
         $rc->execute_plan();
         $rc->destroy();
         // TODO:  We should see a warning.
-        $this->assertEquals('', $logger->get_html());
+        $this->assertNotEquals('', $logger->get_html());
         $modinfo = get_fast_modinfo($newcourse);
         $pages = $modinfo->get_instances_of('page');
         $this->assertCount(5, $pages);

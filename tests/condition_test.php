@@ -141,7 +141,9 @@ final class condition_test extends \advanced_testcase {
         $this->assertFalse($tree->check_available(false, $info, false, $this->user->id)->is_available());
         $this->assertFalse($tree->is_available_for_all());
 
-        $this->clock->bump(500);
+        $this->clock->bump(420);
+        $this->assertFalse($tree->check_available(false, $info, false, $this->user->id)->is_available());
+        $this->clock->bump(1);
         $this->assertTrue($tree->check_available(false, $info, false, $this->user->id)->is_available());
     }
 

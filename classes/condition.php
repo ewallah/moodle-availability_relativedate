@@ -100,9 +100,9 @@ class condition extends \core_availability\condition {
     /**
      * Determines whether this particular item is currently available.
      *
-     * @param bool $not
-     * @param info $info
-     * @param bool $grabthelot
+     * @param bool $not Not
+     * @param info $info Info
+     * @param bool $grabthelot Grap all
      * @param int $userid If set, specifies a different user ID to check availability for
      * @return bool True if this item is available to the user, false otherwise
      */
@@ -112,11 +112,8 @@ class condition extends \core_availability\condition {
             // Always not available if for some reason the value could not be calculated.
             return false;
         }
-        $allow = di::get(clock::class)->time() >= $calc;
-        if ($not) {
-            $allow = !$allow;
-        }
-        return $allow;
+        $allow = di::get(clock::class)->time() > $calc;
+        return $not ? !$allow : $allow;
     }
 
     /**
@@ -178,7 +175,7 @@ class condition extends \core_availability\condition {
      * Obtains a the options for days week months.
      *
      * @param int $i index
-     * @return string
+     * @return string option
      */
     public static function options_start(int $i) {
         return match ($i) {
@@ -196,8 +193,8 @@ class condition extends \core_availability\condition {
     /**
      * Obtains a the options for hours days weeks months.
      *
-     * @param int $number
-     * @return array
+     * @param int $number Number
+     * @return array of strings
      */
     public static function options_dwm($number = 2) {
         $s = $number === 1 ? '' : 's';
@@ -213,8 +210,8 @@ class condition extends \core_availability\condition {
     /**
      * Obtains a the options for hour day week month.
      *
-     * @param int $i
-     * @return string
+     * @param int $i option
+     * @return string option
      */
     public static function option_dwm(int $i): string {
         return match ($i) {
@@ -230,8 +227,8 @@ class condition extends \core_availability\condition {
     /**
      * Perform the calculation.
      *
-     * @param stdClass $course
-     * @param int $userid
+     * @param stdClass $course Course
+     * @param int $userid User id
      * @return int relative date.
      */
     private function calc($course, $userid): int {
@@ -255,7 +252,7 @@ class condition extends \core_availability\condition {
                         JOIN {enrol} e on ue.enrolid = e.id
                         WHERE e.courseid = :courseid AND ue.userid = :userid AND ue.timestart > 0
                         ORDER by ue.timestart DESC';
-                $lowest = $this->getlowest($sql, ['courseid' => $course->id, 'userid' => $userid]);
+                $lowest = $this->getlowest($sql, $course->id, $userid);
                 if ($lowest === 0) {
                     // A teacher or admin without restriction - or a student with no limit set?
                     $sql = 'SELECT ue.timecreated
@@ -263,7 +260,7 @@ class condition extends \core_availability\condition {
                             JOIN {enrol} e on (e.id = ue.enrolid AND e.courseid = :courseid)
                             WHERE ue.userid = :userid
                             ORDER by ue.timecreated DESC';
-                    $lowest = $this->getlowest($sql, ['courseid' => $course->id, 'userid' => $userid]);
+                    $lowest = $this->getlowest($sql, $course->id, $userid);
                 }
                 return $this->fixdate("+$x", $lowest);
             case 4:
@@ -273,14 +270,21 @@ class condition extends \core_availability\condition {
                         JOIN {enrol} e on ue.enrolid = e.id
                         WHERE e.courseid = :courseid AND ue.userid = :userid
                         ORDER by e.enrolenddate DESC';
-                $lowest = $this->getlowest($sql, ['courseid' => $course->id, 'userid' => $userid]);
+                $lowest = $this->getlowest($sql, $course->id, $userid);
                 return $this->fixdate("+$x", $lowest);
             case 7:
                 // Since completion of a module.
+                $cache = \cache::make('core', 'completion');
+                $cmid = $this->relativecoursemodule;
+                if ($cacheddata = $cache->get("{$userid}_{$course->id}")) {
+                    if (isset($cacheddata[$cmid])) {
+                        $data = $cacheddata[$cmid];
+                        return $this->fixdate("+$x", $data['timemodified']);
+                    }
+                }
                 $cm = new stdClass();
-                $cm->id = $this->relativecoursemodule;
+                $cm->id = $cmid;
                 $cm->course = $course->id;
-
                 try {
                     $completion = new \completion_info($course);
                     $data = $completion->get_data($cm, false, $userid);
@@ -296,12 +300,14 @@ class condition extends \core_availability\condition {
     /**
      * Get the record with the lowest value.
      *
-     * @param string $sql
-     * @param array $parameters
+     * @param string $sql Sql string
+     * @param int $courseid Course id
+     * @param int $userid User id
      * @return int lowest value.
      */
-    private function getlowest($sql, $parameters): int {
+    private function getlowest(string $sql, int $courseid, int $userid): int {
         global $DB;
+        $parameters = ['courseid' => $courseid, 'userid' => $userid];
         if ($lowestrec = $DB->get_record_sql($sql, $parameters, IGNORE_MULTIPLE)) {
             $recs = get_object_vars($lowestrec);
             foreach ($recs as $value) {
@@ -315,8 +321,8 @@ class condition extends \core_availability\condition {
     /**
      * Keep the original hour.
      *
-     * @param string $calc
-     * @param int $newdate
+     * @param string $calc Calculation
+     * @param int $newdate New date
      * @return int relative date.
      */
     private function fixdate($calc, $newdate): int {
@@ -379,10 +385,10 @@ class condition extends \core_availability\condition {
     /**
      * Helper for updating ids, implemented for course modules and sections
      *
-     * @param string $table
-     * @param int $oldid
-     * @param int $newid
-     * @return bool
+     * @param string $table Table
+     * @param int $oldid Old id
+     * @param int $newid New id
+     * @return bool true if succesfull
      */
     public function update_dependency_id($table, $oldid, $newid) {
         if ($this->relativestart === 7) {
