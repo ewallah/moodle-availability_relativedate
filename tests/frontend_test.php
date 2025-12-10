@@ -47,6 +47,9 @@ final class frontend_test extends \advanced_testcase {
         $CFG->enablecompletion = true;
         $CFG->enableavailability = true;
         set_config('enableavailability', true);
+        $cache = \cache::make('availability_relativedate', 'enrolend');
+        $cache->set('0_999', 0);
+        $cache->set('0_1', 1);
     }
 
     /**
@@ -70,6 +73,11 @@ final class frontend_test extends \advanced_testcase {
         $DB->set_field('course_modules', 'deletioninprogress', true, ['id' => $cm->id]);
         $arr = $this->call_method([$course]);
         $this->assertCount(6, $arr);
+        $cache = \cache::make('availability_relativedate', 'enrolend');
+        $this->assertTrue($cache->has("0_{$course->id}"));
+        $this->assertEquals($course->id, $cache->get("0_{$course->id}"));
+
+        $arr = $this->call_method([$course]);
         $this->assertCount(5, $arr[1]);
         $expected = [
             ['field' => 1, 'display' => 'after course start date'],

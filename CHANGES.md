@@ -1,3 +1,9 @@
+## v5.2.4 (2025-12-10)
+
+* version update
+* cache
+* infection 99%
+
 ## v5.2.3 (2025-08-08)
 
 * version update

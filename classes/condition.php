@@ -235,6 +235,7 @@ class condition extends \core_availability\condition {
         $a = $this->relativenumber;
         $b = $this->option_dwm($this->relativedwm);
         $x = "$a $b";
+        $key = "{$userid}_{$course->id}";
         switch ($this->relativestart) {
             case 6:
                 // Before course start date.
@@ -247,6 +248,10 @@ class condition extends \core_availability\condition {
                 return $this->fixdate("+$x", $course->enddate);
             case 3:
                 // After latest enrolment start date.
+                $cache = \cache::make('availability_relativedate', 'enrolstart');
+                if ($data = $cache->get($key)) {
+                    return $this->fixdate("+$x", $data);
+                }
                 $sql = 'SELECT ue.timestart
                         FROM {user_enrolments} ue
                         JOIN {enrol} e on ue.enrolid = e.id
@@ -262,8 +267,13 @@ class condition extends \core_availability\condition {
                             ORDER by ue.timecreated DESC';
                     $lowest = $this->getlowest($sql, $course->id, $userid);
                 }
+                $cache->set($key, $lowest);
                 return $this->fixdate("+$x", $lowest);
             case 4:
+                $cache = \cache::make('availability_relativedate', 'enrolend');
+                if ($data = $cache->get($key)) {
+                    return $this->fixdate("+$x", $data);
+                }
                 // After latest enrolment end date.
                 $sql = 'SELECT e.enrolenddate
                         FROM {user_enrolments} ue
@@ -271,12 +281,13 @@ class condition extends \core_availability\condition {
                         WHERE e.courseid = :courseid AND ue.userid = :userid
                         ORDER by e.enrolenddate DESC';
                 $lowest = $this->getlowest($sql, $course->id, $userid);
+                $cache->set($key, $lowest);
                 return $this->fixdate("+$x", $lowest);
             case 7:
                 // Since completion of a module.
                 $cache = \cache::make('core', 'completion');
                 $cmid = $this->relativecoursemodule;
-                if ($cacheddata = $cache->get("{$userid}_{$course->id}")) {
+                if ($cacheddata = $cache->get($key)) {
                     if (isset($cacheddata[$cmid])) {
                         $data = $cacheddata[$cmid];
                         return $this->fixdate("+$x", $data['timemodified']);

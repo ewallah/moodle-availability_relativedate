@@ -49,6 +49,7 @@ class frontend extends \core_availability\frontend {
     protected function get_javascript_init_params($course, ?cm_info $cm = null, ?section_info $section = null) {
         global $DB;
 
+        $key = "0_{$course->id}";
         // Convert associative array for JS.
         $optionsdwm = self::convert_associative_array_for_js(condition::options_dwm(), 'field', 'display');
 
@@ -68,11 +69,18 @@ class frontend extends \core_availability\frontend {
         $optionsstart[] = ['field' => 3, 'display' => condition::options_start(3)];
 
         // Check if the course has enrolments with end dates.
-        if ($DB->count_records_select('enrol', 'courseid = :courseid AND enrolenddate > 0', ['courseid' => $course->id]) > 0) {
+        $cache = \cache::make('availability_relativedate', 'enrolend');
+        if (!$cache->has($key) &&
+            $DB->count_records_select('enrol', 'courseid = :courseid AND enrolenddate > 0', ['courseid' => $course->id]) > 0) {
+            // Just set a value.
+            $cache->set($key, $course->id);
+        }
+        if ($cache->has($key)) {
             $optionsstart[] = ['field' => 4, 'display' => condition::options_start(4)];
         }
 
         // Initialize activity selection array.
+        // TODO: Cache. 
         $activitysel = [];
         if ($course->enablecompletion) {
             $modinfo = get_fast_modinfo($course);

@@ -74,6 +74,8 @@ final class condition_test extends \advanced_testcase {
         $this->course = $dg->create_course(['startdate' => $now, 'enddate' => $now + 7 * WEEKSECS, 'enablecompletion' => 1]);
         $this->user = $dg->create_user(['timezone' => 'UTC']);
         $dg->enrol_user($this->user->id, $this->course->id, 5, $now);
+        \cache::make('availability_relativedate', 'enrolstart')->set("{$this->user->id}_33", 999);
+        \cache::make('availability_relativedate', 'enrolend')->set('0_999', 999);
     }
 
     /**
@@ -448,6 +450,8 @@ final class condition_test extends \advanced_testcase {
         $condition31 = new condition((object)['type' => 'relativedate', 'n' => 1, 'd' => 2, 's' => 3, 'm' => 999999]);
         $result31 = \phpunit_util::call_internal_method($condition31, 'calc', [$this->course, $this->user->id], $name);
         $this->assertEquals($enrol1->timecreated + DAYSECS, $result31);
+        $cache = \cache::make('availability_relativedate', 'enrolstart');
+        $this->assertTrue($cache->has("{$this->user->id}_{$this->course->id}"));
 
         $user2 = self::getDataGenerator()->create_user(['timezone' => 'UTC']);
         self::getDataGenerator()->enrol_user(
@@ -470,6 +474,8 @@ final class condition_test extends \advanced_testcase {
         $condition4 = new condition((object)['type' => 'relativedate', 'n' => 1, 'd' => 2, 's' => 4, 'm' => 999999]);
         $result4 = \phpunit_util::call_internal_method($condition4, 'calc', [$this->course, $this->user->id], $name);
         $this->assertEquals($courseself->enrolenddate + DAYSECS, $result4);
+        $cache = \cache::make('availability_relativedate', 'enrolend');
+        $this->assertTrue($cache->has("{$this->user->id}_{$this->course->id}"));
 
         $condition5 = new condition((object)['type' => 'relativedate', 'n' => 1, 'd' => 2, 's' => 5, 'm' => 999999]);
         $result5 = \phpunit_util::call_internal_method($condition5, 'calc', [$this->course, $this->user->id], $name);
