@@ -40,50 +40,53 @@ class behat_availability_relativedate extends behat_base {
     /**
      * See a relative date
      * @Then /^I should see relativedate "([^"]*)"$/
-     * @param string $date
+     * @param string $date Date to see
      */
-    public function i_should_see_relativedate($date) {
+    public function i_should_see_relativedate(string $date) {
         $user = self::get_session_user();
         $times = array_filter(explode('##', $date));
         $time = reset($times);
         $stime = userdate($time, get_string('strftimedate', 'langconfig'), $user->timezone);
+
         $this->execute("behat_general::assert_element_contains_text", [$stime, '.course-content', 'css_element']);
     }
 
     /**
      * Add a self enrolment method starting
      * @Given /^selfenrolment exists in course "(?P<course>[^"]*)" starting "(?P<date>[^"]*)"$/
-     * @param string $course
-     * @param string $date
+     * @param string $course Course
+     * @param string $date Date
      */
-    public function selfenrolment_exists_in_course_starting($course, $date) {
+    public function selfenrolment_exists_in_course_starting(string $course, string $date) {
         $this->config_self_enrolment($course, $date, '');
     }
 
     /**
      * Add a self enrolment method ending
      * @Given /^selfenrolment exists in course "(?P<course>[^"]*)" ending "(?P<date>[^"]*)"$/
-     * @param string $course
-     * @param string $date
+     * @param string $course Course
+     * @param string $date Date
      */
-    public function selfenrolment_exists_in_course_ending($course, $date) {
+    public function selfenrolment_exists_in_course_ending(string $course, string $date) {
         $this->config_self_enrolment($course, '', $date);
     }
 
     /**
      * Make one activity available after another
      * @Given /^I make "(?P<activity2>[^"]*)" relative date depending on "(?P<activity1>[^"]*)"$/
-     * @param string $activity1
-     * @param string $activity2
+     * @param string $activity1 Activity 1
+     * @param string $activity2 @ctivity 2
      */
-    public function i_make_activity_relative_date_depending_on($activity1, $activity2) {
+    public function i_make_activity_relative_date_depending_on(string $activity1, string $activity2) {
         global $DB;
         $cm1 = $this->get_course_module_for_identifier($activity1);
         $cm2 = $this->get_course_module_for_identifier($activity2);
+
         if ($cm1 && $cm2) {
             $str = '{"op":"|","c":[{"type":"relativedate","n":1,"d":1,"s":7,"m":' . $cm1->id . '}],"show":true}';
             $DB->set_field('course_modules', 'availability', $str, ['id' => $cm2->id]);
         }
+
         $this->execute('behat_general::i_run_all_adhoc_tasks');
         core_courseformat\base::reset_course_cache(0);
         get_fast_modinfo(0, 0, true);
@@ -91,19 +94,21 @@ class behat_availability_relativedate extends behat_base {
 
     /**
      * Configure self enrolment
-     * @param string $course
-     * @param string $start
-     * @param string $end
+     * @param string $course Course
+     * @param string $start Start
+     * @param string $end End
      */
-    private function config_self_enrolment($course, $start, $end) {
+    private function config_self_enrolment(string $course, string $start, string $end) {
         global $CFG, $DB;
         require_once($CFG->dirroot . '/enrol/self/lib.php');
+
         $courseid = $this->get_course_id($course);
         $selfplugin = enrol_get_plugin('self');
         $instance = $DB->get_record('enrol', ['courseid' => $courseid, 'enrol' => 'self'], '*', MUST_EXIST);
         $instance->customint6 = 1;
         $instance->enrolstartdate = $this->get_transformed_timestamp($start);
         $instance->enrolenddate = $this->get_transformed_timestamp($end);
+
         $DB->update_record('enrol', $instance);
         $selfplugin->update_status($instance, ENROL_INSTANCE_ENABLED);
     }
@@ -112,18 +117,21 @@ class behat_availability_relativedate extends behat_base {
      * Return timestamp for the time passed.
      *
      * @param string $time time to convert
-     * @return string
+     * @return string converted time
      */
-    protected function get_transformed_timestamp($time) {
+    protected function get_transformed_timestamp(string $time): string {
         if ($time === '') {
-            return 0;
+            return '';
         }
+
         if (intval($time) > 0) {
             return $time;
         }
+
         $timepassed = array_filter(explode('##', $time));
         $first = reset($timepassed);
         $sfirst = strtotime($first);
+
         return ($sfirst == '') ? $first : $sfirst;
     }
 }

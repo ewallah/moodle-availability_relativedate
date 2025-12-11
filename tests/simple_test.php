@@ -57,6 +57,7 @@ final class simple_test extends \basic_testcase {
 
         $structure = (object)['type' => 'relativedate'];
         $structure->d = 2;
+
         $cond = new condition($structure);
         $this->assertNotEqualsCanonicalizing($structure, $cond->save());
         $structure->d = 'b';
@@ -65,6 +66,7 @@ final class simple_test extends \basic_testcase {
 
         $structure = (object)['type' => 'relativedate'];
         $structure->c = 3;
+
         $cond = new condition($structure);
         $this->assertNotEqualsCanonicalizing($structure, $cond->save());
         $structure->c = 'c';
@@ -73,6 +75,7 @@ final class simple_test extends \basic_testcase {
 
         $structure = (object)['type' => 'relativedate'];
         $structure->e = 4;
+
         $cond = new condition($structure);
         $this->assertNotEqualsCanonicalizing($structure, $cond->save());
         $structure->e = 'd';
@@ -81,6 +84,7 @@ final class simple_test extends \basic_testcase {
 
         $structure = (object)['type' => 'relativedate'];
         $structure->s = 4;
+
         $cond = new condition($structure);
         $this->assertNotEqualsCanonicalizing($structure, $cond->save());
         $structure->s = 'd';
@@ -89,6 +93,7 @@ final class simple_test extends \basic_testcase {
 
         $structure = (object)['type' => 'relativedate'];
         $structure->n = 5;
+
         $cond = new condition($structure);
         $this->assertNotEqualsCanonicalizing($structure, $cond->save());
         $structure->n = 'e';
@@ -165,7 +170,6 @@ final class simple_test extends \basic_testcase {
 
     /**
      * Relative dates debug provider.
-     * @return Generator
      */
     public static function debug_provider(): Generator {
         $daybefore = ' 1 ' . get_string('day', 'availability_relativedate') . ' ';

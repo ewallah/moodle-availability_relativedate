@@ -30,8 +30,8 @@ class autoupdate {
      * Called when a course_module_deleted event is triggered. Updates the completion state for all
      * availability_relativedate instances in the course of the activity.
      *
-     * @param \core\event\base $event
-     * @return void
+     * @param \core\event\base $event Base event
+     * @return void Nothing
      */
     public static function update_from_event(\core\event\base $event): void {
         $data = $event->get_data();

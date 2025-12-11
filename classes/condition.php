@@ -41,7 +41,7 @@ use stdClass;
  */
 class condition extends \core_availability\condition {
     /** @var int relativenumber (how many relative) for condition. */
-    private $relativenumber;
+    private readonly int $relativenumber;
 
     /** @var int relativedwm (what does the date relates to) for condition.
      *
@@ -51,7 +51,7 @@ class condition extends \core_availability\condition {
      * 3 => weeks
      * 4 => months
      */
-    private $relativedwm;
+    private readonly int $relativedwm;
 
     /** @var int relativestart (what date relates to) for condition.
      *
@@ -63,12 +63,12 @@ class condition extends \core_availability\condition {
      * 6 => Before Course start date
      * 7 => After completion of an activity
      */
-    private $relativestart;
+    private readonly int $relativestart;
 
     /**
      * @var int Course module id of the activity used by type 6
      */
-    private $relativecoursemodule;
+    private int $relativecoursemodule;
 
     /**
      * Constructor.
@@ -107,11 +107,12 @@ class condition extends \core_availability\condition {
      * @return bool True if this item is available to the user, false otherwise
      */
     public function is_available($not, info $info, $grabthelot, $userid) {
-        $calc = $this->calc($info->get_course(), $userid);
+        $calc = $this->calc($info->get_course(), (int) $userid);
         if ($calc === 0) {
             // Always not available if for some reason the value could not be calculated.
             return false;
         }
+
         $allow = di::get(clock::class)->time() > $calc;
         return $not ? !$allow : $allow;
     }
@@ -129,21 +130,23 @@ class condition extends \core_availability\condition {
         $course = $info->get_course();
         $capability = has_capability('moodle/course:manageactivities', context_course::instance($course->id));
         $relative = $this->relativestart;
-        if ($relative === 2 || $relative === 5) {
-            if ((!isset($course->enddate) || (int)$course->enddate === 0) && $capability) {
-                return get_string('noenddate', 'availability_relativedate');
-            }
+        if (($relative === 2 || $relative === 5) && (!isset($course->enddate) || (int)$course->enddate === 0) && $capability) {
+            return get_string('noenddate', 'availability_relativedate');
         }
+
         if ($relative === 2 || $relative === 6) {
             $fromuntil = $not ? 'from' : 'until';
         } else {
             $fromuntil = $not ? 'until' : 'from';
         }
+
         $calc = $this->calc($course, $USER->id);
         $brackets = '(' . trim($this->get_debug_string()) . ')';
+
         if ($calc === 0) {
             return $brackets;
         }
+
         $a = new stdClass();
         $a->rnumber = userdate($calc, get_string('strftimedatetime', 'langconfig'));
         $a->rtime = ($capability && $full) ? $brackets : '';
@@ -161,12 +164,14 @@ class condition extends \core_availability\condition {
         $modname = '';
         if ($this->relativestart === 7) {
             $modname = ' ';
+
             if (get_coursemodule_from_id('', $this->relativecoursemodule)) {
                 $modname .= \core_availability\condition::description_cm_name($this->relativecoursemodule);
             } else {
                 $modname .= \html_writer::span(get_string('missing', 'availability_relativedate'), 'alert alert-danger');
             }
         }
+
         return ' ' . $this->relativenumber . ' ' . self::options_dwm($this->relativenumber)[$this->relativedwm] . ' ' .
                self::options_start($this->relativestart) . $modname;
     }
@@ -231,33 +236,35 @@ class condition extends \core_availability\condition {
      * @param int $userid User id
      * @return int relative date.
      */
-    private function calc($course, $userid): int {
+    private function calc($course, int $userid): int {
         $a = $this->relativenumber;
-        $b = $this->option_dwm($this->relativedwm);
-        $x = "$a $b";
+        $b = static::option_dwm($this->relativedwm);
+        $x = "{$a} {$b}";
         $key = "{$userid}_{$course->id}";
         switch ($this->relativestart) {
             case 6:
                 // Before course start date.
-                return $this->fixdate("-$x", $course->startdate);
+                return $this->fixdate("-{$x}", $course->startdate);
             case 2:
                 // Before course end date.
-                return $this->fixdate("-$x", $course->enddate);
+                return $this->fixdate("-{$x}", $course->enddate);
             case 5:
                 // After course end date.
-                return $this->fixdate("+$x", $course->enddate);
+                return $this->fixdate("+{$x}", $course->enddate);
             case 3:
                 // After latest enrolment start date.
                 $cache = \cache::make('availability_relativedate', 'enrolstart');
                 if ($data = $cache->get($key)) {
-                    return $this->fixdate("+$x", $data);
+                    return $this->fixdate("+{$x}", $data);
                 }
+
                 $sql = 'SELECT ue.timestart
                         FROM {user_enrolments} ue
                         JOIN {enrol} e on ue.enrolid = e.id
                         WHERE e.courseid = :courseid AND ue.userid = :userid AND ue.timestart > 0
                         ORDER by ue.timestart DESC';
                 $lowest = $this->getlowest($sql, $course->id, $userid);
+
                 if ($lowest === 0) {
                     // A teacher or admin without restriction - or a student with no limit set?
                     $sql = 'SELECT ue.timecreated
@@ -267,13 +274,16 @@ class condition extends \core_availability\condition {
                             ORDER by ue.timecreated DESC';
                     $lowest = $this->getlowest($sql, $course->id, $userid);
                 }
+
                 $cache->set($key, $lowest);
-                return $this->fixdate("+$x", $lowest);
+                return $this->fixdate("+{$x}", $lowest);
             case 4:
                 $cache = \cache::make('availability_relativedate', 'enrolend');
+
                 if ($data = $cache->get($key)) {
-                    return $this->fixdate("+$x", $data);
+                    return $this->fixdate("+{$x}", $data);
                 }
+
                 // After latest enrolment end date.
                 $sql = 'SELECT e.enrolenddate
                         FROM {user_enrolments} ue
@@ -282,30 +292,33 @@ class condition extends \core_availability\condition {
                         ORDER by e.enrolenddate DESC';
                 $lowest = $this->getlowest($sql, $course->id, $userid);
                 $cache->set($key, $lowest);
-                return $this->fixdate("+$x", $lowest);
+                return $this->fixdate("+{$x}", $lowest);
             case 7:
                 // Since completion of a module.
                 $cache = \cache::make('core', 'completion');
                 $cmid = $this->relativecoursemodule;
+
                 if ($cacheddata = $cache->get($key)) {
                     if (isset($cacheddata[$cmid])) {
                         $data = $cacheddata[$cmid];
-                        return $this->fixdate("+$x", $data['timemodified']);
+                        return $this->fixdate("+{$x}", $data['timemodified']);
                     }
                 }
+
                 $cm = new stdClass();
                 $cm->id = $cmid;
                 $cm->course = $course->id;
                 try {
                     $completion = new \completion_info($course);
                     $data = $completion->get_data($cm, false, $userid);
-                    return $this->fixdate("+$x", $data->timemodified);
-                } catch (\Exception $e) {
+                    return $this->fixdate("+{$x}", $data->timemodified);
+                } catch (\Exception) {
                     return 0;
                 }
         }
+
         // After course start date.
-        return $this->fixdate("+$x", $course->startdate);
+        return $this->fixdate("+{$x}", $course->startdate);
     }
 
     /**
@@ -321,10 +334,12 @@ class condition extends \core_availability\condition {
         $parameters = ['courseid' => $courseid, 'userid' => $userid];
         if ($lowestrec = $DB->get_record_sql($sql, $parameters, IGNORE_MULTIPLE)) {
             $recs = get_object_vars($lowestrec);
+
             foreach ($recs as $value) {
                 return $value;
             }
         }
+
         return 0;
     }
 
@@ -336,7 +351,7 @@ class condition extends \core_availability\condition {
      * @param int $newdate New date
      * @return int relative date.
      */
-    private function fixdate($calc, $newdate): int {
+    private function fixdate(string $calc, int $newdate): int {
         if ($newdate > 0) {
             $olddate = strtotime($calc, $newdate);
             if ($this->relativedwm > 1) {
@@ -344,8 +359,10 @@ class condition extends \core_availability\condition {
                 $arr2 = getdate($newdate);
                 return mktime($arr2['hours'], $arr2['minutes'], $arr2['seconds'], $arr1['mon'], $arr1['mday'], $arr1['year']);
             }
+
             return $olddate;
         }
+
         return 0;
     }
 
@@ -358,22 +375,27 @@ class condition extends \core_availability\condition {
     public static function completion_value_used($course, $cmid): bool {
         $courseobj = (is_object($course)) ? $course : get_course($course);
         $modinfo = get_fast_modinfo($courseobj);
+
         foreach ($modinfo->cms as $othercm) {
             if ($othercm->availability) {
                 $info = new info_module($othercm);
+
                 if (self::check_used($info, $cmid)) {
                     return true;
                 }
             }
         }
+
         foreach ($modinfo->get_section_info_all() as $section) {
             if ($section->availability) {
                 $info = new info_section($section);
+
                 if (self::check_used($info, $cmid)) {
                     return true;
                 }
             }
         }
+
         return false;
     }
 
@@ -385,11 +407,13 @@ class condition extends \core_availability\condition {
      */
     public static function check_used(info $info, int $cmid): bool {
         $tree = $info->get_availability_tree();
+
         foreach ($tree->get_all_children('availability_relativedate\condition') as $cond) {
             if ($cond->relativestart === 7 && $cond->relativecoursemodule === $cmid) {
                 return true;
             }
         }
+
         return false;
     }
 
@@ -402,14 +426,15 @@ class condition extends \core_availability\condition {
      * @return bool true if succesfull
      */
     public function update_dependency_id($table, $oldid, $newid) {
-        if ($this->relativestart === 7) {
-            if (in_array($table, ['course_modules', 'course_sections'])) {
-                if ($this->relativecoursemodule === $oldid) {
-                    $this->relativecoursemodule = $newid;
-                    return true;
-                }
-            }
+        if (
+            $this->relativestart === 7 &&
+            in_array($table, ['course_modules', 'course_sections']) &&
+            $this->relativecoursemodule === $oldid
+        ) {
+            $this->relativecoursemodule = $newid;
+            return true;
         }
+
         return false;
     }
 
@@ -430,10 +455,11 @@ class condition extends \core_availability\condition {
             $this->relativecoursemodule = 0;
             // We do not find the module, so we issue a warning.
             $logger->process(
-                "Restored item ($name) has availability condition on module that was not restored",
+                "Restored item ({$name}) has availability condition on module that was not restored",
                 \backup::LOG_WARNING
             );
         }
+
         return true;
     }
 }

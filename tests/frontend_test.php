@@ -66,6 +66,7 @@ final class frontend_test extends \advanced_testcase {
         $instance = $DB->get_record('enrol', ['courseid' => $course->id, 'enrol' => 'self'], '*', MUST_EXIST);
         $DB->set_field('enrol', 'enrolenddate', $now + 10000, ['id' => $instance->id]);
         $DB->set_field('enrol', 'enrolstartdate', $now - 100, ['id' => $instance->id]);
+
         $page = $dg->get_plugin_generator('mod_page')->create_instance(['course' => $course, 'completion' => 1]);
         $modinfo = get_fast_modinfo($course);
         $cms = $modinfo->get_instances();
@@ -231,8 +232,8 @@ final class frontend_test extends \advanced_testcase {
 
     /**
      * Test behat funcs
-     * @param array $params
-     * @return array
+     * @param array $params Parameters to use
+     * @return array returned data
      */
     private function call_method(array $params): array {
         $frontend = new frontend();

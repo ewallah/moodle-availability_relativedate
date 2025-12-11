@@ -39,7 +39,7 @@ if ($ADMIN->fulltree) {
 
     $settings->add(
         new admin_setting_configtext(
-            name: "$component/maxnumber",
+            name: "{$component}/maxnumber",
             visiblename: get_string(
                 identifier: 'maxnumber',
                 component: $component
@@ -69,7 +69,7 @@ if ($ADMIN->fulltree) {
 
     $settings->add(
         new admin_setting_configselect(
-            name: "$component/defaultnumber",
+            name: "{$component}/defaultnumber",
             visiblename: get_string(
                 identifier: 'defaultnumber',
                 component: $component
@@ -82,7 +82,7 @@ if ($ADMIN->fulltree) {
 
     $settings->add(
         new admin_setting_configselect(
-            name: "$component/defaultdwm",
+            name: "{$component}/defaultdwm",
             visiblename: get_string(
                 identifier: 'defaultdwm',
                 component: $component
@@ -97,9 +97,10 @@ if ($ADMIN->fulltree) {
     for ($i = 1; $i < 8; $i++) {
         $optionsstart[$i] = availability_relativedate\condition::options_start($i);
     }
+
     $settings->add(
         new admin_setting_configselect(
-            name: "$component/defaultstart",
+            name: "{$component}/defaultstart",
             visiblename: get_string(
                 identifier: 'defaultstart',
                 component: $component

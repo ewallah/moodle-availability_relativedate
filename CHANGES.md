@@ -1,8 +1,19 @@
-## v5.2.4 (2025-12-10)
+## v5.3.2 (2025-12-10)
 
 * version update
 * cache
 * infection 99%
+* mock_clock_with_frozen
+* better privacy class
+* pgsql 16
+* rector checks
+
+## v5.3.1 (2025-10-7)
+
+* version update
+* infection 98%
+* issue 33
+* funding
 
 ## v5.2.3 (2025-08-08)
 

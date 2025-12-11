@@ -70,17 +70,20 @@ class frontend extends \core_availability\frontend {
 
         // Check if the course has enrolments with end dates.
         $cache = \cache::make('availability_relativedate', 'enrolend');
-        if (!$cache->has($key) &&
-            $DB->count_records_select('enrol', 'courseid = :courseid AND enrolenddate > 0', ['courseid' => $course->id]) > 0) {
+        if (
+            !$cache->has($key) &&
+            $DB->count_records_select('enrol', 'courseid = :courseid AND enrolenddate > 0', ['courseid' => $course->id]) > 0
+        ) {
             // Just set a value.
             $cache->set($key, $course->id);
         }
+
         if ($cache->has($key)) {
             $optionsstart[] = ['field' => 4, 'display' => condition::options_start(4)];
         }
 
         // Initialize activity selection array.
-        // TODO: Cache. 
+        // TODO: Cache.
         $activitysel = [];
         if ($course->enablecompletion) {
             $modinfo = get_fast_modinfo($course);
@@ -90,7 +93,7 @@ class frontend extends \core_availability\frontend {
             // Get sections with content.
             foreach ($modinfo->get_sections() as $sectionnum => $cursection) {
                 $sectioninfo = $modinfo->get_section_info($sectionnum);
-                $sectionname = empty($sectioninfo->name) ? "$str $sectionnum" : format_string($sectioninfo->name);
+                $sectionname = empty($sectioninfo->name) ? "{$str} {$sectionnum}" : format_string($sectioninfo->name);
                 $sectionmodules = [];
 
                 // Get course modules in the section.
@@ -124,6 +127,7 @@ class frontend extends \core_availability\frontend {
                 $optionsstart[] = ['field' => 7, 'display' => condition::options_start(7)];
             }
         }
+
         $config = get_config('availability_relativedate');
         $max = property_exists($config, 'maxnumber') ? $config->maxnumber + 1 : 60;
         $default = property_exists($config, 'defaultnumber') ? $config->defaultnumber : 1;
