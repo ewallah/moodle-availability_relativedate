@@ -172,7 +172,7 @@ class condition extends \core_availability\condition {
             }
         }
 
-        return ' ' . $this->relativenumber . ' ' . self::options_dwm($this->relativenumber)[$this->relativedwm] . ' ' .
+        return ' ' . $this->relativenumber . ' ' . self::options_dwm($this->relativenumber > 1)[$this->relativedwm] . ' ' .
                self::options_start($this->relativestart) . $modname;
     }
 
@@ -198,11 +198,11 @@ class condition extends \core_availability\condition {
     /**
      * Obtains a the options for hours days weeks months.
      *
-     * @param int $number Number
+     * @param bool $plural Default True
      * @return array of strings
      */
-    public static function options_dwm($number = 2) {
-        $s = $number === 1 ? '' : 's';
+    public static function options_dwm($plural = true): array {
+        $s = $plural ? 's' : '';
         return [
             0 => get_string('minute' . $s, 'availability_relativedate'),
             1 => get_string('hour' . $s, 'availability_relativedate'),

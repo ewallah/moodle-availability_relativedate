@@ -390,7 +390,7 @@ final class condition_test extends \advanced_testcase {
         $cond = new condition((object)['type' => 'relativedate', 'n' => 'null', 'd' => 'null', 's' => 'null', 'm' => 'null']);
         $information = $cond->get_description(false, false, $info);
         $this->assertNotEquals("Until {$str}", $information);
-        $this->assertEquals('{relativedate: 0 minutes }', "{$cond}");
+        $this->assertEquals('{relativedate: 0 minute }', "{$cond}");
     }
 
     /**
