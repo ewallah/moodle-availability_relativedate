@@ -55,9 +55,6 @@ final class backup_test extends advanced_testcase {
         $this->resetAfterTest();
         $this->preventResetByRollback();
         $this->setAdminUser();
-        set_config('enabled_stores', 'logstore_standard', 'tool_log');
-        set_config('buffersize', 0, 'logstore_standard');
-        get_log_manager(true);
         $CFG->enablecompletion = true;
         $CFG->enableavailability = true;
 
