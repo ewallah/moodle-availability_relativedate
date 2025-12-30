@@ -25,6 +25,8 @@
 
 $string['after'] = ' after ';
 $string['before'] = ' before ';
+$string['cachedef_enrolend'] = 'Course end enrol date cache to calc relative dates';
+$string['cachedef_enrolstart'] = 'Course start enrol date cache to calc relative dates';
 $string['datecompletion'] = 'after completion of activity';
 $string['dateend'] = 'before course end date';
 $string['dateendafter'] = 'after course end date';
