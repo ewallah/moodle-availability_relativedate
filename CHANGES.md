@@ -1,3 +1,8 @@
+## v5.4.2 (2026-01-02)
+
+* version update
+* missing cache string
+
 ## v5.4.1 (2025-12-12)
 
 * version update
