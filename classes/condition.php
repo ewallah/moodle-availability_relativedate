@@ -254,44 +254,45 @@ class condition extends \core_availability\condition {
             case 3:
                 // After latest enrolment start date.
                 $cache = \cache::make('availability_relativedate', 'enrolstart');
-                if ($data = $cache->get($key)) {
-                    return $this->fixdate("+{$x}", $data);
-                }
 
-                $sql = 'SELECT ue.timestart
-                        FROM {user_enrolments} ue
-                        JOIN {enrol} e on ue.enrolid = e.id
-                        WHERE e.courseid = :courseid AND ue.userid = :userid AND ue.timestart > 0
-                        ORDER by ue.timestart DESC';
-                $lowest = $this->getlowest($sql, $course->id, $userid);
-
-                if ($lowest === 0) {
-                    // A teacher or admin without restriction - or a student with no limit set?
-                    $sql = 'SELECT ue.timecreated
+                if ($cache->has($key)) {
+                    $lowest = $cache->get($key);
+                } else {
+                    $sql = 'SELECT ue.timestart
                             FROM {user_enrolments} ue
-                            JOIN {enrol} e on (e.id = ue.enrolid AND e.courseid = :courseid)
-                            WHERE ue.userid = :userid
-                            ORDER by ue.timecreated DESC';
+                            JOIN {enrol} e on ue.enrolid = e.id
+                            WHERE e.courseid = :courseid AND ue.userid = :userid AND ue.timestart > 0
+                            ORDER by ue.timestart DESC';
                     $lowest = $this->getlowest($sql, $course->id, $userid);
-                }
 
-                $cache->set($key, $lowest);
+                    if ($lowest === 0) {
+                        // A teacher or admin without restriction - or a student with no limit set?
+                        $sql = 'SELECT ue.timecreated
+                                FROM {user_enrolments} ue
+                                JOIN {enrol} e on (e.id = ue.enrolid AND e.courseid = :courseid)
+                                WHERE ue.userid = :userid
+                                ORDER by ue.timecreated DESC';
+                        $lowest = $this->getlowest($sql, $course->id, $userid);
+                    }
+
+                    $cache->set($key, $lowest);
+                }
                 return $this->fixdate("+{$x}", $lowest);
             case 4:
+                // After latest enrolment end date.
                 $cache = \cache::make('availability_relativedate', 'enrolend');
 
-                if ($data = $cache->get($key)) {
-                    return $this->fixdate("+{$x}", $data);
+                if ($cache->has($key)) {
+                    $lowest = $cache->get($key);
+                } else {
+                    $sql = 'SELECT e.enrolenddate
+                            FROM {user_enrolments} ue
+                            JOIN {enrol} e on ue.enrolid = e.id
+                            WHERE e.courseid = :courseid AND ue.userid = :userid
+                            ORDER by e.enrolenddate DESC';
+                    $lowest = $this->getlowest($sql, $course->id, $userid);
+                    $cache->set($key, $lowest);
                 }
-
-                // After latest enrolment end date.
-                $sql = 'SELECT e.enrolenddate
-                        FROM {user_enrolments} ue
-                        JOIN {enrol} e on ue.enrolid = e.id
-                        WHERE e.courseid = :courseid AND ue.userid = :userid
-                        ORDER by e.enrolenddate DESC';
-                $lowest = $this->getlowest($sql, $course->id, $userid);
-                $cache->set($key, $lowest);
                 return $this->fixdate("+{$x}", $lowest);
             case 7:
                 // Since completion of a module.

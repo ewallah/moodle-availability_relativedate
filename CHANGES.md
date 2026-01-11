@@ -2,6 +2,7 @@
 
 * version update
 * missing cache string
+* infection 0.32.0
 
 ## v5.4.1 (2025-12-12)
 
