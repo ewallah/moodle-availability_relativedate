@@ -354,7 +354,7 @@ final class condition_test extends \advanced_testcase {
         $this->assertFalse($cond->is_available(false, $info, false, $user->id));
         $this->assertTrue($cond->is_available(true, $info, false, $user->id));
         $this->assertFalse($cond->is_available(false, $info, false, null));
-        $this->assertTrue($cond->is_available(true, $info, false, null));
+        $this->assertFalse($cond->is_available(true, $info, false, null));
 
         $cond = new condition((object)['type' => 'relativedate', 'n' => 7, 'd' => 2, 's' => 3, 'm' => 1]);
         $information = $cond->get_description(true, false, $info);

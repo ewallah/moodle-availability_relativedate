@@ -89,7 +89,7 @@ if ($ADMIN->fulltree) {
             ),
             description: null,
             defaultsetting: 2,
-            choices: availability_relativedate\condition::options_dwm(2)
+            choices: availability_relativedate\condition::options_dwm(true)
         )
     );
 

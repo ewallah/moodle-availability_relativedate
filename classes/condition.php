@@ -237,6 +237,9 @@ class condition extends \core_availability\condition {
      * @return int relative date.
      */
     private function calc($course, int $userid): int {
+        if ($userid == 0) {
+            return 0;
+        }
         $a = $this->relativenumber;
         $b = static::option_dwm($this->relativedwm);
         $x = "{$a} {$b}";
@@ -263,7 +266,7 @@ class condition extends \core_availability\condition {
                             JOIN {enrol} e on ue.enrolid = e.id
                             WHERE e.courseid = :courseid AND ue.userid = :userid AND ue.timestart > 0
                             ORDER by ue.timestart DESC';
-                    $lowest = $this->getlowest($sql, $course->id, $userid);
+                    $lowest = $this->get_first_value($sql, $course->id, $userid);
 
                     if ($lowest === 0) {
                         // A teacher or admin without restriction - or a student with no limit set?
@@ -272,7 +275,7 @@ class condition extends \core_availability\condition {
                                 JOIN {enrol} e on (e.id = ue.enrolid AND e.courseid = :courseid)
                                 WHERE ue.userid = :userid
                                 ORDER by ue.timecreated DESC';
-                        $lowest = $this->getlowest($sql, $course->id, $userid);
+                        $lowest = $this->get_first_value($sql, $course->id, $userid);
                     }
 
                     $cache->set($key, $lowest);
@@ -290,7 +293,7 @@ class condition extends \core_availability\condition {
                             JOIN {enrol} e on ue.enrolid = e.id
                             WHERE e.courseid = :courseid AND ue.userid = :userid
                             ORDER by e.enrolenddate DESC';
-                    $lowest = $this->getlowest($sql, $course->id, $userid);
+                    $lowest = $this->get_first_value($sql, $course->id, $userid);
                     $cache->set($key, $lowest);
                 }
                 return $this->fixdate("+{$x}", $lowest);
@@ -330,7 +333,7 @@ class condition extends \core_availability\condition {
      * @param int $userid User id
      * @return int lowest value.
      */
-    private function getlowest(string $sql, int $courseid, int $userid): int {
+    private function get_first_value(string $sql, int $courseid, int $userid): int {
         global $DB;
         $parameters = ['courseid' => $courseid, 'userid' => $userid];
         if ($lowestrec = $DB->get_record_sql($sql, $parameters, IGNORE_MULTIPLE)) {
