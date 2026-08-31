@@ -305,7 +305,9 @@ class condition extends \core_availability\condition {
                 if ($cacheddata = $cache->get($key)) {
                     if (isset($cacheddata[$cmid])) {
                         $data = $cacheddata[$cmid];
-                        return $this->fixdate("+{$x}", $data['timemodified']);
+                        if (array_key_exists('timemodified', $data) && $data['timemodified']) {
+                            return $this->fixdate("+{$x}", $data['timemodified']);
+                        }
                     }
                 }
 
