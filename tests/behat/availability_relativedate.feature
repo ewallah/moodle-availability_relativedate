@@ -156,7 +156,24 @@ Feature: availability_relativedate
     And I should see "5 days after course start date" in the "region-main" "region"
 
   Scenario: Restrict fora
-    Given I am on the "forumB" "forum activity editing" page logged in as teacher1
+    Given I am on the "forumA" "forum activity editing" page logged in as teacher1
+    And I expand all fieldsets
+    And I set the following fields to these values:
+      | Whole forum grading > Type            | Point       |
+      | Whole forum grading > Grade to pass   | 50          |
+      | Add requirements                      | 1           |
+      | View the activity                     | 1           |
+      | Receive a grade                       | 1           |
+      | Passing grade                         | 1           |
+      | completiongradeitemnumber             | Whole forum |
+      | completionpostsenabled                | 1           |
+      | completionposts                       | 2           |
+      | completiondiscussionsenabled          | 1           |
+      | completiondiscussions                 | 1           |
+      | completionrepliesenabled              | 1           |
+      | completionreplies                     | 1           |
+    And I press "Save and display"
+    And I am on the "forumB" "forum activity editing" page logged in as teacher1
     And I expand all fieldsets
     And I click on "Add restriction..." "button"
     And I click on "Relative date" "button" in the "Add restriction..." "dialogue"
