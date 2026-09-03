@@ -317,7 +317,7 @@ class condition extends \core_availability\condition {
                 try {
                     $completion = new \completion_info($course);
                     $data = $completion->get_data($cm, false, $userid);
-                    return $this->fixdate("+{$x}", $data->timemodified);
+                    return is_null($data->timemodified) ? 0 : $this->fixdate("+{$x}", $data->timemodified);
                 } catch (\Exception) {
                     return 0;
                 }
