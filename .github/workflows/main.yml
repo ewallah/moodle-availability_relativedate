@@ -64,7 +64,7 @@ jobs:
           MOODLE_BRANCH: ${{ matrix.moodle-branch }}
 
       - name: behat window size
-        run: moodle-plugin-ci add-config '$CFG->behat_window_size_modifier = 2;'
+        run: moodle-plugin-ci add-config '$CFG->behat_increasetimeout = 3;'
 
       - name: phplint
         if: ${{ !cancelled() }}
