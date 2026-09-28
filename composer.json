@@ -1,0 +1,20 @@
+{
+  "name": "ewallah/moodle-availability_relativedate",
+  "type": "moodle-availability",
+  "description": "Restrict module and section access based on relative dates",
+  "homepage": "https://github.com/ewallah/moodle-availability_relativedate",
+  "license": "GPL-3.0-or-later",
+  "require": {
+    "composer/installers": "*",
+    "moodle/moodle": "5.1.*||5.2.*"
+  },
+  "support": {
+    "issues": "https://github.com/ewallah/moodle-availability_relativedate/issues",
+    "source": "https://github.com/ewallah/moodle-availability_relativedate"
+  },
+  "config": {
+    "allow-plugins": {
+      "composer/installers": true
+    }
+  }
+}
