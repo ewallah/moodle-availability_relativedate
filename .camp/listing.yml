@@ -1,0 +1,16 @@
+name: Availability relative date
+summary: Restrict module and section access based on relative dates..
+description: |
+  This availability condition makes it easy to show modules or sections only x minutes/hours/days/weeks/months/years
+  - before / after course start date (THX to Frederik Milling Pytlick)
+  - before / after course end date
+  - after user enrolment date
+  - after end of enrolment period
+  - after the completion of an activity (THX to Stefan Hanauska and Daniel Poggenpohl)
+labels:
+  - fully-free
+category: availability
+links:
+  docs: https://github.com/ewallah/moodle-availability_relativedate/README.md
+  issues: https://github.com/ewallah/moodle-availability_relativedate/issues
+
