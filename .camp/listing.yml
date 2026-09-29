@@ -1,5 +1,5 @@
 name: Availability relative date
-summary: Restrict module and section access based on relative dates..
+summary: Restrict module and section access based on relative dates.
 description: |
   This availability condition makes it easy to show modules or sections only x minutes/hours/days/weeks/months/years
   - before / after course start date (THX to Frederik Milling Pytlick)
