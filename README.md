@@ -22,7 +22,7 @@ This plugin is 100% open source and has NOT been tested in Moodle Workplace, Tot
 
 ## Requirements
 
-This plugin requires Moodle 4.2+
+This plugin requires Moodle 5.1+
 
 ## Installation
 
