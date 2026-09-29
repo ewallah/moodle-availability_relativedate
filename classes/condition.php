@@ -50,6 +50,7 @@ class condition extends \core_availability\condition {
      * 2 => days
      * 3 => weeks
      * 4 => months
+     * 5 => years
      */
     private readonly int $relativedwm;
 
@@ -209,6 +210,7 @@ class condition extends \core_availability\condition {
             2 => get_string('day' . $s, 'availability_relativedate'),
             3 => get_string('week' . $s, 'availability_relativedate'),
             4 => get_string('month' . $s, 'availability_relativedate'),
+            5 => get_string('year' . $s, 'availability_relativedate'),
         ];
     }
 
@@ -225,6 +227,7 @@ class condition extends \core_availability\condition {
             2 => 'day',
             3 => 'week',
             4 => 'month',
+            5 => 'year',
             default => '',
         };
     }

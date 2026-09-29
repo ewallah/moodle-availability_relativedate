@@ -23,8 +23,6 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-$string['after'] = ' after ';
-$string['before'] = ' before ';
 $string['cachedef_enrolend'] = 'Course end enrol date cache to calc relative dates';
 $string['cachedef_enrolstart'] = 'Course start enrol date cache to calc relative dates';
 $string['datecompletion'] = 'after completion of activity';

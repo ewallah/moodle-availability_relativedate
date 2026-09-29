@@ -27,7 +27,8 @@ defined('MOODLE_INTERNAL') || die();
 
 if ($ADMIN->fulltree) {
     $component = 'availability_relativedate';
-    $maxnumber = during_initial_install() ? 100 : get_config($component, 'maxnumber') + 1;
+    $configmax = get_config($component, 'maxnumber');
+    $maxnumber = (during_initial_install() || $configmax === false) ? 100 : max(60, (int)$configmax + 1);
 
     $settings->add(
         new admin_setting_heading(
@@ -48,7 +49,7 @@ if ($ADMIN->fulltree) {
                 identifier: 'maxnumber_help',
                 component: $component
             ),
-            defaultsetting: 59,
+            defaultsetting: $maxnumber,
             paramtype: PARAM_INT,
             size: 6
         )

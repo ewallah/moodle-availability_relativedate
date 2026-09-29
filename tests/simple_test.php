@@ -127,10 +127,10 @@ final class simple_test extends \basic_testcase {
      * Tests static methods.
      */
     public function test_static(): void {
-        $this->assertCount(5, condition::options_dwm());
-        $expected = [0 => 'minutes', 1 => 'hours', 2 => 'days', 3 => 'weeks', 4 => 'months'];
+        $this->assertCount(6, condition::options_dwm());
+        $expected = [0 => 'minutes', 1 => 'hours', 2 => 'days', 3 => 'weeks', 4 => 'months', 5 => 'years'];
         $this->assertEquals($expected, condition::options_dwm());
-        $expected = [0 => 'minute', 1 => 'hour', 2 => 'day', 3 => 'week', 4 => 'month'];
+        $expected = [0 => 'minute', 1 => 'hour', 2 => 'day', 3 => 'week', 4 => 'month', 5 => 'year'];
         $this->assertEquals($expected, condition::options_dwm(false));
 
         $this->assertEquals('minute', condition::option_dwm(0));
@@ -138,8 +138,9 @@ final class simple_test extends \basic_testcase {
         $this->assertEquals('day', condition::option_dwm(2));
         $this->assertEquals('week', condition::option_dwm(3));
         $this->assertEquals('month', condition::option_dwm(4));
-        $this->assertEquals('', condition::option_dwm(5));
+        $this->assertEquals('year', condition::option_dwm(5));
         $this->assertEquals('', condition::option_dwm(6));
+        $this->assertEquals('', condition::option_dwm(7));
 
         $this->assertEquals('', condition::options_start(0));
         $this->assertEquals('after course start date', condition::options_start(1));

@@ -4,7 +4,7 @@ Restrict module and section access based on relative dates.
 
 ## Idea
 
-This availability condition makes it easy to show modules or sections only x days/weeks/months
+This availability condition makes it easy to show modules or sections only x minutes/hours/days/weeks/months/years
   - before / after course start date (THX to Frederik Milling Pytlick)
   - before / after course end date
   - after user enrolment date

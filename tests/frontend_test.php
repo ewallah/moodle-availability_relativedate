@@ -108,13 +108,14 @@ final class frontend_test extends \advanced_testcase {
         $this->assertCount(6, $arr);
 
         // Hours - minutes.
-        $this->assertCount(5, $arr[0]);
+        $this->assertCount(6, $arr[0]);
         $expected = [
             (object)['field' => 0, 'display' => 'minutes'],
             (object)['field' => 1, 'display' => 'hours'],
             (object)['field' => 2, 'display' => 'days'],
             (object)['field' => 3, 'display' => 'weeks'],
             (object)['field' => 4, 'display' => 'months'],
+            (object)['field' => 5, 'display' => 'years'],
         ];
         $this->assertEquals($expected, $arr[0]);
 
@@ -152,7 +153,7 @@ final class frontend_test extends \advanced_testcase {
         $arr = $this->call_method([$course, null, $section]);
         $this->assertCount(6, $arr);
 
-        $this->assertCount(5, $arr[0]);
+        $this->assertCount(6, $arr[0]);
         $this->assertCount(6, $arr[1]);
         $expected = [
             ['field' => 1, 'display' => 'after course start date'],
@@ -204,7 +205,7 @@ final class frontend_test extends \advanced_testcase {
         $arr = $this->call_method([$course, $cm]);
         $this->assertCount(6, $arr);
 
-        $this->assertCount(5, $arr[0]);
+        $this->assertCount(6, $arr[0]);
         $this->assertCount(4, $arr[1]);
         $expected = [
             ['field' => 1, 'display' => 'after course start date'],
