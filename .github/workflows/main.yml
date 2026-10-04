@@ -114,6 +114,7 @@ jobs:
           COVERALLS_REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: firefox
+        id: firefox
         if: ${{ !cancelled() }}
         run: moodle-plugin-ci --ansi behat
 
