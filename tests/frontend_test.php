@@ -24,6 +24,7 @@
  */
 
 namespace availability_relativedate;
+
 use PHPUnit\Framework\Attributes\CoversClass;
 
 /**
