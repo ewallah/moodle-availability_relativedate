@@ -111,9 +111,6 @@ class behat_availability_relativedate extends behat_base {
         try {
             $DB->update_record('enrol', $instance);
         } catch (\moodle_exception $e) {
-            print_object($start);
-            print_object($end);
-            print_object($instance);
             mtrace('Failed for some reason');
         }
         $selfplugin->update_status($instance, ENROL_INSTANCE_ENABLED);
