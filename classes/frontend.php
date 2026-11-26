@@ -41,12 +41,12 @@ class frontend extends \core_availability\frontend {
     /**
      * Get JavaScript initialization parameters.
      *
-     * @param stdClass $course The course object.
-     * @param cm_info|null $cm The course module info.
-     * @param section_info|null $section The section info.
+     * @param \stdClass $course The course object.
+     * @param \cm_info|null $cm The course module info.
+     * @param \section_info|null $section The section info.
      * @return array The JavaScript initialization parameters.
      */
-    protected function get_javascript_init_params($course, ?cm_info $cm = null, ?section_info $section = null) {
+    protected function get_javascript_init_params($course, ?\cm_info $cm = null, ?\section_info $section = null) {
         global $DB;
 
         $key = "0_{$course->id}";

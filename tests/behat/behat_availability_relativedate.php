@@ -108,10 +108,12 @@ class behat_availability_relativedate extends behat_base {
         $instance->customint6 = 1;
         $instance->enrolstartdate = $this->get_transformed_timestamp($start);
         $instance->enrolenddate = $this->get_transformed_timestamp($end);
-
         try {
             $DB->update_record('enrol', $instance);
         } catch (\moodle_exception $e) {
+            print_object($start);
+            print_object($end);
+            print_object($instance);
             mtrace('Failed for some reason');
         }
         $selfplugin->update_status($instance, ENROL_INSTANCE_ENABLED);
@@ -131,11 +133,9 @@ class behat_availability_relativedate extends behat_base {
         if (intval($time) > 0) {
             return $time;
         }
-
         $timepassed = array_filter(explode('##', $time));
         $first = reset($timepassed);
-        $sfirst = strtotime($first);
-
+        $sfirst = strtotime($first, time());
         return ($sfirst == '') ? $first : $sfirst;
     }
 }

@@ -7,13 +7,8 @@ Feature: availability relative enrol start date
 
   Background:
     Given the following "courses" exist:
-      | fullname  | shortname | category | format | startdate         | enddate           | enablecompletion |
-      | Course 1  | C1        | 0        | topics | ##-10 days noon## | ##+10 days noon## | 1                |
-    And selfenrolment exists in course "C1" starting " ##-2 days 17:00## "
-    And selfenrolment exists in course "C1" ending " ##+10 days noon## "
-    And the following "activities" exist:
-      | activity   | name   | intro | course | idnumber    | section | visible |
-      | page       | Page A | intro | C1     | pageA       | 1       | 1       |
+      | fullname  | shortname | category | format | startdate           | enddate             | enablecompletion |
+      | Course 1  | C1        | 0        | topics | ## -10 days noon ## | ## +10 days noon ## | 1                |
     And the following "users" exist:
       | username | timezone |
       | teacher1 | 5        |
@@ -22,6 +17,13 @@ Feature: availability relative enrol start date
       | user     | course | role           |
       | teacher1 | C1     | editingteacher |
       | student1 | C1     | student        |
+    And I log in as "admin"
+    And selfenrolment exists in course "C1" starting "## -2 days 17:00 ##"
+    And selfenrolment exists in course "C1" ending "## +10 days noon ##"
+    And the following "activities" exist:
+      | activity   | name   | intro | course | idnumber    | section | visible |
+      | page       | Page A | intro | C1     | pageA       | 1       | 1       |
+    And I log out
 
   @javascript
   Scenario Outline: Test enrol date condition
